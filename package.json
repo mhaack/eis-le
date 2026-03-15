@@ -1,0 +1,18 @@
+{
+  "name": "eisleipzig-pipeline",
+  "version": "1.0.0",
+  "description": "Data pipeline for eisleipzig.de — weekly scraping, enrichment, and alerts",
+  "type": "module",
+  "scripts": {
+    "import": "node scripts/initial-import.js",
+    "enrich": "node scripts/enrich-with-claude.js",
+    "update": "node scripts/weekly-update.js",
+    "update:search-new": "node scripts/weekly-update.js --search-new",
+    "alerts": "node scripts/send-alerts.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "@supabase/supabase-js": "^2.49.1",
+    "resend": "^4.1.2"
+  }
+}
