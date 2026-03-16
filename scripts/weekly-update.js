@@ -97,7 +97,13 @@ async function searchForNewShops() {
         continue;
       }
 
-      const slug = generateSlug(details.displayName?.text);
+      const placeName = details.displayName?.text;
+      if (!placeName) {
+        console.warn(`  Skipping place ${place.place_id}: no displayName`);
+        continue;
+      }
+
+      const slug = generateSlug(placeName);
       const shop = {
         ...mapPlaceToShop(details, { slug }),
         listing_status: 'draft',
@@ -108,8 +114,8 @@ async function searchForNewShops() {
         .upsert(shop, { onConflict: 'google_place_id' });
 
       if (!error) {
-        console.log(`  [NEW] ${details.name}`);
-        newShops.push({ shop: details.name, field: 'new_shop', old: null, new: 'draft' });
+        console.log(`  [NEW] ${placeName}`);
+        newShops.push({ shop: placeName, field: 'new_shop', old: null, new: 'draft' });
         knownIds.add(place.place_id);
       }
 
