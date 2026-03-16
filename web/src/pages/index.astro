@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import UserStoryPills from '../components/UserStoryPills.astro';
 import FilterBar from '../components/FilterBar.astro';
 import ShopCard from '../components/ShopCard.astro';
+import { IceCreamCone } from 'lucide-astro';
 import { getAllShops, resolveShopPhotoMap } from '../lib/data';
 
 const shops = await getAllShops();
@@ -31,7 +32,7 @@ const photoMap = await resolveShopPhotoMap(shops);
         ))}
       </div>
       <div x-show="visibleCount === 0" class="text-center py-16" x-cloak>
-        <p class="text-xl mb-2">🍦</p>
+        <p class="text-xl mb-2"><IceCreamCone size={28} stroke-width={2} class="text-schoko-muted mx-auto" /></p>
         <p class="text-schoko-muted font-heading text-lg">Hmm, hier schmilzt gerade nichts. Versuch's mit weniger Filtern.</p>
       </div>
     </section>

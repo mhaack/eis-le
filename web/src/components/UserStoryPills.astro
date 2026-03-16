@@ -1,10 +1,12 @@
 ---
+import { Baby, Leaf, Moon, Bike, Trophy } from 'lucide-astro';
+
 const stories = [
-  { href: '/eis-mit-kindern', emoji: '🧒', label: 'Eis mit Kindern', variant: 'mango' },
-  { href: '/veganes-eis', emoji: '💚', label: 'Veganes Eis', variant: 'pistazie' },
-  { href: '/date-night-eis', emoji: '🌙', label: 'Date Night', variant: 'heidelbeere' },
-  { href: '/eis-fuer-radfahrer', emoji: '🚴', label: 'Radtour-Stopp', variant: 'schoko' },
-  { href: '/beste-eisdielen-lvz', emoji: '🏆', label: 'Beste laut LVZ', variant: 'erdbeere' },
+  { href: '/eis-mit-kindern', icon: Baby, label: 'Eis mit Kindern', variant: 'mango' },
+  { href: '/veganes-eis', icon: Leaf, label: 'Veganes Eis', variant: 'pistazie' },
+  { href: '/date-night-eis', icon: Moon, label: 'Date Night', variant: 'heidelbeere' },
+  { href: '/eis-fuer-radfahrer', icon: Bike, label: 'Radtour-Stopp', variant: 'schoko' },
+  { href: '/beste-eisdielen-lvz', icon: Trophy, label: 'Beste laut LVZ', variant: 'erdbeere' },
 ];
 
 const bgMap: Record<string, string> = {
@@ -22,11 +24,11 @@ const bgMap: Record<string, string> = {
       <a
         href={s.href}
         class:list={[
-          'pill text-sm font-medium no-underline transition-colors',
+          'pill text-sm font-medium no-underline transition-colors inline-flex items-center gap-1.5',
           bgMap[s.variant],
         ]}
       >
-        <span>{s.emoji}</span>
+        <s.icon size={14} stroke-width={2} />
         <span>{s.label}</span>
       </a>
     ))}

@@ -1,4 +1,6 @@
 ---
+import LogoIcon from './LogoIcon.astro';
+
 const currentPath = Astro.url.pathname;
 
 const links = [
@@ -11,7 +13,7 @@ const links = [
 <header class="sticky top-0 z-50 bg-creme/90 backdrop-blur-md border-b border-border">
   <nav class="max-w-[960px] mx-auto px-4 py-3 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 no-underline group">
-      <span class="text-2xl">🍦</span>
+      <LogoIcon size={28} />
       <span class="font-heading text-xl font-semibold text-schoko group-hover:text-erdbeere transition-colors">
         eisleipzig
       </span>

@@ -6,6 +6,7 @@ import FlavorList from '../components/FlavorList.astro';
 import HighlightList from '../components/HighlightList.astro';
 import RatingCTA from '../components/RatingCTA.astro';
 import { getAllShops, getShopBySlug, formatOpeningHours, isShopOpen, resolveShopPhotos } from '../lib/data';
+import { Star, ArrowLeft, Clock, MapPin, Phone, ExternalLink, Navigation, CreditCard, IceCreamCone, Sparkles } from 'lucide-astro';
 
 export async function getStaticPaths() {
   const shops = await getAllShops();
@@ -45,7 +46,7 @@ const openNow = isShopOpen(shop.opening_hours);
     <!-- Back nav -->
     <div class="mb-4">
       <a href="/" class="text-sm text-heidelbeere hover:text-schoko transition-colors inline-flex items-center gap-1">
-        <span>←</span> Alle Eisdielen
+        <ArrowLeft size={14} stroke-width={2} /> Alle Eisdielen
       </a>
     </div>
 
@@ -75,16 +76,17 @@ const openNow = isShopOpen(shop.opening_hours);
       <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
         <!-- Rating -->
         <div class="flex items-center gap-1.5">
-          <div class="flex">
+          <div class="flex gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
-              <span class:list={['text-base', i < stars ? 'text-vanille' : 'text-border']}>★</span>
+              <Star size={16} stroke-width={2} class:list={[i < stars ? 'text-vanille fill-current' : 'text-border']} />
             ))}
           </div>
           <span class="font-semibold text-schoko">{shop.google_rating}</span>
           <span class="text-schoko-muted">({shop.google_review_count})</span>
         </div>
         <!-- Neighborhood -->
-        <a href={`/stadtteil/${shop.neighborhood_slug}`} class="text-heidelbeere font-medium hover:underline">
+        <a href={`/stadtteil/${shop.neighborhood_slug}`} class="text-heidelbeere font-medium hover:underline inline-flex items-center gap-1">
+          <MapPin size={14} stroke-width={2} />
           {shop.neighborhood}
         </a>
         <!-- Price -->
@@ -121,16 +123,16 @@ const openNow = isShopOpen(shop.opening_hours);
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
       <!-- Left: Flavors -->
       <div class="animate-fade-up stagger-3">
-        <h2 class="font-heading text-xl font-semibold text-schoko mb-4">
-          🍨 Eissorten heute
+        <h2 class="font-heading text-xl font-semibold text-schoko mb-4 flex items-center gap-2">
+          <IceCreamCone size={20} stroke-width={2} class="text-erdbeere" /> Eissorten heute
         </h2>
         <FlavorList flavors={shop.flavor_list ?? []} />
       </div>
 
       <!-- Right: Highlights -->
       <div class="animate-fade-up stagger-4">
-        <h2 class="font-heading text-xl font-semibold text-schoko mb-4">
-          ✨ Das Besondere hier
+        <h2 class="font-heading text-xl font-semibold text-schoko mb-4 flex items-center gap-2">
+          <Sparkles size={20} stroke-width={2} class="text-vanille" /> Das Besondere hier
         </h2>
         <HighlightList highlights={shop.highlights ?? []} />
       </div>
@@ -140,7 +142,9 @@ const openNow = isShopOpen(shop.opening_hours);
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
       <!-- Opening hours -->
       <div class="card p-5 animate-fade-up stagger-5">
-        <h3 class="font-heading text-lg font-semibold text-schoko mb-3">🕐 Öffnungszeiten</h3>
+        <h3 class="font-heading text-lg font-semibold text-schoko mb-3 flex items-center gap-2">
+          <Clock size={18} stroke-width={2} class="text-schoko-muted" /> Öffnungszeiten
+        </h3>
         <div class="space-y-2">
           {hoursEntries.map(([day, hours]) => (
             <div class="flex justify-between text-sm">
@@ -153,28 +157,36 @@ const openNow = isShopOpen(shop.opening_hours);
 
       <!-- Location & contact -->
       <div class="card p-5 animate-fade-up stagger-6">
-        <h3 class="font-heading text-lg font-semibold text-schoko mb-3">📍 Anfahrt & Kontakt</h3>
-        <div class="space-y-2 text-sm">
+        <h3 class="font-heading text-lg font-semibold text-schoko mb-3 flex items-center gap-2">
+          <MapPin size={18} stroke-width={2} class="text-schoko-muted" /> Anfahrt & Kontakt
+        </h3>
+        <div class="space-y-2.5 text-sm">
           <p class="text-schoko">{shop.address_street}</p>
           {shop.location_description && (
             <p class="text-schoko-muted italic">{shop.location_description}</p>
           )}
           {shop.phone && (
             <p>
-              <a href={`tel:${shop.phone}`} class="text-heidelbeere">{shop.phone}</a>
+              <a href={`tel:${shop.phone}`} class="text-heidelbeere inline-flex items-center gap-1.5">
+                <Phone size={14} stroke-width={2} /> {shop.phone}
+              </a>
             </p>
           )}
           {shop.website && (
             <p>
-              <a href={shop.website} target="_blank" rel="noopener" class="text-heidelbeere">Website besuchen →</a>
+              <a href={shop.website} target="_blank" rel="noopener" class="text-heidelbeere inline-flex items-center gap-1.5">
+                <ExternalLink size={14} stroke-width={2} /> Website besuchen
+              </a>
             </p>
           )}
           <p>
-            <a href={shop.google_maps_url} target="_blank" rel="noopener" class="text-heidelbeere">Auf Google Maps →</a>
+            <a href={shop.google_maps_url} target="_blank" rel="noopener" class="text-heidelbeere inline-flex items-center gap-1.5">
+              <Navigation size={14} stroke-width={2} /> Auf Google Maps
+            </a>
           </p>
           {shop.payment_methods?.length > 0 && (
-            <p class="text-schoko-muted">
-              Zahlung: {shop.payment_methods.join(', ')}
+            <p class="text-schoko-muted inline-flex items-center gap-1.5">
+              <CreditCard size={14} stroke-width={2} /> {shop.payment_methods.join(', ')}
             </p>
           )}
         </div>
