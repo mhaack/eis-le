@@ -97,7 +97,7 @@ async function searchForNewShops() {
         continue;
       }
 
-      const slug = generateSlug(details.name);
+      const slug = generateSlug(details.displayName?.text);
       const shop = {
         ...mapPlaceToShop(details, { slug }),
         listing_status: 'draft',
