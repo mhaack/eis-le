@@ -1,0 +1,28 @@
+---
+interface Props {
+  rank: number;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { rank, size = 'md' } = Astro.props;
+
+const medalColor = rank === 1 ? '#d4a853' : rank === 2 ? '#b0b0b0' : rank === 3 ? '#cd7f32' : '#c4566a';
+
+const sizeMap: Record<string, { circle: string; text: string; label: string }> = {
+  sm: { circle: 'w-7 h-7', text: 'text-xs', label: 'text-[9px]' },
+  md: { circle: 'w-9 h-9', text: 'text-sm', label: 'text-[10px]' },
+  lg: { circle: 'w-11 h-11', text: 'text-base', label: 'text-xs' },
+};
+
+const s = sizeMap[size];
+---
+
+<div class="flex flex-col items-center gap-0.5">
+  <div
+    class:list={[s.circle, 'rounded-full flex items-center justify-center text-white font-bold shadow-md']}
+    style={`background-color: ${medalColor};`}
+  >
+    <span class={s.text}>#{rank}</span>
+  </div>
+  <span class:list={[s.label, 'font-semibold uppercase tracking-wide text-erdbeere']}>LVZ</span>
+</div>

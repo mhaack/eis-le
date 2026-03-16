@@ -1,0 +1,28 @@
+---
+---
+
+<section class="max-w-[960px] mx-auto px-4 pb-8">
+  <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+    {[
+      { key: 'alle', label: 'Alle' },
+      { key: 'open', label: '🟢 Geöffnet' },
+      // { key: 'lvz', label: '🏆 LVZ-Ranking' },
+      { key: 'vegan', label: '💚 Vegan' },
+      { key: 'kinder', label: '🧒 Kinderfreundlich' },
+      { key: 'fahrrad', label: '🚴 Fahrradfreundlich' },
+    ].map(f => (
+      <button
+        @click={`activeFilter = '${f.key}'`}
+        :class={`activeFilter === '${f.key}' ? 'bg-schoko text-creme' : 'bg-sand text-schoko-muted hover:bg-schoko/10'`}
+        class="pill text-sm font-medium transition-colors cursor-pointer shrink-0"
+      >
+        {f.label}
+      </button>
+    ))}
+  </div>
+</section>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

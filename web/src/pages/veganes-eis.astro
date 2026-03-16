@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ShopGrid from '../components/ShopGrid.astro';
+import LeafletMap from '../components/LeafletMap.astro';
+import { getVeganShops, resolveShopPhotoMap } from '../lib/data';
+
+const shops = await getVeganShops();
+const photoMap = await resolveShopPhotoMap(shops);
+---
+
+<BaseLayout title="Veganes Eis in Leipzig — Pflanzliche Eisdielen" description="Veganes Eis in Leipzig: Die besten Eisdielen mit pflanzlichen Sorten, Sorbets und handgemachtem Eis ohne Milch.">
+  <section class="max-w-[960px] mx-auto px-4 py-8">
+    <div class="mb-8 animate-fade-up">
+      <span class="text-4xl mb-4 block">💚</span>
+      <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-schoko mb-4">
+        Pflanzlich, handgemacht, richtig gut
+      </h1>
+      <p class="text-lg text-schoko-light leading-relaxed max-w-2xl">
+        Vegan heißt in Leipzig schon lange nicht mehr „die eine Sorte Sorbet in der Ecke". Wir zeigen dir, wo du das beste pflanzliche Eis bekommst.
+      </p>
+    </div>
+
+    <div class="mb-10">
+      <LeafletMap shops={shops} height="300px" id="vegan-map" />
+    </div>
+
+    <ShopGrid shops={shops} photoMap={photoMap} emptyMessage="Keine veganen Eisdielen gefunden." />
+  </section>
+</BaseLayout>

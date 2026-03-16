@@ -1,0 +1,35 @@
+---
+import Tag from './Tag.astro';
+
+interface Props {
+  flavors: { name: string; tag?: 'vegan' | 'signatur' | 'saisonal' }[];
+}
+
+const { flavors } = Astro.props;
+
+const tagVariant: Record<string, 'pistazie' | 'erdbeere' | 'vanille'> = {
+  vegan: 'pistazie',
+  signatur: 'erdbeere',
+  saisonal: 'vanille',
+};
+
+const tagLabel: Record<string, string> = {
+  vegan: 'Vegan',
+  signatur: 'Signatur',
+  saisonal: 'Saisonal',
+};
+---
+
+<div class="space-y-3">
+  {flavors.map((flavor, i) => (
+    <div class="flex items-center gap-3 py-2 border-b border-border last:border-0">
+      <span class="text-sm font-semibold text-schoko-muted w-6 text-right shrink-0">
+        {String(i + 1).padStart(2, '0')}
+      </span>
+      <span class="text-base font-medium text-schoko flex-1">{flavor.name}</span>
+      {flavor.tag && (
+        <Tag label={tagLabel[flavor.tag]} variant={tagVariant[flavor.tag]} size="sm" />
+      )}
+    </div>
+  ))}
+</div>

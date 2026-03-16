@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LVZBadge from '../components/LVZBadge.astro';
+import Tag from '../components/Tag.astro';
+import FlavorList from '../components/FlavorList.astro';
+import HighlightList from '../components/HighlightList.astro';
+import RatingCTA from '../components/RatingCTA.astro';
+import { getAllShops, getShopBySlug, formatOpeningHours, isShopOpen, resolveShopPhotos } from '../lib/data';
+
+export async function getStaticPaths() {
+  const shops = await getAllShops();
+  return shops.map(shop => ({
+    params: { slug: shop.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const shop = await getShopBySlug(slug!);
+
+if (!shop) {
+  return Astro.redirect('/');
+}
+
+const stars = Math.round(shop.google_rating);
+const photos = await resolveShopPhotos(shop.photos);
+
+// Build tags
+const tags: { label: string; variant: 'pistazie' | 'erdbeere' | 'vanille' | 'heidelbeere' | 'mango' | 'default' }[] = [];
+if (shop.has_vegan_options) tags.push({ label: shop.fully_vegan ? 'Voll vegan' : 'Vegane Optionen', variant: 'pistazie' });
+if (shop.child_friendly) tags.push({ label: 'Kinderfreundlich', variant: 'mango' });
+if (shop.has_bike_parking) tags.push({ label: 'Fahrradstellplatz', variant: 'default' });
+if (shop.has_dog_ice_cream) tags.push({ label: 'Hundeeis', variant: 'mango' });
+if (shop.is_organic) tags.push({ label: 'Bio', variant: 'pistazie' });
+if (shop.has_lactose_free) tags.push({ label: 'Laktosefrei', variant: 'pistazie' });
+if (shop.has_gluten_free) tags.push({ label: 'Glutenfrei', variant: 'pistazie' });
+if (shop.has_outdoor_seating) tags.push({ label: 'Terrasse', variant: 'default' });
+if (shop.has_coffee) tags.push({ label: 'Kaffee', variant: 'default' });
+
+const hoursEntries = formatOpeningHours(shop.opening_hours);
+const openNow = isShopOpen(shop.opening_hours);
+---
+
+<BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood}, Leipzig`} description={shop.specialty}>
+  <article class="max-w-[960px] mx-auto px-4 py-6">
+    <!-- Back nav -->
+    <div class="mb-4">
+      <a href="/" class="text-sm text-heidelbeere hover:text-schoko transition-colors inline-flex items-center gap-1">
+        <span>←</span> Alle Eisdielen
+      </a>
+    </div>
+
+    <!-- Hero image -->
+    <div class="relative rounded-[20px] overflow-hidden h-64 sm:h-80 mb-6 animate-fade-up">
+      <img
+        src={photos[0]}
+        alt={shop.name}
+        class="w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+
+      {shop.lvz_rank && (
+        <div class="absolute top-4 left-4">
+          <LVZBadge rank={shop.lvz_rank} size="lg" />
+        </div>
+      )}
+
+      <div class="absolute bottom-4 left-4 right-4">
+        <p class="text-white/80 text-sm font-medium mb-1">{shop.ice_cream_type}</p>
+        <h1 class="font-heading text-2xl sm:text-3xl font-bold text-white">{shop.name}</h1>
+      </div>
+    </div>
+
+    <!-- Info bar -->
+    <div class="card p-4 mb-6 animate-fade-up stagger-1">
+      <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
+        <!-- Rating -->
+        <div class="flex items-center gap-1.5">
+          <div class="flex">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span class:list={['text-base', i < stars ? 'text-vanille' : 'text-border']}>★</span>
+            ))}
+          </div>
+          <span class="font-semibold text-schoko">{shop.google_rating}</span>
+          <span class="text-schoko-muted">({shop.google_review_count})</span>
+        </div>
+        <!-- Neighborhood -->
+        <a href={`/stadtteil/${shop.neighborhood_slug}`} class="text-heidelbeere font-medium hover:underline">
+          {shop.neighborhood}
+        </a>
+        <!-- Price -->
+        {shop.price_per_scoop && (
+          <span class="text-schoko-muted">{shop.price_per_scoop}/Kugel</span>
+        )}
+        <!-- Open status -->
+        {openNow !== null && (
+          <span class:list={[
+            'pill text-xs font-medium',
+            openNow ? 'bg-pistazie-bg text-pistazie' : 'bg-erdbeere-bg text-erdbeere',
+          ]}>
+            {openNow ? 'Geöffnet' : 'Geschlossen'}
+          </span>
+        )}
+      </div>
+    </div>
+
+    <!-- Tags -->
+    {tags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-6 animate-fade-up stagger-2">
+        {tags.map(t => <Tag label={t.label} variant={t.variant} size="md" />)}
+      </div>
+    )}
+
+    <!-- Editorial intro -->
+    <div class="mb-8 animate-fade-up stagger-2">
+      <p class="text-lg text-schoko-light leading-relaxed">
+        {shop.our_review}
+      </p>
+    </div>
+
+    <!-- Two-column content -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+      <!-- Left: Flavors -->
+      <div class="animate-fade-up stagger-3">
+        <h2 class="font-heading text-xl font-semibold text-schoko mb-4">
+          🍨 Eissorten heute
+        </h2>
+        <FlavorList flavors={shop.flavor_list ?? []} />
+      </div>
+
+      <!-- Right: Highlights -->
+      <div class="animate-fade-up stagger-4">
+        <h2 class="font-heading text-xl font-semibold text-schoko mb-4">
+          ✨ Das Besondere hier
+        </h2>
+        <HighlightList highlights={shop.highlights ?? []} />
+      </div>
+    </div>
+
+    <!-- Details section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+      <!-- Opening hours -->
+      <div class="card p-5 animate-fade-up stagger-5">
+        <h3 class="font-heading text-lg font-semibold text-schoko mb-3">🕐 Öffnungszeiten</h3>
+        <div class="space-y-2">
+          {hoursEntries.map(([day, hours]) => (
+            <div class="flex justify-between text-sm">
+              <span class="text-schoko-muted">{day}</span>
+              <span class="font-medium text-schoko">{hours}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Location & contact -->
+      <div class="card p-5 animate-fade-up stagger-6">
+        <h3 class="font-heading text-lg font-semibold text-schoko mb-3">📍 Anfahrt & Kontakt</h3>
+        <div class="space-y-2 text-sm">
+          <p class="text-schoko">{shop.address_street}</p>
+          {shop.location_description && (
+            <p class="text-schoko-muted italic">{shop.location_description}</p>
+          )}
+          {shop.phone && (
+            <p>
+              <a href={`tel:${shop.phone}`} class="text-heidelbeere">{shop.phone}</a>
+            </p>
+          )}
+          {shop.website && (
+            <p>
+              <a href={shop.website} target="_blank" rel="noopener" class="text-heidelbeere">Website besuchen →</a>
+            </p>
+          )}
+          <p>
+            <a href={shop.google_maps_url} target="_blank" rel="noopener" class="text-heidelbeere">Auf Google Maps →</a>
+          </p>
+          {shop.payment_methods?.length > 0 && (
+            <p class="text-schoko-muted">
+              Zahlung: {shop.payment_methods.join(', ')}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating CTA -->
+    <div class="mb-10 animate-fade-up stagger-7">
+      <RatingCTA shopName={shop.name} />
+    </div>
+  </article>
+</BaseLayout>

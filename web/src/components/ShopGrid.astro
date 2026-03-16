@@ -1,0 +1,25 @@
+---
+import type { Shop } from '../lib/data';
+import ShopCard from './ShopCard.astro';
+
+interface Props {
+  shops: Shop[];
+  photoMap?: Map<string, string>;
+  emptyMessage?: string;
+}
+
+const { shops, photoMap, emptyMessage = 'Hmm, hier schmilzt gerade nichts. Versuch\'s mit weniger Filtern.' } = Astro.props;
+---
+
+{shops.length > 0 ? (
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {shops.map((shop, i) => (
+      <ShopCard shop={shop} index={i} photoUrl={photoMap?.get(shop.id)} />
+    ))}
+  </div>
+) : (
+  <div class="text-center py-16">
+    <p class="text-xl mb-2">🍦</p>
+    <p class="text-schoko-muted font-heading text-lg">{emptyMessage}</p>
+  </div>
+)}

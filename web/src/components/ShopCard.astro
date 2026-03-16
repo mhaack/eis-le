@@ -1,0 +1,99 @@
+---
+import { type Shop, isShopOpen } from '../lib/data';
+import Tag from './Tag.astro';
+import LVZBadge from './LVZBadge.astro';
+
+interface Props {
+  shop: Shop;
+  index?: number;
+  photoUrl?: string;
+}
+
+const { shop, index = 0, photoUrl } = Astro.props;
+
+const stars = Math.round(shop.google_rating);
+const openNow = isShopOpen(shop.opening_hours);
+
+const tags: { label: string; variant: 'pistazie' | 'erdbeere' | 'vanille' | 'heidelbeere' | 'mango' | 'default' }[] = [];
+if (shop.has_vegan_options) tags.push({ label: 'Vegan', variant: 'pistazie' });
+if (shop.child_friendly) tags.push({ label: 'Kinderfreundlich', variant: 'mango' });
+if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
+if (shop.has_dog_ice_cream) tags.push({ label: 'Hundeeis', variant: 'mango' });
+---
+
+<a
+  href={`/${shop.slug}`}
+  class:list={[
+    'card block no-underline overflow-hidden animate-fade-up',
+    `stagger-${(index % 9) + 1}`,
+  ]}
+  data-filter-lvz={shop.lvz_rank ? 'true' : undefined}
+  data-filter-vegan={shop.has_vegan_options ? 'true' : undefined}
+  data-filter-kinder={shop.child_friendly ? 'true' : undefined}
+  data-filter-fahrrad={shop.has_bike_parking ? 'true' : undefined}
+>
+  <!-- Image -->
+  <div class="relative h-48 overflow-hidden">
+    <img
+      src={photoUrl || 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop'}
+      alt={shop.name}
+      class="w-full h-full object-cover"
+      loading="lazy"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+
+    {shop.lvz_rank && (
+      <div class="absolute top-3 left-3">
+        <LVZBadge rank={shop.lvz_rank} size="sm" />
+      </div>
+    )}
+
+    {openNow !== null && (
+      <div class="absolute top-3 right-3">
+        <span class:list={[
+          'pill text-xs font-medium',
+          openNow ? 'bg-pistazie-bg text-pistazie' : 'bg-erdbeere-bg text-erdbeere',
+        ]}>
+          {openNow ? 'Geöffnet' : 'Geschlossen'}
+        </span>
+      </div>
+    )}
+  </div>
+
+  <!-- Content -->
+  <div class="p-4">
+    <!-- Neighborhood + rating row -->
+    <div class="flex items-center justify-between mb-1.5">
+      <span class="text-xs font-medium text-schoko-muted uppercase tracking-wide">{shop.neighborhood}</span>
+      <div class="flex items-center gap-1">
+        <span class="text-vanille text-sm">★</span>
+        <span class="text-sm font-semibold text-schoko">{shop.google_rating}</span>
+        <span class="text-xs text-schoko-muted">({shop.google_review_count})</span>
+      </div>
+    </div>
+
+    <!-- Shop name -->
+    <h3 class="font-heading text-lg font-semibold text-schoko mb-1 leading-snug">{shop.name}</h3>
+
+    <!-- Type + price -->
+    <p class="text-sm text-schoko-muted mb-3">
+      {shop.ice_cream_type}
+      {shop.is_handmade && <span> · Handgemacht</span>}
+      {shop.price_per_scoop && <span> · {shop.price_per_scoop}</span>}
+    </p>
+
+    <!-- Tags -->
+    {tags.length > 0 && (
+      <div class="flex flex-wrap gap-1.5 mb-3">
+        {tags.map(t => <Tag label={t.label} variant={t.variant} />)}
+      </div>
+    )}
+
+    <!-- Specialty quote -->
+    {shop.specialty && (
+      <p class="text-sm text-schoko-light italic leading-relaxed line-clamp-2">
+        &bdquo;{shop.specialty}&ldquo;
+      </p>
+    )}
+  </div>
+</a>
