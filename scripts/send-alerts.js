@@ -10,7 +10,7 @@ import { Resend } from 'resend';
 
 const CHANGES_FILE = '/tmp/eisleipzig-changes.json';
 const ALERT_EMAIL = process.env.ALERT_EMAIL;
-const FROM_EMAIL = 'updates@eisleipzig.de';
+const FROM_EMAIL = 'updates@eis-le.de';
 
 if (!ALERT_EMAIL) {
   throw new Error('Missing ALERT_EMAIL environment variable');
@@ -52,7 +52,7 @@ async function run() {
     <ul>
       ${changes.map(formatChange).join('\n      ')}
     </ul>
-    <p><small>Automatisch generiert von der eisleipzig.de Pipeline</small></p>
+    <p><small>Automatisch generiert von der eis-le.de Pipeline</small></p>
   `;
 
   const { error } = await resend.emails.send({
