@@ -1,0 +1,36 @@
+---
+import { Baby, Leaf, Moon, Bike, Trophy } from 'lucide-astro';
+
+const stories = [
+  { href: '/eis-mit-kindern', icon: Baby, label: 'Eis mit Kindern', variant: 'mango' },
+  { href: '/veganes-eis', icon: Leaf, label: 'Veganes Eis', variant: 'pistazie' },
+  { href: '/date-night-eis', icon: Moon, label: 'Date Night', variant: 'heidelbeere' },
+  { href: '/eis-fuer-radfahrer', icon: Bike, label: 'Radtour-Stopp', variant: 'schoko' },
+  { href: '/beste-eisdielen-lvz', icon: Trophy, label: 'Beste laut LVZ', variant: 'erdbeere' },
+];
+
+const bgMap: Record<string, string> = {
+  mango: 'bg-mango-bg text-mango hover:bg-mango/15',
+  pistazie: 'bg-pistazie-bg text-pistazie hover:bg-pistazie/15',
+  heidelbeere: 'bg-heidelbeere-bg text-heidelbeere hover:bg-heidelbeere/15',
+  schoko: 'bg-sand text-schoko-light hover:bg-schoko/10',
+  erdbeere: 'bg-erdbeere-bg text-erdbeere hover:bg-erdbeere/15',
+};
+---
+
+<section class="max-w-[960px] mx-auto px-4 pb-6">
+  <div class="flex flex-wrap justify-center gap-2.5">
+    {stories.map(s => (
+      <a
+        href={s.href}
+        class:list={[
+          'pill text-sm font-medium no-underline transition-colors inline-flex items-center gap-1.5',
+          bgMap[s.variant],
+        ]}
+      >
+        <s.icon size={14} stroke-width={2} />
+        <span>{s.label}</span>
+      </a>
+    ))}
+  </div>
+</section>

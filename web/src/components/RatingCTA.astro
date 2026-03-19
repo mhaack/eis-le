@@ -1,0 +1,40 @@
+---
+interface Props {
+  shopName: string;
+}
+
+const { shopName } = Astro.props;
+---
+
+<div class="card p-6 text-center" x-data="{ rating: 0, submitted: false }">
+  <h3 class="font-heading text-xl font-semibold text-schoko mb-2">Warst du schon da?</h3>
+  <p class="text-sm text-schoko-muted mb-4">Erzähl uns, wie's war bei {shopName}.</p>
+
+  <div x-show="!submitted" class="flex justify-center gap-2 mb-4">
+    <template x-for="star in 5" :key="star">
+      <button
+        @click="rating = star"
+        @mouseenter="$el.parentElement.dataset.hover = star"
+        @mouseleave="delete $el.parentElement.dataset.hover"
+        class="w-10 h-10 rounded-xl border-2 border-border flex items-center justify-center text-lg cursor-pointer transition-all hover:scale-110"
+        :class="star <= (parseInt($el.parentElement.dataset?.hover) || rating) ? 'bg-vanille-bg border-vanille text-vanille' : 'bg-card-bg text-border'"
+      >
+        ★
+      </button>
+    </template>
+  </div>
+
+  <button
+    x-show="rating > 0 && !submitted"
+    @click="submitted = true"
+    class="pill bg-schoko text-creme font-medium px-6 py-2 cursor-pointer hover:bg-schoko-light transition-colors"
+  >
+    Bewertung abschicken
+  </button>
+
+  <div x-show="submitted" x-transition class="py-4">
+    <p class="text-lg mb-1">💛</p>
+    <p class="font-heading text-schoko font-semibold">Danke für deine Bewertung!</p>
+    <p class="text-sm text-schoko-muted">Dein Feedback hilft anderen Eis-Fans.</p>
+  </div>
+</div>

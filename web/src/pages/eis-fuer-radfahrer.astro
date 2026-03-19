@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ShopGrid from '../components/ShopGrid.astro';
+import LeafletMap from '../components/LeafletMap.astro';
+import { getBikeFriendlyShops, resolveShopPhotoMap } from '../lib/data';
+
+const shops = await getBikeFriendlyShops();
+const photoMap = await resolveShopPhotoMap(shops);
+---
+
+<BaseLayout title="Eis für Radfahrer in Leipzig — Fahrradfreundliche Eisdielen" description="Fahrradfreundliche Eisdielen in Leipzig: Mit Fahrradstellplätzen, an Radwegen und perfekt für eine Eispause auf der Tour.">
+  <section class="max-w-[960px] mx-auto px-4 py-8">
+    <div class="mb-8 animate-fade-up">
+      <span class="text-4xl mb-4 block">🚴</span>
+      <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-schoko mb-4">
+        Klingel ab, Kugel auf
+      </h1>
+      <p class="text-lg text-schoko-light leading-relaxed max-w-2xl">
+        Leipzig ist eine Fahrradstadt — und die besten Eispausen liegen dort, wo die schönsten Radwege entlangführen.
+      </p>
+    </div>
+
+    <div class="mb-10">
+      <LeafletMap shops={shops} height="300px" id="bike-map" />
+    </div>
+
+    <ShopGrid shops={shops} photoMap={photoMap} emptyMessage="Keine fahrradfreundlichen Eisdielen gefunden." />
+  </section>
+</BaseLayout>

@@ -1,0 +1,32 @@
+---
+import { Clock, Leaf, Baby, Bike } from 'lucide-astro';
+
+const filters = [
+  { key: 'alle', label: 'Alle', icon: null },
+  { key: 'open', label: 'Geöffnet', icon: Clock },
+  // { key: 'lvz', label: 'LVZ-Ranking', icon: Trophy },
+  { key: 'vegan', label: 'Vegan', icon: Leaf },
+  { key: 'kinder', label: 'Kinderfreundlich', icon: Baby },
+  { key: 'fahrrad', label: 'Fahrradfreundlich', icon: Bike },
+];
+---
+
+<section class="max-w-[960px] mx-auto px-4 pb-8">
+  <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+    {filters.map(f => (
+      <button
+        @click={`activeFilter = '${f.key}'`}
+        :class={`activeFilter === '${f.key}' ? 'bg-schoko text-creme' : 'bg-sand text-schoko-muted hover:bg-schoko/10'`}
+        class="pill text-sm font-medium transition-colors cursor-pointer shrink-0 inline-flex items-center gap-1.5"
+      >
+        {f.icon && <f.icon size={14} stroke-width={2} />}
+        {f.label}
+      </button>
+    ))}
+  </div>
+</section>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

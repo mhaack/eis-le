@@ -1,0 +1,26 @@
+---
+interface Props {
+  size?: number;
+  class?: string;
+}
+
+const { size = 24, class: className = '' } = Astro.props;
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  class={className}
+>
+  <!-- Cone -->
+  <path d="M8 11l4 11 4-11" fill="var(--color-vanille)" stroke="var(--color-schoko)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Scoop 1 -->
+  <circle cx="12" cy="8" r="4" fill="var(--color-erdbeere)" stroke="var(--color-schoko)" stroke-width="1.5" />
+  <!-- Scoop 2 -->
+  <circle cx="8.5" cy="10" r="3" fill="var(--color-pistazie)" stroke="var(--color-schoko)" stroke-width="1.5" />
+  <!-- Scoop 3 -->
+  <circle cx="15.5" cy="10" r="3" fill="var(--color-vanille-bg)" stroke="var(--color-schoko)" stroke-width="1.5" />
+</svg>

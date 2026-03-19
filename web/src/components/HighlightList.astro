@@ -1,0 +1,19 @@
+---
+interface Props {
+  highlights: { icon: string; title: string; text: string }[];
+}
+
+const { highlights } = Astro.props;
+---
+
+<div class="space-y-4">
+  {highlights.map(h => (
+    <div class="flex gap-3 p-4 rounded-2xl bg-sand/50">
+      <span class="text-2xl shrink-0">{h.icon}</span>
+      <div>
+        <h4 class="font-heading text-sm font-semibold text-schoko mb-0.5">{h.title}</h4>
+        <p class="text-sm text-schoko-muted leading-relaxed">{h.text}</p>
+      </div>
+    </div>
+  ))}
+</div>

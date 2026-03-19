@@ -1,0 +1,27 @@
+---
+interface Props {
+  label: string;
+  variant?: 'pistazie' | 'erdbeere' | 'vanille' | 'heidelbeere' | 'mango' | 'default';
+  size?: 'sm' | 'md';
+}
+
+const { label, variant = 'default', size = 'sm' } = Astro.props;
+
+const variantClasses: Record<string, string> = {
+  pistazie: 'bg-pistazie-bg text-pistazie',
+  erdbeere: 'bg-erdbeere-bg text-erdbeere',
+  vanille: 'bg-vanille-bg text-vanille',
+  heidelbeere: 'bg-heidelbeere-bg text-heidelbeere',
+  mango: 'bg-mango-bg text-mango',
+  default: 'bg-sand text-schoko-muted',
+};
+
+const sizeClasses: Record<string, string> = {
+  sm: 'text-xs px-2.5 py-0.5',
+  md: 'text-sm px-3 py-1',
+};
+---
+
+<span class:list={['pill', variantClasses[variant], sizeClasses[size]]}>
+  {label}
+</span>

@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import UserStoryPills from '../components/UserStoryPills.astro';
+import FilterBar from '../components/FilterBar.astro';
+import ShopCard from '../components/ShopCard.astro';
+import { IceCreamCone } from 'lucide-astro';
+import { getAllShops, resolveShopPhotoMap } from '../lib/data';
+
+const shops = await getAllShops();
+const photoMap = await resolveShopPhotoMap(shops);
+---
+
+<BaseLayout title="eisleipzig — Die besten Eisdielen in Leipzig">
+  <Hero />
+  <UserStoryPills />
+  <div x-data="shopFilter()" x-cloak>
+    <FilterBar />
+    <section class="max-w-[960px] mx-auto px-4 pb-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" x-ref="grid">
+        {shops.map((shop, i) => (
+          <div
+            class="shop-card-wrapper"
+            data-periods={JSON.stringify(shop.opening_hours ?? [])}
+            data-filter-lvz={shop.lvz_rank ? 'true' : undefined}
+            data-filter-vegan={shop.has_vegan_options ? 'true' : undefined}
+            data-filter-kinder={shop.child_friendly ? 'true' : undefined}
+            data-filter-fahrrad={shop.has_bike_parking ? 'true' : undefined}
+          >
+            <ShopCard shop={shop} index={i} photoUrl={photoMap.get(shop.id)} />
+          </div>
+        ))}
+      </div>
+      <div x-show="visibleCount === 0" class="text-center py-16" x-cloak>
+        <p class="text-xl mb-2"><IceCreamCone size={28} stroke-width={2} class="text-schoko-muted mx-auto" /></p>
+        <p class="text-schoko-muted font-heading text-lg">Hmm, hier schmilzt gerade nichts. Versuch's mit weniger Filtern.</p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  function isOpenNow(periods) {
+    if (!Array.isArray(periods) || periods.length === 0) return false;
+    const now = new Date();
+    const berlin = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+    const day = berlin.getDay();
+    const mins = berlin.getHours() * 60 + berlin.getMinutes();
+
+    return periods.some(p => {
+      const openDay = p.open.day;
+      const openMins = p.open.hour * 60 + (p.open.minute ?? 0);
+      if (!p.close) return openDay === day;
+      const closeDay = p.close.day;
+      const closeMins = p.close.hour * 60 + (p.close.minute ?? 0);
+      if (openDay === closeDay) {
+        return day === openDay && mins >= openMins && mins < closeMins;
+      }
+      // wraps past midnight
+      return (day === openDay && mins >= openMins) || (day === closeDay && mins < closeMins);
+    });
+  }
+
+  document.addEventListener('alpine:init', () => {
+    window.Alpine.data('shopFilter', () => ({
+      activeFilter: 'alle',
+      visibleCount: -1,
+      init() {
+        this.$watch('activeFilter', () => this.applyFilter());
+      },
+      applyFilter() {
+        const cards = this.$refs.grid.querySelectorAll('.shop-card-wrapper');
+        let count = 0;
+        cards.forEach(card => {
+          let show = false;
+          if (this.activeFilter === 'alle') {
+            show = true;
+          } else if (this.activeFilter === 'open') {
+            try {
+              const periods = JSON.parse(card.dataset.periods || '[]');
+              show = isOpenNow(periods);
+            } catch { show = false; }
+          } else {
+            show = card.hasAttribute(`data-filter-${this.activeFilter}`);
+          }
+          card.style.display = show ? '' : 'none';
+          if (show) count++;
+        });
+        this.visibleCount = count;
+      }
+    }));
+  });
+</script>

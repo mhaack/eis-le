@@ -1,0 +1,178 @@
+/* ===== Google Fonts ===== */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@import "tailwindcss";
+
+/* ===== Design Tokens ===== */
+@theme {
+  --color-creme: #fef9f0;
+  --color-sand: #f5ece0;
+  --color-card-bg: #fffdf9;
+  --color-schoko: #2d1810;
+  --color-schoko-light: #5c3d2e;
+  --color-schoko-muted: #8b6f5e;
+  --color-border: #e8ddd0;
+  --color-pistazie: #7a9a5a;
+  --color-pistazie-bg: #eef4e8;
+  --color-erdbeere: #c4566a;
+  --color-erdbeere-bg: #fceef1;
+  --color-vanille: #c49a3c;
+  --color-vanille-bg: #fdf5e6;
+  --color-heidelbeere: #5b6da3;
+  --color-heidelbeere-bg: #eef0f7;
+  --color-mango: #d4903a;
+  --color-mango-bg: #fdf2e4;
+
+  --font-heading: 'Fraunces', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+
+/* ===== Base styles ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-schoko);
+  background-color: var(--color-creme);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Paper grain texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ===== Typography ===== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-schoko);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+a {
+  color: var(--color-heidelbeere);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-schoko);
+}
+
+/* ===== Card base ===== */
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(45, 24, 16, 0.08), 0 2px 8px rgba(45, 24, 16, 0.04);
+}
+
+/* ===== Pill/Tag base ===== */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 24px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ===== Animations ===== */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s ease both;
+}
+
+/* Stagger delays for grid items */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
+.stagger-9 { animation-delay: 0.45s; }
+
+/* ===== Wave underline SVG ===== */
+.wave-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.wave-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 120 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 4 Q15 0 30 4 Q45 8 60 4 Q75 0 90 4 Q105 8 120 4' fill='none' stroke='%23c4566a' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 120px 8px;
+}
+
+/* ===== Star rating ===== */
+.star {
+  color: var(--color-border);
+  transition: color 0.15s ease;
+}
+
+.star.filled {
+  color: var(--color-vanille);
+}
+
+/* ===== Scrollbar styling ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-sand);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-schoko-muted);
+}
+
+/* Leaflet overrides */
+.leaflet-container {
+  font-family: var(--font-body) !important;
+  border-radius: 16px;
+}

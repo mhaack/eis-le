@@ -1,0 +1,56 @@
+---
+import LogoIcon from './LogoIcon.astro';
+import { getNeighborhoods } from '../lib/data';
+
+const neighborhoods = await getNeighborhoods();
+---
+
+<footer class="bg-schoko text-creme/80 mt-16">
+  <div class="max-w-[960px] mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+      <!-- Brand -->
+      <div>
+        <a href="/" class="flex items-center gap-2 text-creme no-underline mb-3">
+          <LogoIcon size={28} />
+          <span class="font-heading text-xl font-semibold">eisleipzig</span>
+        </a>
+        <p class="text-sm text-creme/60 leading-relaxed">
+          Alle Eisdielen in Leipzig.<br />
+          Ehrlich bewertet, liebevoll kuratiert.
+        </p>
+      </div>
+      <!-- Entdecken -->
+      <div>
+        <h4 class="font-heading text-sm font-semibold text-creme mb-3 uppercase tracking-wider">Entdecken</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/veganes-eis" class="text-creme/60 hover:text-creme transition-colors">Veganes Eis</a></li>
+          <li><a href="/eis-mit-kindern" class="text-creme/60 hover:text-creme transition-colors">Eis mit Kindern</a></li>
+          <li><a href="/date-night-eis" class="text-creme/60 hover:text-creme transition-colors">Date Night</a></li>
+          <li><a href="/eis-fuer-radfahrer" class="text-creme/60 hover:text-creme transition-colors">Radtour-Stopp</a></li>
+          <li><a href="/beste-eisdielen-lvz" class="text-creme/60 hover:text-creme transition-colors">LVZ-Ranking</a></li>
+        </ul>
+      </div>
+      <!-- Stadtteile -->
+      <div>
+        <h4 class="font-heading text-sm font-semibold text-creme mb-3 uppercase tracking-wider">Stadtteile</h4>
+        <ul class="space-y-2 text-sm">
+          {neighborhoods.map(n => (
+            <li>
+              <a href={`/stadtteil/${n.slug}`} class="text-creme/60 hover:text-creme transition-colors">
+                {n.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-creme/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-creme/40 font-heading italic">
+        Gemacht in Leipzig, mit Liebe und zu viel Eis.
+      </p>
+      <p class="text-xs text-creme/30">
+        &copy; {new Date().getFullYear()} eis-le.de
+      </p>
+    </div>
+  </div>
+</footer>
