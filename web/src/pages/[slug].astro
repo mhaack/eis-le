@@ -30,7 +30,6 @@ const tags: { label: string; variant: 'pistazie' | 'erdbeere' | 'vanille' | 'hei
 if (shop.has_vegan_options) tags.push({ label: shop.fully_vegan ? 'Voll vegan' : 'Vegane Optionen', variant: 'pistazie' });
 if (shop.child_friendly) tags.push({ label: 'Kinderfreundlich', variant: 'mango' });
 if (shop.has_bike_parking) tags.push({ label: 'Fahrradstellplatz', variant: 'default' });
-if (shop.has_dog_ice_cream) tags.push({ label: 'Hundeeis', variant: 'mango' });
 if (shop.is_organic) tags.push({ label: 'Bio', variant: 'pistazie' });
 if (shop.has_lactose_free) tags.push({ label: 'Laktosefrei', variant: 'pistazie' });
 if (shop.has_gluten_free) tags.push({ label: 'Glutenfrei', variant: 'pistazie' });

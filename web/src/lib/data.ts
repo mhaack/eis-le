@@ -101,11 +101,9 @@ export interface Shop {
   atmosphere_tags: string[];
   open_after_8pm: boolean;
   has_coffee: boolean;
-  has_alcohol_flavors: boolean;
   has_car_parking: boolean;
   has_bike_parking: boolean;
   near_public_transport: boolean;
-  has_dog_ice_cream: boolean;
   neighborhood_id: string | null;
   neighborhood: { id: string; name: string; slug: string; description: string | null } | null;
   near_park: string;
@@ -119,7 +117,6 @@ export interface Shop {
   highlights: { icon: string; title: string; text: string }[] | null;
   specialty: string;
   payment_methods: string[];
-  editorial_tags: string[];
   listing_status: 'published' | 'draft' | 'archived';
 }
 

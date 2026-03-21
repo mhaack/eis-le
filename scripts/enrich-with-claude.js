@@ -37,8 +37,6 @@ Allowed fields and expected values:
   "is_organic": true,
   "has_bike_parking": true,
   "near_public_transport": true,
-  "has_dog_ice_cream": true,
-
   "near_park": "Name of nearby park if mentioned",
   "near_water": "Name of nearby water if mentioned",
   "near_playground": "Description of nearby playground if mentioned",

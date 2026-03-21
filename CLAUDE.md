@@ -1,14 +1,15 @@
-# CLAUDE.md — project memory for eisleipzig-pipeline
+# CLAUDE.md — eisleipzig.de
 
 ## Project purpose
 
-Backend data pipeline for **eisleipzig.de**, a Leipzig ice cream shop directory. The pipeline:
+**eisleipzig.de** — a Leipzig ice cream shop directory. The repo contains:
 
-- Seeds a Supabase `shops` table from Google Places API (New)
-- Enriches records using Claude (reviews → structured fields)
-- Runs weekly via GitHub Actions to keep data fresh and alert on changes
+- **`web/`** — Astro SSG frontend, deployed as a Cloudflare Worker
+- **`scripts/`** — Data pipeline (seed, enrich, weekly update) run as one-offs or by CI
+- **`admin/`** — Local admin UI (plain HTML + Alpine.js) with a Node proxy server for Supabase
+- **`sql/`** — Database migrations
 
-There is no application server in this repo. The scripts are run as one-offs or by CI.
+The pipeline seeds a Supabase `shops` table from Google Places API (New), enriches records using Claude, and runs weekly via GitHub Actions.
 
 ---
 
@@ -78,7 +79,6 @@ Key column groups:
 | `is_organic` | Claude only |
 | `has_bike_parking` | Claude only |
 | `near_public_transport` | Claude only |
-| `has_dog_ice_cream` | Claude only |
 | `atmosphere_tags` | Merged: Google booleans + Claude vibe tags (see below) |
 
 ### Manual-only columns
@@ -86,15 +86,12 @@ Key column groups:
 | Column | Notes |
 |---|---|
 | `neighborhood_id` | FK to `neighborhoods.id` — set manually |
-| `has_alcohol_flavors` | Never written by any script — editorial judgement only |
 | `has_indoor_seating` | Claude may fill this, but editorial can override |
 | `slug` | Set on import via `generateSlug()`; never overwritten by weekly update |
 | `listing_status` | Set to `draft` on import; manually promoted to `published` |
 | `lvz_rank`, `lvz_year` | LVZ newspaper rankings — manual |
 | `our_rating`, `our_review` | Editorial ratings — manual |
 | `highlights` | JSONB editorial highlights — manual |
-| `has_loyalty_program` | Manual |
-| `editorial_tags` | Manual |
 | `last_visited_at` | Manual |
 | `price_per_scoop` | Manual |
 | `wait_time_typical` | Manual (kurz / mittel / lang) |
@@ -119,10 +116,6 @@ All HTTP calls go to `https://places.googleapis.com/v1/places`. Field masks are 
 ### child_friendly comes from goodForChildren
 
 Mapped directly in `mapPlaceToShop`: `child_friendly: details.goodForChildren ?? null`. Not inferred by Claude.
-
-### has_alcohol_flavors is manual-only
-
-This field is never written by `initial-import.js`, `weekly-update.js`, or `enrich-with-claude.js`. It requires editorial judgement. Do not add it to any script.
 
 ### listing_status = 'ignored' skips a shop from everything
 
@@ -158,6 +151,12 @@ node scripts/weekly-update.js --search-new
 
 # Send email alert for changes written by weekly-update.js
 node scripts/send-alerts.js
+
+# Local admin UI (reads .env from project root)
+node admin/server.js
+
+# Frontend dev server
+cd web && npx astro dev
 ```
 
 All scripts require environment variables from `.env`. Load them with `dotenv` or export them manually before running.
@@ -172,7 +171,7 @@ Files in `sql/` follow the pattern:
 YYYYMMDDNNNNNN_description.sql
 ```
 
-Example: `20240315000001_add_has_dog_ice_cream.sql`
+Example: `20260321000001_neighborhoods.sql`
 
 The leading date + sequence number ensures migrations apply in the correct order. The initial schema is `01_shops.sql` (legacy name, predates the convention).
 
@@ -181,7 +180,5 @@ The leading date + sequence number ensures migrations apply in the correct order
 ## What NOT to do
 
 - **Do not add `editorialSummary` back to the Places API field mask.** It was removed intentionally — the field is unreliable and polluted Claude's enrichment prompts.
-- **Do not map `servesBeer`, `servesWine`, or `servesCocktails`** from the Places API. These are not relevant to an ice cream directory and their presence is misleading for shops that happen to serve drinks.
-- **Do not add `has_alcohol_flavors` to any script.** It is an editorial field only (see above).
 - **Do not use the old Places API** (`maps.googleapis.com/maps/api/place`). The codebase is fully on Places API (New).
 - **Do not overwrite `slug` in the weekly update.** `mapPlaceToShop` only sets `slug` when a `slug` option is passed explicitly (only done at import time). Weekly updates intentionally omit it.

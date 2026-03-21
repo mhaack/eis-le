@@ -428,14 +428,7 @@
                     <option value="false">Nein</option>
                   </select>
                 </div>
-                <div class="field">
-                  <label>Alkohol-Sorten</label>
-                  <select x-model="selected.has_alcohol_flavors">
-                    <option value="">— unbekannt —</option>
-                    <option value="true">Ja</option>
-                    <option value="false">Nein</option>
-                  </select>
-                </div>
+                <div class="field"></div>
               </div>
               <div class="field-row-3">
                 <div class="field">
@@ -546,14 +539,6 @@
                   </select>
                 </div>
               </div>
-              <div class="field">
-                <label>Hunde-Eis</label>
-                <select x-model="selected.has_dog_ice_cream">
-                  <option value="">— unbekannt —</option>
-                  <option value="true">Ja</option>
-                  <option value="false">Nein</option>
-                </select>
-              </div>
             </div>
           </details>
 
@@ -586,18 +571,6 @@
                 <label>Zahlungsmethoden (kommagetrennt)</label>
                 <input type="text" x-model="selected._payment_methods">
                 <div class="field-hint">z.B. Bar, Kreditkarte, EC-Karte, Kontaktlos</div>
-              </div>
-              <div class="field">
-                <label>Treueprogramm</label>
-                <select x-model="selected.has_loyalty_program">
-                  <option value="">— unbekannt —</option>
-                  <option value="true">Ja</option>
-                  <option value="false">Nein</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Editorial Tags (kommagetrennt)</label>
-                <input type="text" x-model="selected._editorial_tags">
               </div>
             </div>
           </details>
@@ -710,13 +683,12 @@
           'child_friendly', 'has_indoor_seating', 'has_outdoor_seating',
           'is_handmade', 'has_waffle_cones', 'has_sundaes', 'has_pastry',
           'has_vegan_options', 'fully_vegan', 'has_lactose_free', 'has_gluten_free',
-          'is_organic', 'open_after_8pm', 'has_coffee', 'has_alcohol_flavors',
-          'has_car_parking', 'has_bike_parking', 'near_public_transport',
-          'has_dog_ice_cream', 'has_loyalty_program'
+          'is_organic', 'open_after_8pm', 'has_coffee',
+          'has_car_parking', 'has_bike_parking', 'near_public_transport'
         ],
 
         // Array fields
-        _arrayFields: ['signature_flavors', 'atmosphere_tags', 'payment_methods', 'editorial_tags'],
+        _arrayFields: ['signature_flavors', 'atmosphere_tags', 'payment_methods'],
 
         // JSON fields
         _jsonFields: ['opening_hours', 'photos', 'highlights', 'flavor_list'],
