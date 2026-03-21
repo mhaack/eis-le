@@ -51,5 +51,7 @@ jobs:
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
 
       - name: Trigger Cloudflare Pages rebuild
-        if: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK_URL != '' }}
-        run: curl -s -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK_URL }}"
+        if: ${{ env.DEPLOY_HOOK_URL != '' }}
+        run: curl -s -X POST "$DEPLOY_HOOK_URL"
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK_URL }}
