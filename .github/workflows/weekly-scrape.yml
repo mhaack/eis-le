@@ -50,8 +50,9 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
 
-      - name: Trigger Cloudflare Pages rebuild
-        if: ${{ env.DEPLOY_HOOK_URL != '' }}
-        run: curl -s -X POST "$DEPLOY_HOOK_URL"
-        env:
-          DEPLOY_HOOK_URL: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK_URL }}
+      - name: Trigger Cloudflare rebuild
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit --allow-empty -m "chore: trigger rebuild after weekly data update"
+          git push
