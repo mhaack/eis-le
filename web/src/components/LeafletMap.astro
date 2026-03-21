@@ -5,9 +5,11 @@ interface Props {
   shops: Shop[];
   height?: string;
   id?: string;
+  center?: { lat: number; lng: number } | null;
 }
 
-const { shops, height = '400px', id = 'map' } = Astro.props;
+const { shops, height = '400px', id = 'map', center = null } = Astro.props;
+const centerJson = JSON.stringify(center);
 const shopsJson = JSON.stringify(shops.map(s => ({
   id: s.id,
   name: s.name,
@@ -15,7 +17,7 @@ const shopsJson = JSON.stringify(shops.map(s => ({
   lat: s.latitude,
   lng: s.longitude,
   lvz_rank: s.lvz_rank,
-  neighborhood: s.neighborhood,
+  neighborhood: s.neighborhood?.name ?? '',
   rating: s.google_rating,
   type: s.ice_cream_type,
 })));
@@ -25,10 +27,11 @@ const shopsJson = JSON.stringify(shops.map(s => ({
 
 <div id={id} style={`height: ${height}; border-radius: 16px;`} class="w-full border border-border"></div>
 
-<script define:vars={{ shopsJson, mapId: id }}>
+<script define:vars={{ shopsJson, centerJson, mapId: id }}>
   async function initMap() {
     const L = await import('https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js');
     const shops = JSON.parse(shopsJson);
+    const center = JSON.parse(centerJson);
 
     const map = L.map(mapId, {
       scrollWheelZoom: false,
@@ -39,11 +42,15 @@ const shopsJson = JSON.stringify(shops.map(s => ({
       maxZoom: 18,
     }).addTo(map);
 
-    // Fit map to show all shop pins
+    // Fit map to show all shop pins, or use neighborhood center for single shops
     const validShops = shops.filter(s => s.lat && s.lng);
-    if (validShops.length > 0) {
+    if (validShops.length > 1) {
       const bounds = L.latLngBounds(validShops.map(s => [s.lat, s.lng]));
       map.fitBounds(bounds, { padding: [30, 30], maxZoom: 15 });
+    } else if (center) {
+      map.setView([center.lat, center.lng], 14);
+    } else if (validShops.length === 1) {
+      map.setView([validShops[0].lat, validShops[0].lng], 14);
     } else {
       map.setView([51.3397, 12.3731], 13);
     }

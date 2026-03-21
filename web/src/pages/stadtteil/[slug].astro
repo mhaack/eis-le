@@ -8,12 +8,13 @@ export async function getStaticPaths() {
   const neighborhoods = await getNeighborhoods();
   return neighborhoods.map(n => ({
     params: { slug: n.slug },
-    props: { name: n.name },
+    props: { name: n.name, latitude: n.latitude, longitude: n.longitude },
   }));
 }
 
 const { slug } = Astro.params;
-const { name } = Astro.props;
+const { name, latitude, longitude } = Astro.props;
+const center = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 const shops = await getShopsByNeighborhood(slug!);
 const photoMap = await resolveShopPhotoMap(shops);
 ---
@@ -37,7 +38,7 @@ const photoMap = await resolveShopPhotoMap(shops);
 
     {shops.length > 0 && (
       <div class="mb-10">
-        <LeafletMap shops={shops} height="300px" id={`map-${slug}`} />
+        <LeafletMap shops={shops} height="300px" id={`map-${slug}`} center={center} />
       </div>
     )}
 

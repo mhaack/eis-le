@@ -109,7 +109,7 @@ export function mapPlaceToShop(details, { slug } = {}) {
     google_place_id: details.id,
     name: details.displayName?.text ?? details.name,
     ...(slug ? { slug } : {}),
-    address_street: details.formattedAddress ?? null,
+    address: details.formattedAddress ?? null,
     latitude: details.location?.latitude ?? null,
     longitude: details.location?.longitude ?? null,
     phone: details.nationalPhoneNumber ?? null,

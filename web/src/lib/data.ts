@@ -69,9 +69,8 @@ export interface Shop {
   google_place_id: string;
   name: string;
   slug: string;
-  address_street: string;
-  address_zip: string;
-  address_city: string;
+  address: string;
+  city: string;
   latitude: number;
   longitude: number;
   phone: string;
@@ -107,8 +106,8 @@ export interface Shop {
   has_bike_parking: boolean;
   near_public_transport: boolean;
   has_dog_ice_cream: boolean;
-  neighborhood: string;
-  neighborhood_slug: string;
+  neighborhood_id: string | null;
+  neighborhood: { id: string; name: string; slug: string; description: string | null } | null;
   near_park: string;
   near_water: string;
   near_playground: string;
@@ -128,7 +127,7 @@ export interface Shop {
 async function fetchShops(filters?: (query: ReturnType<ReturnType<typeof supabase.from>['select']>) => typeof query): Promise<Shop[]> {
   let query = supabase
     .from('shops')
-    .select('*')
+    .select('*, neighborhood:neighborhoods(*)')
     .eq('listing_status', 'published')
     .order('lvz_rank', { ascending: true, nullsFirst: false })
     .order('google_rating', { ascending: false });
@@ -154,7 +153,7 @@ export async function getAllShops(): Promise<Shop[]> {
 export async function getShopBySlug(slug: string): Promise<Shop | undefined> {
   const { data, error } = await supabase
     .from('shops')
-    .select('*')
+    .select('*, neighborhood:neighborhoods(*)')
     .eq('slug', slug)
     .eq('listing_status', 'published')
     .single();
@@ -164,7 +163,14 @@ export async function getShopBySlug(slug: string): Promise<Shop | undefined> {
 }
 
 export async function getShopsByNeighborhood(neighborhoodSlug: string): Promise<Shop[]> {
-  return fetchShops((q) => q.eq('neighborhood_slug', neighborhoodSlug));
+  const { data: nbh } = await supabase
+    .from('neighborhoods')
+    .select('id')
+    .eq('slug', neighborhoodSlug)
+    .single();
+
+  if (!nbh) return [];
+  return fetchShops((q) => q.eq('neighborhood_id', nbh.id));
 }
 
 export async function getVeganShops(): Promise<Shop[]> {
@@ -186,7 +192,7 @@ export async function getBikeFriendlyShops(): Promise<Shop[]> {
 export async function getLVZShops(): Promise<Shop[]> {
   const { data, error } = await supabase
     .from('shops')
-    .select('*')
+    .select('*, neighborhood:neighborhoods(*)')
     .eq('listing_status', 'published')
     .not('lvz_rank', 'is', null)
     .order('lvz_rank', { ascending: true });
@@ -199,25 +205,33 @@ export async function getLVZShops(): Promise<Shop[]> {
   return (data ?? []) as Shop[];
 }
 
-export async function getNeighborhoods(): Promise<{ name: string; slug: string; count: number }[]> {
-  const shops = await getAllShops();
-  const map = new Map<string, { name: string; slug: string; count: number }>();
+export interface Neighborhood {
+  name: string;
+  slug: string;
+  latitude: number | null;
+  longitude: number | null;
+  count: number;
+}
 
+export async function getNeighborhoods(): Promise<Neighborhood[]> {
+  const { data: neighborhoods, error } = await supabase
+    .from('neighborhoods')
+    .select('name, slug, latitude, longitude')
+    .order('name');
+
+  if (error || !neighborhoods) return [];
+
+  const shops = await getAllShops();
+  const counts = new Map<string, number>();
   for (const shop of shops) {
-    if (!shop.neighborhood_slug) continue;
-    const existing = map.get(shop.neighborhood_slug);
-    if (existing) {
-      existing.count++;
-    } else {
-      map.set(shop.neighborhood_slug, {
-        name: shop.neighborhood,
-        slug: shop.neighborhood_slug,
-        count: 1,
-      });
-    }
+    const slug = shop.neighborhood?.slug;
+    if (slug) counts.set(slug, (counts.get(slug) ?? 0) + 1);
   }
 
-  return [...map.values()].sort((a, b) => a.name.localeCompare(b.name, 'de'));
+  return neighborhoods
+    .map(n => ({ name: n.name, slug: n.slug, latitude: n.latitude, longitude: n.longitude, count: counts.get(n.slug) ?? 0 }))
+    .filter(n => n.count > 0)
+    .sort((a, b) => a.name.localeCompare(b.name, 'de'));
 }
 
 // --- Opening hours helpers ---

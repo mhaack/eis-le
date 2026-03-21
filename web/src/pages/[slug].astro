@@ -41,7 +41,7 @@ const hoursEntries = formatOpeningHours(shop.opening_hours);
 const openNow = isShopOpen(shop.opening_hours);
 ---
 
-<BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood}, Leipzig`} description={shop.specialty}>
+<BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}, Leipzig`} description={shop.specialty}>
   <article class="max-w-[960px] mx-auto px-4 py-6">
     <!-- Back nav -->
     <div class="mb-4">
@@ -85,10 +85,12 @@ const openNow = isShopOpen(shop.opening_hours);
           <span class="text-schoko-muted">({shop.google_review_count})</span>
         </div>
         <!-- Neighborhood -->
-        <a href={`/stadtteil/${shop.neighborhood_slug}`} class="text-heidelbeere font-medium hover:underline inline-flex items-center gap-1">
-          <MapPin size={14} stroke-width={2} />
-          {shop.neighborhood}
-        </a>
+        {shop.neighborhood && (
+          <a href={`/stadtteil/${shop.neighborhood.slug}`} class="text-heidelbeere font-medium hover:underline inline-flex items-center gap-1">
+            <MapPin size={14} stroke-width={2} />
+            {shop.neighborhood.name}
+          </a>
+        )}
         <!-- Price -->
         {shop.price_per_scoop && (
           <span class="text-schoko-muted">{shop.price_per_scoop}/Kugel</span>
@@ -161,7 +163,7 @@ const openNow = isShopOpen(shop.opening_hours);
           <MapPin size={18} stroke-width={2} class="text-schoko-muted" /> Anfahrt & Kontakt
         </h3>
         <div class="space-y-2.5 text-sm">
-          <p class="text-schoko">{shop.address_street}</p>
+          <p class="text-schoko">{shop.address}</p>
           {shop.location_description && (
             <p class="text-schoko-muted italic">{shop.location_description}</p>
           )}

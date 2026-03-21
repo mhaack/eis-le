@@ -65,7 +65,7 @@ if (shop.has_dog_ice_cream) tags.push({ label: 'Hundeeis', variant: 'mango' });
   <div class="p-4">
     <!-- Neighborhood + rating row -->
     <div class="flex items-center justify-between mb-1.5">
-      <span class="text-xs font-medium text-schoko-muted uppercase tracking-wide">{shop.neighborhood}</span>
+      <span class="text-xs font-medium text-schoko-muted uppercase tracking-wide">{shop.neighborhood?.name}</span>
       <div class="flex items-center gap-1">
         <Star size={14} stroke-width={2} class="text-vanille fill-current" />
         <span class="text-sm font-semibold text-schoko">{shop.google_rating}</span>

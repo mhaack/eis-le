@@ -39,8 +39,6 @@ Allowed fields and expected values:
   "near_public_transport": true,
   "has_dog_ice_cream": true,
 
-  "neighborhood": "District name in German, e.g. Connewitz",
-  "neighborhood_slug": "connewitz",
   "near_park": "Name of nearby park if mentioned",
   "near_water": "Name of nearby water if mentioned",
   "near_playground": "Description of nearby playground if mentioned",
@@ -50,7 +48,6 @@ Allowed fields and expected values:
 
 Notes:
 - Only set boolean fields when confident — omit rather than guess.
-- neighborhood_slug: lowercase, spaces to hyphens, no umlauts (ä→ae, ö→oe, ü→ue, ß→ss).
 - near_* fields: only fill in when a concrete name or place is mentioned.
 - atmosphere_tags: pick only from these allowed values based on the overall vibe:
   casual, cozy, quiet, trendy, lively, romantic, modern, traditional, upscale, rustic

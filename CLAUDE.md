@@ -14,7 +14,23 @@ There is no application server in this repo. The scripts are run as one-offs or 
 
 ## Data model overview
 
-Single table: `shops`. Key column groups:
+Two tables: `shops` and `neighborhoods`. Shops reference neighborhoods via `neighborhood_id` FK.
+
+### `neighborhoods` table (manual-only)
+
+| Column | Notes |
+|---|---|
+| `id` | uuid PK |
+| `name` | e.g. "Connewitz" (unique) |
+| `slug` | e.g. "connewitz" (unique) |
+| `description` | Optional editorial blurb |
+| `latitude`, `longitude` | Center point for map views |
+
+Neighborhoods are managed manually — not written by any script.
+
+### `shops` table
+
+Key column groups:
 
 ### From Google Places API (auto-updated weekly)
 
@@ -22,7 +38,7 @@ Single table: `shops`. Key column groups:
 |---|---|
 | `google_place_id` | Unique key for deduplication (`onConflict`) |
 | `name` | `displayName.text` |
-| `address_street` | `formattedAddress` |
+| `address` | `formattedAddress` |
 | `latitude`, `longitude` | `location.latitude/longitude` |
 | `phone` | `nationalPhoneNumber` |
 | `website` | `websiteUri` |
@@ -51,8 +67,6 @@ Single table: `shops`. Key column groups:
 | `location_description` | One sentence about the location |
 | `ice_cream_type` | Eiscafé / Eisdiele / Gelateria / Softeis / Eisautomat / Frozen Yogurt / other |
 | `signature_flavors` | text[] |
-| `neighborhood` | German district name |
-| `neighborhood_slug` | Slugified neighbourhood (ae/oe/ue for umlauts) |
 | `near_park`, `near_water`, `near_playground` | Specific names only, not guesses |
 | `has_vegan_options` | May be set by Claude if Google didn't supply it |
 | `fully_vegan` | Claude only |
@@ -71,6 +85,7 @@ Single table: `shops`. Key column groups:
 
 | Column | Notes |
 |---|---|
+| `neighborhood_id` | FK to `neighborhoods.id` — set manually |
 | `has_alcohol_flavors` | Never written by any script — editorial judgement only |
 | `has_indoor_seating` | Claude may fill this, but editorial can override |
 | `slug` | Set on import via `generateSlug()`; never overwritten by weekly update |
@@ -83,7 +98,7 @@ Single table: `shops`. Key column groups:
 | `last_visited_at` | Manual |
 | `price_per_scoop` | Manual |
 | `wait_time_typical` | Manual (kurz / mittel / lang) |
-| `address_zip`, `address_city` | Can be set manually; not returned by `mapPlaceToShop` |
+| `city` | Defaults to 'Leipzig'; not returned by `mapPlaceToShop` |
 
 ---
 
