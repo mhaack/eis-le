@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eisleipzig Admin</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+  <style>
+    :root {
+      --bg: #faf8f5;
+      --card: #fff;
+      --border: #e5e0d8;
+      --text: #2d1810;
+      --muted: #8b6f5e;
+      --accent: #5b6da3;
+      --green: #4a7c59;
+      --red: #c0392b;
+      --yellow: #b8860b;
+      --gray: #999;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+    }
+    header h1 { font-size: 18px; font-weight: 600; }
+    .back-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 14px; }
+    .back-btn:hover { text-decoration: underline; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px 24px; }
+
+    /* Config error */
+    .config-error { background: #fde; border: 1px solid var(--red); padding: 20px; border-radius: 8px; margin: 40px auto; max-width: 600px; }
+    .config-error h2 { color: var(--red); margin-bottom: 8px; }
+    .config-error code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+    .config-error pre { background: #f5f5f5; padding: 12px; border-radius: 6px; margin-top: 12px; font-size: 13px; overflow-x: auto; }
+
+    /* Filters */
+    .filters { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filters input, .filters select {
+      padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 14px; background: var(--card);
+    }
+    .filters input { flex: 1; min-width: 200px; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    th { text-align: left; padding: 10px 14px; font-size: 12px; text-transform: uppercase; color: var(--muted); background: #f9f7f4; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 14px; font-size: 14px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tbody tr { cursor: pointer; transition: background 0.15s; }
+    tbody tr:hover { background: #f5f2ed; }
+
+    /* Status badges */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .badge-published { background: #e8f5e9; color: var(--green); }
+    .badge-draft { background: #fff8e1; color: var(--yellow); }
+    .badge-archived { background: #f0f0f0; color: var(--gray); }
+    .badge-ignored { background: #fde; color: var(--red); }
+
+    /* Detail view */
+    .toolbar {
+      position: sticky; top: 49px; z-index: 40;
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 16px; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .btn-save {
+      background: var(--accent); color: #fff; border: none; padding: 8px 20px;
+      border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;
+    }
+    .btn-save:hover { opacity: 0.9; }
+    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+    .msg-ok { color: var(--green); font-size: 13px; }
+    .msg-err { color: var(--red); font-size: 13px; }
+
+    /* Form sections */
+    details { background: var(--card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
+    summary {
+      padding: 12px 16px; font-weight: 600; font-size: 14px; cursor: pointer;
+      list-style: none; display: flex; align-items: center; gap: 8px;
+    }
+    summary::before { content: '▸'; transition: transform 0.2s; display: inline-block; }
+    details[open] summary::before { transform: rotate(90deg); }
+    .section-body { padding: 4px 16px 16px; }
+
+    /* Form fields */
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 14px; font-family: inherit; background: var(--card);
+    }
+    .field textarea { resize: vertical; font-family: ui-monospace, monospace; font-size: 13px; }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .field-readonly input, .field-readonly textarea { background: #f5f3f0; color: var(--muted); }
+    .field-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .loading { text-align: center; padding: 60px; color: var(--muted); font-size: 16px; }
+    .shop-count { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body x-data="adminApp()" @keydown.meta.s.window.prevent="view === 'detail' && save()" @keydown.ctrl.s.window.prevent="view === 'detail' && save()">
+
+  <div>
+      <header>
+        <h1>eisleipzig Admin</h1>
+        <button class="back-btn" x-show="view === 'detail'" @click="back()">&#8592; Alle Shops</button>
+      </header>
+
+      <div class="container">
+
+        <!-- LIST VIEW -->
+        <div x-show="view === 'list'" x-cloak>
+          <div class="filters">
+            <input type="text" placeholder="Shop suchen..." x-model="filterSearch">
+            <select x-model="filterStatus">
+              <option value="">Alle Status</option>
+              <option value="published">published</option>
+              <option value="draft">draft</option>
+              <option value="archived">archived</option>
+              <option value="ignored">ignored</option>
+            </select>
+          </div>
+
+          <div class="shop-count" x-text="filteredShops.length + ' von ' + shops.length + ' Shops'"></div>
+
+          <div x-show="listLoading" class="loading">Lade Shops...</div>
+
+          <table x-show="!listLoading">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Stadtteil</th>
+                <th>Status</th>
+                <th>Google</th>
+                <th>Unsere</th>
+                <th>Typ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="shop in filteredShops" :key="shop.id">
+                <tr @click="openShop(shop)">
+                  <td x-text="shop.name"></td>
+                  <td x-text="shop.neighborhood?.name ?? '—'"></td>
+                  <td>
+                    <span class="badge"
+                      :class="'badge-' + shop.listing_status"
+                      x-text="shop.listing_status"></span>
+                  </td>
+                  <td x-text="shop.google_rating ?? '—'"></td>
+                  <td x-text="shop.our_rating ?? '—'"></td>
+                  <td x-text="shop.ice_cream_type ?? '—'" style="font-size:12px;color:var(--muted)"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- DETAIL VIEW -->
+        <div x-show="view === 'detail'" x-cloak>
+          <div class="toolbar">
+            <button class="btn-save" @click="save()" :disabled="saving">
+              <span x-show="!saving">Speichern</span>
+              <span x-show="saving">Speichert...</span>
+            </button>
+            <span class="msg-ok" x-show="saveSuccess" x-text="'Gespeichert'"></span>
+            <span class="msg-err" x-show="saveError" x-text="saveError"></span>
+          </div>
+
+          <!-- Status & Identity -->
+          <details open>
+            <summary>Status & Identifikation</summary>
+            <div class="section-body">
+              <div class="field-row">
+                <div class="field">
+                  <label>Listing Status</label>
+                  <select x-model="selected.listing_status">
+                    <option value="published">published</option>
+                    <option value="draft">draft</option>
+                    <option value="archived">archived</option>
+                    <option value="ignored">ignored</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Stadtteil</label>
+                  <select x-model="selected.neighborhood_id">
+                    <option value="">— kein Bezirk —</option>
+                    <template x-for="n in neighborhoods" :key="n.id">
+                      <option :value="n.id" x-text="n.name"></option>
+                    </template>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label>Name</label>
+                  <input type="text" x-model="selected.name">
+                </div>
+                <div class="field field-readonly">
+                  <label>Slug</label>
+                  <input type="text" :value="selected.slug" readonly>
+                  <div class="field-hint">Wird nicht geaendert</div>
+                </div>
+              </div>
+              <div class="field field-readonly">
+                <label>Google Place ID</label>
+                <input type="text" :value="selected.google_place_id" readonly>
+              </div>
+            </div>
+          </details>
+
+          <!-- Contact & Location -->
+          <details open>
+            <summary>Kontakt & Lage</summary>
+            <div class="section-body">
+              <div class="field-row">
+                <div class="field">
+                  <label>Adresse</label>
+                  <input type="text" x-model="selected.address">
+                </div>
+                <div class="field">
+                  <label>Stadt</label>
+                  <input type="text" x-model="selected.city">
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label>Breitengrad</label>
+                  <input type="number" step="0.0001" x-model.number="selected.latitude">
+                </div>
+                <div class="field">
+                  <label>Laengengrad</label>
+                  <input type="number" step="0.0001" x-model.number="selected.longitude">
+                </div>
+              </div>
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Telefon</label>
+                  <input type="text" x-model="selected.phone">
+                </div>
+                <div class="field">
+                  <label>Website</label>
+                  <input type="url" x-model="selected.website">
+                </div>
+                <div class="field field-readonly">
+                  <label>Google Maps URL</label>
+                  <input type="url" :value="selected.google_maps_url" readonly>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Google Data (read-only) -->
+          <details>
+            <summary>Google-Daten</summary>
+            <div class="section-body">
+              <div class="field-row-3">
+                <div class="field field-readonly">
+                  <label>Google Rating</label>
+                  <input type="text" :value="selected.google_rating" readonly>
+                </div>
+                <div class="field field-readonly">
+                  <label>Bewertungen</label>
+                  <input type="text" :value="selected.google_review_count" readonly>
+                </div>
+                <div class="field field-readonly">
+                  <label>Preisniveau (Google)</label>
+                  <input type="text" :value="selected.price_level ?? '—'" readonly>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field field-readonly">
+                  <label>Zuletzt gescraped</label>
+                  <input type="text" :value="fmtDate(selected.last_scraped_at)" readonly>
+                </div>
+                <div class="field field-readonly">
+                  <label>Daten geaendert am</label>
+                  <input type="text" :value="fmtDate(selected.data_changed_at)" readonly>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Editorial -->
+          <details open>
+            <summary>Redaktion</summary>
+            <div class="section-body">
+              <div class="field">
+                <label>Specialty</label>
+                <textarea rows="2" x-model="selected.specialty"></textarea>
+              </div>
+              <div class="field">
+                <label>Standortbeschreibung</label>
+                <textarea rows="2" x-model="selected.location_description"></textarea>
+              </div>
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Unsere Bewertung (1-5)</label>
+                  <input type="number" step="0.1" min="1" max="5" x-model.number="selected.our_rating">
+                </div>
+                <div class="field">
+                  <label>LVZ Rang</label>
+                  <input type="number" step="1" x-model.number="selected.lvz_rank">
+                </div>
+                <div class="field">
+                  <label>LVZ Jahr</label>
+                  <input type="number" step="1" x-model.number="selected.lvz_year">
+                </div>
+              </div>
+              <div class="field">
+                <label>Unsere Review</label>
+                <textarea rows="3" x-model="selected.our_review"></textarea>
+              </div>
+              <div class="field">
+                <label>Zuletzt besucht</label>
+                <input type="date" x-model="selected.last_visited_at">
+              </div>
+            </div>
+          </details>
+
+          <!-- Ice Cream & Offer -->
+          <details>
+            <summary>Eiscreme & Angebot</summary>
+            <div class="section-body">
+              <div class="field-row">
+                <div class="field">
+                  <label>Typ</label>
+                  <select x-model="selected.ice_cream_type">
+                    <option value="">— unbekannt —</option>
+                    <option value="Eiscafe">Eiscafe</option>
+                    <option value="Eisdiele">Eisdiele</option>
+                    <option value="Gelateria">Gelateria</option>
+                    <option value="Softeis">Softeis</option>
+                    <option value="Eisautomat">Eisautomat</option>
+                    <option value="Frozen Yogurt">Frozen Yogurt</option>
+                    <option value="other">other</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Preis pro Kugel</label>
+                  <input type="text" x-model="selected.price_per_scoop">
+                </div>
+              </div>
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Handgemacht</label>
+                  <select x-model="selected.is_handmade">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Waffeln</label>
+                  <select x-model="selected.has_waffle_cones">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Eisbecher</label>
+                  <select x-model="selected.has_sundaes">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Signature Flavors (kommagetrennt)</label>
+                <input type="text" x-model="selected._signature_flavors">
+                <div class="field-hint">z.B. Pistazie, Mango, Stracciatella</div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Dietary -->
+          <details>
+            <summary>Ernaehrung & Getraenke</summary>
+            <div class="section-body">
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Vegan-Optionen</label>
+                  <select x-model="selected.has_vegan_options">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Komplett vegan</label>
+                  <select x-model="selected.fully_vegan">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Laktosefrei</label>
+                  <select x-model="selected.has_lactose_free">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Glutenfrei</label>
+                  <select x-model="selected.has_gluten_free">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Bio</label>
+                  <select x-model="selected.is_organic">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Alkohol-Sorten</label>
+                  <select x-model="selected.has_alcohol_flavors">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Kaffee</label>
+                  <select x-model="selected.has_coffee">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Kuchen/Gebaeck</label>
+                  <select x-model="selected.has_pastry">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field"></div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Family & Atmosphere -->
+          <details>
+            <summary>Familie & Atmosphaere</summary>
+            <div class="section-body">
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Kinderfreundlich</label>
+                  <select x-model="selected.child_friendly">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Innen-Sitzplaetze</label>
+                  <select x-model="selected.has_indoor_seating">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Aussen-Sitzplaetze</label>
+                  <select x-model="selected.has_outdoor_seating">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label>Nach 20 Uhr geoeffnet</label>
+                  <select x-model="selected.open_after_8pm">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Wartezeit</label>
+                  <select x-model="selected.wait_time_typical">
+                    <option value="">— unbekannt —</option>
+                    <option value="kurz">kurz</option>
+                    <option value="mittel">mittel</option>
+                    <option value="lang">lang</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Atmosphere Tags (kommagetrennt)</label>
+                <input type="text" x-model="selected._atmosphere_tags">
+                <div class="field-hint">Erlaubt: casual, cozy, quiet, trendy, lively, romantic, modern, traditional, upscale, rustic, live-music, good-for-groups</div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Accessibility -->
+          <details>
+            <summary>Erreichbarkeit & Haustiere</summary>
+            <div class="section-body">
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Auto-Parkplatz</label>
+                  <select x-model="selected.has_car_parking">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Fahrrad-Parkplatz</label>
+                  <select x-model="selected.has_bike_parking">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Nahe OEPNV</label>
+                  <select x-model="selected.near_public_transport">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Hunde-Eis</label>
+                <select x-model="selected.has_dog_ice_cream">
+                  <option value="">— unbekannt —</option>
+                  <option value="true">Ja</option>
+                  <option value="false">Nein</option>
+                </select>
+              </div>
+            </div>
+          </details>
+
+          <!-- Surroundings -->
+          <details>
+            <summary>Umgebung</summary>
+            <div class="section-body">
+              <div class="field-row-3">
+                <div class="field">
+                  <label>Nahe Park</label>
+                  <input type="text" x-model="selected.near_park">
+                </div>
+                <div class="field">
+                  <label>Nahe Gewaesser</label>
+                  <input type="text" x-model="selected.near_water">
+                </div>
+                <div class="field">
+                  <label>Nahe Spielplatz</label>
+                  <input type="text" x-model="selected.near_playground">
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Payment & Extras -->
+          <details>
+            <summary>Bezahlung & Extras</summary>
+            <div class="section-body">
+              <div class="field">
+                <label>Zahlungsmethoden (kommagetrennt)</label>
+                <input type="text" x-model="selected._payment_methods">
+                <div class="field-hint">z.B. Bar, Kreditkarte, EC-Karte, Kontaktlos</div>
+              </div>
+              <div class="field">
+                <label>Treueprogramm</label>
+                <select x-model="selected.has_loyalty_program">
+                  <option value="">— unbekannt —</option>
+                  <option value="true">Ja</option>
+                  <option value="false">Nein</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Editorial Tags (kommagetrennt)</label>
+                <input type="text" x-model="selected._editorial_tags">
+              </div>
+            </div>
+          </details>
+
+          <!-- Raw data -->
+          <details>
+            <summary>Rohdaten (JSON)</summary>
+            <div class="section-body">
+              <div class="field">
+                <label>Oeffnungszeiten</label>
+                <textarea rows="8" x-model="selected._opening_hours"></textarea>
+              </div>
+              <div class="field">
+                <label>Fotos</label>
+                <textarea rows="4" x-model="selected._photos"></textarea>
+              </div>
+              <div class="field">
+                <label>Highlights</label>
+                <textarea rows="6" x-model="selected._highlights" placeholder='[
+  { "icon": "star", "title": "Besonderes Angebot", "text": "Hausgemachte Waffeln" },
+  { "icon": "award", "title": "Auszeichnung", "text": "Beste Eisdiele 2024" }
+]'></textarea>
+              </div>
+              <div class="field">
+                <label>Flavor List</label>
+                <textarea rows="6" x-model="selected._flavor_list" placeholder='[
+  { "name": "Pistazie", "tag": "signatur" },
+  { "name": "Mango Sorbet", "tag": "vegan" },
+  { "name": "Erdbeere" },
+  { "name": "Holunderbluete", "tag": "saisonal" }
+]'></textarea>
+              </div>
+            </div>
+          </details>
+
+          <!-- Timestamps -->
+          <details>
+            <summary>Zeitstempel</summary>
+            <div class="section-body">
+              <div class="field-row">
+                <div class="field field-readonly">
+                  <label>Erstellt</label>
+                  <input type="text" :value="fmtDate(selected.created_at)" readonly>
+                </div>
+                <div class="field field-readonly">
+                  <label>Aktualisiert</label>
+                  <input type="text" :value="fmtDate(selected.updated_at)" readonly>
+                </div>
+              </div>
+            </div>
+          </details>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Minimal Supabase REST API client via local proxy
+    const api = {
+      async query(table, { select = '*', filters = {}, order } = {}) {
+        const params = new URLSearchParams();
+        params.set('select', select);
+        for (const [k, v] of Object.entries(filters)) params.set(k, v);
+        if (order) params.set('order', order);
+        const res = await fetch(`/api/${table}?${params}`, {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+      },
+      async update(table, id, payload) {
+        const res = await fetch(`/api/${table}?id=eq.${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.text();
+          throw new Error(err);
+        }
+      },
+      async getOne(table, id, select = '*') {
+        const params = new URLSearchParams();
+        params.set('select', select);
+        params.set('id', `eq.${id}`);
+        const res = await fetch(`/api/${table}?${params}`, {
+          headers: { 'Accept': 'application/vnd.pgrst.object+json' }
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+      }
+    };
+
+    function adminApp() {
+      return {
+        view: 'list',
+        shops: [],
+        neighborhoods: [],
+        listLoading: true,
+        filterStatus: '',
+        filterSearch: '',
+        selected: null,
+        saving: false,
+        saveError: null,
+        saveSuccess: false,
+
+        // Boolean fields list for coercion
+        _boolFields: [
+          'child_friendly', 'has_indoor_seating', 'has_outdoor_seating',
+          'is_handmade', 'has_waffle_cones', 'has_sundaes', 'has_pastry',
+          'has_vegan_options', 'fully_vegan', 'has_lactose_free', 'has_gluten_free',
+          'is_organic', 'open_after_8pm', 'has_coffee', 'has_alcohol_flavors',
+          'has_car_parking', 'has_bike_parking', 'near_public_transport',
+          'has_dog_ice_cream', 'has_loyalty_program'
+        ],
+
+        // Array fields
+        _arrayFields: ['signature_flavors', 'atmosphere_tags', 'payment_methods', 'editorial_tags'],
+
+        // JSON fields
+        _jsonFields: ['opening_hours', 'photos', 'highlights', 'flavor_list'],
+
+        // Read-only fields (excluded from update payload)
+        _readonlyFields: [
+          'id', 'google_place_id', 'slug', 'created_at', 'updated_at',
+          'last_scraped_at', 'data_changed_at', 'google_rating',
+          'google_review_count', 'price_level', 'google_maps_url', 'neighborhood'
+        ],
+
+        init() {
+          this.loadData();
+        },
+
+        async loadData() {
+          this.listLoading = true;
+          const [shops, neighborhoods] = await Promise.all([
+            api.query('shops', { select: '*, neighborhood:neighborhoods(*)', order: 'name.asc' }),
+            api.query('neighborhoods', { select: 'id,name,slug', order: 'name.asc' })
+          ]);
+          this.shops = shops;
+          this.neighborhoods = neighborhoods;
+          this.listLoading = false;
+        },
+
+        get filteredShops() {
+          let list = this.shops;
+          if (this.filterStatus) {
+            list = list.filter(s => s.listing_status === this.filterStatus);
+          }
+          if (this.filterSearch) {
+            const q = this.filterSearch.toLowerCase();
+            list = list.filter(s =>
+              s.name?.toLowerCase().includes(q) ||
+              s.neighborhood?.name?.toLowerCase().includes(q) ||
+              s.address?.toLowerCase().includes(q)
+            );
+          }
+          return list;
+        },
+
+        openShop(shop) {
+          const clone = JSON.parse(JSON.stringify(shop));
+
+          // Convert booleans to string for <select> binding
+          for (const f of this._boolFields) {
+            clone[f] = clone[f] === true ? 'true' : clone[f] === false ? 'false' : '';
+          }
+
+          // Convert arrays to comma strings
+          for (const f of this._arrayFields) {
+            clone['_' + f] = (clone[f] ?? []).join(', ');
+          }
+
+          // Convert JSON to formatted strings
+          for (const f of this._jsonFields) {
+            clone['_' + f] = clone[f] != null ? JSON.stringify(clone[f], null, 2) : '';
+          }
+
+          // Nulls to empty strings for text inputs
+          clone.neighborhood_id = clone.neighborhood_id ?? '';
+          clone.wait_time_typical = clone.wait_time_typical ?? '';
+          clone.ice_cream_type = clone.ice_cream_type ?? '';
+
+          this.selected = clone;
+          this.saveError = null;
+          this.saveSuccess = false;
+          this.view = 'detail';
+          window.scrollTo(0, 0);
+        },
+
+        back() {
+          this.view = 'list';
+          this.selected = null;
+        },
+
+        async save() {
+          this.saving = true;
+          this.saveError = null;
+          this.saveSuccess = false;
+
+          const s = this.selected;
+          const payload = {};
+          const jsonErrors = [];
+
+          // Copy all simple fields
+          for (const [key, val] of Object.entries(s)) {
+            if (key.startsWith('_')) continue;
+            if (this._readonlyFields.includes(key)) continue;
+            if (this._boolFields.includes(key)) continue;
+            if (this._arrayFields.includes(key)) continue;
+            if (this._jsonFields.includes(key)) continue;
+
+            // Normalize empty strings to null for nullable fields
+            payload[key] = val === '' ? null : val;
+          }
+
+          // Coerce booleans
+          for (const f of this._boolFields) {
+            payload[f] = s[f] === 'true' ? true : s[f] === 'false' ? false : null;
+          }
+
+          // Parse arrays from comma strings
+          for (const f of this._arrayFields) {
+            const raw = s['_' + f] ?? '';
+            const arr = raw.split(/\s*,\s*/).filter(v => v.length > 0);
+            payload[f] = arr.length > 0 ? arr : null;
+          }
+
+          // Parse JSON fields
+          for (const f of this._jsonFields) {
+            const raw = s['_' + f] ?? '';
+            if (!raw.trim()) {
+              payload[f] = null;
+              continue;
+            }
+            try {
+              payload[f] = JSON.parse(raw);
+            } catch (e) {
+              jsonErrors.push(f);
+            }
+          }
+
+          // Coerce numbers that might be empty strings
+          for (const f of ['our_rating', 'lvz_rank', 'lvz_year', 'latitude', 'longitude']) {
+            if (payload[f] === null || payload[f] === undefined) continue;
+            if (typeof payload[f] === 'string' && payload[f].trim() === '') {
+              payload[f] = null;
+            }
+          }
+
+          if (jsonErrors.length > 0) {
+            this.saveError = 'Ungültiges JSON in: ' + jsonErrors.join(', ') + ' (übersprungen)';
+            for (const f of jsonErrors) delete payload[f];
+          }
+
+          try {
+            await api.update('shops', s.id, payload);
+            this.saveSuccess = true;
+            setTimeout(() => this.saveSuccess = false, 3000);
+
+            // Refresh the shop in the list
+            const idx = this.shops.findIndex(sh => sh.id === s.id);
+            if (idx !== -1) {
+              const refreshed = await api.getOne('shops', s.id, '*, neighborhood:neighborhoods(*)');
+              this.shops[idx] = refreshed;
+            }
+          } catch (err) {
+            this.saveError = (this.saveError ? this.saveError + ' | ' : '') + err.message;
+          }
+
+          this.saving = false;
+        },
+
+        fmtDate(iso) {
+          if (!iso) return '—';
+          return new Date(iso).toLocaleString('de-DE', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          });
+        }
+      };
+    }
+  </script>
+</body>
+</html>

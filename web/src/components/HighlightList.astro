@@ -1,19 +1,47 @@
 ---
+import { Star, Award, Truck, RefreshCw, Heart, Leaf, Sparkles, Coffee, MapPin, Clock, Gift, Smile, ThumbsUp, Zap, Sun, Snowflake, Music, Camera } from 'lucide-astro';
+
 interface Props {
   highlights: { icon: string; title: string; text: string }[];
 }
 
 const { highlights } = Astro.props;
+
+const iconMap: Record<string, any> = {
+  star: Star,
+  award: Award,
+  truck: Truck,
+  'refresh-cw': RefreshCw,
+  heart: Heart,
+  leaf: Leaf,
+  sparkles: Sparkles,
+  coffee: Coffee,
+  'map-pin': MapPin,
+  clock: Clock,
+  gift: Gift,
+  smile: Smile,
+  'thumbs-up': ThumbsUp,
+  zap: Zap,
+  sun: Sun,
+  snowflake: Snowflake,
+  music: Music,
+  camera: Camera,
+};
 ---
 
 <div class="space-y-4">
-  {highlights.map(h => (
-    <div class="flex gap-3 p-4 rounded-2xl bg-sand/50">
-      <span class="text-2xl shrink-0">{h.icon}</span>
-      <div>
-        <h4 class="font-heading text-sm font-semibold text-schoko mb-0.5">{h.title}</h4>
-        <p class="text-sm text-schoko-muted leading-relaxed">{h.text}</p>
+  {highlights.map(h => {
+    const Icon = iconMap[h.icon];
+    return (
+      <div class="flex gap-3 p-4 rounded-2xl bg-sand/50">
+        <div class="shrink-0 mt-0.5">
+          {Icon ? <Icon size={20} stroke-width={2} class="text-erdbeere" /> : <Sparkles size={20} stroke-width={2} class="text-erdbeere" />}
+        </div>
+        <div>
+          <h4 class="font-heading text-sm font-semibold text-schoko mb-0.5">{h.title}</h4>
+          <p class="text-sm text-schoko-muted leading-relaxed">{h.text}</p>
+        </div>
       </div>
-    </div>
-  ))}
+    );
+  })}
 </div>
