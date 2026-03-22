@@ -2,21 +2,31 @@
 import Tag from './Tag.astro';
 
 interface Props {
-  flavors: { name: string; tag?: 'vegan' | 'signatur' | 'saisonal' }[];
+  flavors: { name: string; tag?: 'vegan' | 'signatur' | 'saisonal' | 'alkohol' | 'bio' | 'exotisch' | 'softeis' | 'sorbet' }[];
 }
 
 const { flavors } = Astro.props;
 
-const tagVariant: Record<string, 'pistazie' | 'erdbeere' | 'vanille'> = {
+const tagVariant: Record<string, 'pistazie' | 'erdbeere' | 'vanille' | 'mango' | 'heidelbeere'> = {
   vegan: 'pistazie',
   signatur: 'erdbeere',
   saisonal: 'vanille',
+  alkohol: 'mango',
+  bio: 'pistazie',
+  exotisch: 'mango',
+  softeis: 'vanille',
+  sorbet: 'heidelbeere',
 };
 
 const tagLabel: Record<string, string> = {
   vegan: 'Vegan',
   signatur: 'Signatur',
   saisonal: 'Saisonal',
+  alkohol: 'Alkohol',
+  bio: 'Bio',
+  exotisch: 'Exotisch',
+  softeis: 'Softeis',
+  sorbet: 'Sorbet',
 };
 ---
 

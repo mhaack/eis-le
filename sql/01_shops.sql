@@ -30,7 +30,6 @@ create table shops (
   ice_cream_type text,
   is_handmade boolean,
   flavor_list jsonb,
-  signature_flavors text[],
   has_waffle_cones boolean,
   has_sundaes boolean,
   has_pastry boolean,

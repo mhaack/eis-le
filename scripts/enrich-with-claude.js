@@ -21,7 +21,6 @@ Extract a JSON object with only the fields you can determine with reasonable con
 
 Allowed fields and expected values:
 {
-  "signature_flavors": ["Flavor 1", "Flavor 2"],
   "has_vegan_options": true,
   "fully_vegan": false,
   "ice_cream_type": "Eiscafé | Eisdiele | Gelateria | Softeis | Eisautomat | Frozen Yogurt | other",

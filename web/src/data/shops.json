@@ -14,7 +14,10 @@
     "google_maps_url": "https://maps.google.com/?cid=1",
     "google_rating": 4.8,
     "google_review_count": 847,
-    "opening_hours": { "Mo-Fr": "12:00–21:00", "Sa-So": "11:00–21:00" },
+    "opening_hours": {
+      "Mo-Fr": "12:00–21:00",
+      "Sa-So": "11:00–21:00"
+    },
     "photos": [
       "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop"
     ],
@@ -25,16 +28,36 @@
     "ice_cream_type": "Gelateria",
     "is_handmade": true,
     "flavor_list": [
-      { "name": "Burnt Butter Karamell", "tag": "signatur" },
-      { "name": "Tonkabohne Vanille", "tag": "signatur" },
-      { "name": "Mango Sorbet", "tag": "vegan" },
-      { "name": "Erdnuss Brownie" },
-      { "name": "Himbeere Basilikum", "tag": "saisonal" },
-      { "name": "Dunkle Schokolade" },
-      { "name": "Kokos Limette", "tag": "vegan" },
-      { "name": "Pistazie" }
+      {
+        "name": "Burnt Butter Karamell",
+        "tag": "signatur"
+      },
+      {
+        "name": "Tonkabohne Vanille",
+        "tag": "signatur"
+      },
+      {
+        "name": "Mango Sorbet",
+        "tag": "vegan"
+      },
+      {
+        "name": "Erdnuss Brownie"
+      },
+      {
+        "name": "Himbeere Basilikum",
+        "tag": "saisonal"
+      },
+      {
+        "name": "Dunkle Schokolade"
+      },
+      {
+        "name": "Kokos Limette",
+        "tag": "vegan"
+      },
+      {
+        "name": "Pistazie"
+      }
     ],
-    "signature_flavors": ["Burnt Butter Karamell", "Tonkabohne Vanille"],
     "has_waffle_cones": true,
     "has_sundaes": true,
     "has_pastry": false,
@@ -44,7 +67,11 @@
     "has_lactose_free": true,
     "has_gluten_free": false,
     "is_organic": true,
-    "atmosphere_tags": ["trendy", "modern", "lively"],
+    "atmosphere_tags": [
+      "trendy",
+      "modern",
+      "lively"
+    ],
     "open_after_8pm": true,
     "has_coffee": true,
     "has_alcohol_flavors": false,
@@ -80,8 +107,16 @@
       }
     ],
     "specialty": "Kreative Eissorten mit gebrannter Butter und regionalen Bio-Zutaten — Leipzig's innovativste Eisdiele.",
-    "editorial_tags": ["top-pick", "date-night"],
-    "payment_methods": ["Bar", "EC-Karte", "Kreditkarte", "Kontaktlos"],
+    "editorial_tags": [
+      "top-pick",
+      "date-night"
+    ],
+    "payment_methods": [
+      "Bar",
+      "EC-Karte",
+      "Kreditkarte",
+      "Kontaktlos"
+    ],
     "listing_status": "published"
   },
   {
@@ -99,7 +134,10 @@
     "google_maps_url": "https://maps.google.com/?cid=2",
     "google_rating": 4.6,
     "google_review_count": 523,
-    "opening_hours": { "Mo-Fr": "11:00–20:00", "Sa-So": "11:00–21:00" },
+    "opening_hours": {
+      "Mo-Fr": "11:00–20:00",
+      "Sa-So": "11:00–21:00"
+    },
     "photos": [
       "https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=600&h=400&fit=crop"
     ],
@@ -110,14 +148,29 @@
     "ice_cream_type": "Gelateria",
     "is_handmade": true,
     "flavor_list": [
-      { "name": "Fior di Latte", "tag": "signatur" },
-      { "name": "Pistazie Sizilien" },
-      { "name": "Stracciatella" },
-      { "name": "Haselnuss", "tag": "signatur" },
-      { "name": "Zitrone Sorbet", "tag": "vegan" },
-      { "name": "Joghurt Waldfrucht", "tag": "saisonal" }
+      {
+        "name": "Fior di Latte",
+        "tag": "signatur"
+      },
+      {
+        "name": "Pistazie Sizilien"
+      },
+      {
+        "name": "Stracciatella"
+      },
+      {
+        "name": "Haselnuss",
+        "tag": "signatur"
+      },
+      {
+        "name": "Zitrone Sorbet",
+        "tag": "vegan"
+      },
+      {
+        "name": "Joghurt Waldfrucht",
+        "tag": "saisonal"
+      }
     ],
-    "signature_flavors": ["Fior di Latte", "Haselnuss"],
     "has_waffle_cones": true,
     "has_sundaes": false,
     "has_pastry": false,
@@ -127,7 +180,10 @@
     "has_lactose_free": false,
     "has_gluten_free": false,
     "is_organic": false,
-    "atmosphere_tags": ["lively", "casual"],
+    "atmosphere_tags": [
+      "lively",
+      "casual"
+    ],
     "open_after_8pm": true,
     "has_coffee": false,
     "has_alcohol_flavors": false,
@@ -159,7 +215,10 @@
     ],
     "specialty": "Authentisches italienisches Gelato mitten auf der Karli — die Schlange gehört zum Erlebnis.",
     "editorial_tags": [],
-    "payment_methods": ["Bar", "EC-Karte"],
+    "payment_methods": [
+      "Bar",
+      "EC-Karte"
+    ],
     "listing_status": "published"
   },
   {
@@ -177,7 +236,10 @@
     "google_maps_url": "https://maps.google.com/?cid=3",
     "google_rating": 4.7,
     "google_review_count": 412,
-    "opening_hours": { "Mo-Fr": "12:00–20:00", "Sa-So": "11:00–20:00" },
+    "opening_hours": {
+      "Mo-Fr": "12:00–20:00",
+      "Sa-So": "11:00–20:00"
+    },
     "photos": [
       "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&h=400&fit=crop"
     ],
@@ -188,15 +250,34 @@
     "ice_cream_type": "Eismanufaktur",
     "is_handmade": true,
     "flavor_list": [
-      { "name": "Vanille Bourbon", "tag": "signatur" },
-      { "name": "Zimt Crumble", "tag": "signatur" },
-      { "name": "Hafermilch Schoko", "tag": "vegan" },
-      { "name": "Erdbeer Rhabarber", "tag": "saisonal" },
-      { "name": "Cashew Karamell", "tag": "vegan" },
-      { "name": "Apfelstrudel" },
-      { "name": "Blaubeere Lavendel", "tag": "saisonal" }
+      {
+        "name": "Vanille Bourbon",
+        "tag": "signatur"
+      },
+      {
+        "name": "Zimt Crumble",
+        "tag": "signatur"
+      },
+      {
+        "name": "Hafermilch Schoko",
+        "tag": "vegan"
+      },
+      {
+        "name": "Erdbeer Rhabarber",
+        "tag": "saisonal"
+      },
+      {
+        "name": "Cashew Karamell",
+        "tag": "vegan"
+      },
+      {
+        "name": "Apfelstrudel"
+      },
+      {
+        "name": "Blaubeere Lavendel",
+        "tag": "saisonal"
+      }
     ],
-    "signature_flavors": ["Vanille Bourbon", "Zimt Crumble"],
     "has_waffle_cones": true,
     "has_sundaes": true,
     "has_pastry": true,
@@ -206,7 +287,11 @@
     "has_lactose_free": true,
     "has_gluten_free": true,
     "is_organic": true,
-    "atmosphere_tags": ["cozy", "casual", "traditional"],
+    "atmosphere_tags": [
+      "cozy",
+      "casual",
+      "traditional"
+    ],
     "open_after_8pm": false,
     "has_coffee": true,
     "has_alcohol_flavors": false,
@@ -242,8 +327,15 @@
       }
     ],
     "specialty": "Handgemachte Eismanufaktur mit Herz für Familien, Hunde und alle, die Zimt lieben.",
-    "editorial_tags": ["family-favorite", "dog-friendly"],
-    "payment_methods": ["Bar", "EC-Karte", "Kontaktlos"],
+    "editorial_tags": [
+      "family-favorite",
+      "dog-friendly"
+    ],
+    "payment_methods": [
+      "Bar",
+      "EC-Karte",
+      "Kontaktlos"
+    ],
     "listing_status": "published"
   },
   {
@@ -261,7 +353,10 @@
     "google_maps_url": "https://maps.google.com/?cid=4",
     "google_rating": 4.5,
     "google_review_count": 389,
-    "opening_hours": { "Mo-Fr": "12:00–21:00", "Sa-So": "11:00–21:00" },
+    "opening_hours": {
+      "Mo-Fr": "12:00–21:00",
+      "Sa-So": "11:00–21:00"
+    },
     "photos": [
       "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600&h=400&fit=crop"
     ],
@@ -272,14 +367,29 @@
     "ice_cream_type": "Gelateria",
     "is_handmade": true,
     "flavor_list": [
-      { "name": "Pistazie", "tag": "signatur" },
-      { "name": "Tiramisù", "tag": "signatur" },
-      { "name": "Amarena" },
-      { "name": "Mango Sorbet", "tag": "vegan" },
-      { "name": "Nocciola" },
-      { "name": "Limone", "tag": "vegan" }
+      {
+        "name": "Pistazie",
+        "tag": "signatur"
+      },
+      {
+        "name": "Tiramisù",
+        "tag": "signatur"
+      },
+      {
+        "name": "Amarena"
+      },
+      {
+        "name": "Mango Sorbet",
+        "tag": "vegan"
+      },
+      {
+        "name": "Nocciola"
+      },
+      {
+        "name": "Limone",
+        "tag": "vegan"
+      }
     ],
-    "signature_flavors": ["Pistazie", "Tiramisù"],
     "has_waffle_cones": true,
     "has_sundaes": true,
     "has_pastry": true,
@@ -289,7 +399,10 @@
     "has_lactose_free": false,
     "has_gluten_free": false,
     "is_organic": false,
-    "atmosphere_tags": ["casual", "lively"],
+    "atmosphere_tags": [
+      "casual",
+      "lively"
+    ],
     "open_after_8pm": true,
     "has_coffee": true,
     "has_alcohol_flavors": false,
@@ -320,8 +433,14 @@
       }
     ],
     "specialty": "Klassisches italienisches Eiscafé am Karl-Heine-Kanal — Plagwitz' süßeste Ecke.",
-    "editorial_tags": ["date-night"],
-    "payment_methods": ["Bar", "EC-Karte", "Kreditkarte"],
+    "editorial_tags": [
+      "date-night"
+    ],
+    "payment_methods": [
+      "Bar",
+      "EC-Karte",
+      "Kreditkarte"
+    ],
     "listing_status": "published"
   },
   {
@@ -339,7 +458,10 @@
     "google_maps_url": "https://maps.google.com/?cid=5",
     "google_rating": 4.3,
     "google_review_count": 678,
-    "opening_hours": { "Mo-Fr": "10:00–22:00", "Sa-So": "10:00–22:00" },
+    "opening_hours": {
+      "Mo-Fr": "10:00–22:00",
+      "Sa-So": "10:00–22:00"
+    },
     "photos": [
       "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&h=400&fit=crop"
     ],
@@ -350,14 +472,27 @@
     "ice_cream_type": "Eiscafé",
     "is_handmade": false,
     "flavor_list": [
-      { "name": "Vanille" },
-      { "name": "Schokolade" },
-      { "name": "Erdbeere" },
-      { "name": "Spaghettieis", "tag": "signatur" },
-      { "name": "Walnuss" },
-      { "name": "Zitrone", "tag": "vegan" }
+      {
+        "name": "Vanille"
+      },
+      {
+        "name": "Schokolade"
+      },
+      {
+        "name": "Erdbeere"
+      },
+      {
+        "name": "Spaghettieis",
+        "tag": "signatur"
+      },
+      {
+        "name": "Walnuss"
+      },
+      {
+        "name": "Zitrone",
+        "tag": "vegan"
+      }
     ],
-    "signature_flavors": ["Spaghettieis"],
     "has_waffle_cones": true,
     "has_sundaes": true,
     "has_pastry": true,
@@ -367,7 +502,10 @@
     "has_lactose_free": false,
     "has_gluten_free": false,
     "is_organic": false,
-    "atmosphere_tags": ["traditional", "cozy"],
+    "atmosphere_tags": [
+      "traditional",
+      "cozy"
+    ],
     "open_after_8pm": true,
     "has_coffee": true,
     "has_alcohol_flavors": false,
@@ -399,7 +537,10 @@
     ],
     "specialty": "DDR-Nostalgie trifft Spaghettieis — ein Leipziger Original seit über 30 Jahren.",
     "editorial_tags": [],
-    "payment_methods": ["Bar", "EC-Karte"],
+    "payment_methods": [
+      "Bar",
+      "EC-Karte"
+    ],
     "listing_status": "published"
   },
   {
@@ -417,7 +558,10 @@
     "google_maps_url": "https://maps.google.com/?cid=6",
     "google_rating": 4.9,
     "google_review_count": 312,
-    "opening_hours": { "Mo-Fr": "13:00–19:00", "Sa-So": "12:00–20:00" },
+    "opening_hours": {
+      "Mo-Fr": "13:00–19:00",
+      "Sa-So": "12:00–20:00"
+    },
     "photos": [
       "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600&h=400&fit=crop"
     ],
@@ -428,15 +572,33 @@
     "ice_cream_type": "Eismanufaktur",
     "is_handmade": true,
     "flavor_list": [
-      { "name": "Sauerrahm Holunder", "tag": "signatur" },
-      { "name": "Schoko Chili", "tag": "signatur" },
-      { "name": "Kokos Passionsfrucht", "tag": "vegan" },
-      { "name": "Joghurt Himbeere" },
-      { "name": "Salzkaramell" },
-      { "name": "Rhabarber Baiser", "tag": "saisonal" },
-      { "name": "Hafer Vanille", "tag": "vegan" }
+      {
+        "name": "Sauerrahm Holunder",
+        "tag": "signatur"
+      },
+      {
+        "name": "Schoko Chili",
+        "tag": "signatur"
+      },
+      {
+        "name": "Kokos Passionsfrucht",
+        "tag": "vegan"
+      },
+      {
+        "name": "Joghurt Himbeere"
+      },
+      {
+        "name": "Salzkaramell"
+      },
+      {
+        "name": "Rhabarber Baiser",
+        "tag": "saisonal"
+      },
+      {
+        "name": "Hafer Vanille",
+        "tag": "vegan"
+      }
     ],
-    "signature_flavors": ["Sauerrahm Holunder", "Schoko Chili"],
     "has_waffle_cones": false,
     "has_sundaes": false,
     "has_pastry": false,
@@ -446,7 +608,11 @@
     "has_lactose_free": true,
     "has_gluten_free": false,
     "is_organic": true,
-    "atmosphere_tags": ["quiet", "cozy", "modern"],
+    "atmosphere_tags": [
+      "quiet",
+      "cozy",
+      "modern"
+    ],
     "open_after_8pm": false,
     "has_coffee": false,
     "has_alcohol_flavors": false,
@@ -482,8 +648,14 @@
       }
     ],
     "specialty": "Kleine Manufaktur mit mutigen Sorten — der Geheimtipp in Schleußig.",
-    "editorial_tags": ["hidden-gem", "family-favorite"],
-    "payment_methods": ["Bar", "Kontaktlos"],
+    "editorial_tags": [
+      "hidden-gem",
+      "family-favorite"
+    ],
+    "payment_methods": [
+      "Bar",
+      "Kontaktlos"
+    ],
     "listing_status": "published"
   },
   {
@@ -516,12 +688,22 @@
     "ice_cream_type": "Softeis",
     "is_handmade": false,
     "flavor_list": [
-      { "name": "Vanille Softeis", "tag": "signatur" },
-      { "name": "Schoko Softeis" },
-      { "name": "Mix (Vanille-Schoko)", "tag": "signatur" },
-      { "name": "Erdbeer Softeis", "tag": "saisonal" }
+      {
+        "name": "Vanille Softeis",
+        "tag": "signatur"
+      },
+      {
+        "name": "Schoko Softeis"
+      },
+      {
+        "name": "Mix (Vanille-Schoko)",
+        "tag": "signatur"
+      },
+      {
+        "name": "Erdbeer Softeis",
+        "tag": "saisonal"
+      }
     ],
-    "signature_flavors": ["Vanille Softeis", "Mix (Vanille-Schoko)"],
     "has_waffle_cones": true,
     "has_sundaes": false,
     "has_pastry": false,
@@ -531,7 +713,10 @@
     "has_lactose_free": false,
     "has_gluten_free": false,
     "is_organic": false,
-    "atmosphere_tags": ["traditional", "rustic"],
+    "atmosphere_tags": [
+      "traditional",
+      "rustic"
+    ],
     "open_after_8pm": false,
     "has_coffee": false,
     "has_alcohol_flavors": false,
@@ -563,7 +748,9 @@
     ],
     "specialty": "Leipzigs letzter echter Softeis-Stand — unprätentiös, günstig und kultig.",
     "editorial_tags": [],
-    "payment_methods": ["Bar"],
+    "payment_methods": [
+      "Bar"
+    ],
     "listing_status": "published"
   },
   {
@@ -596,14 +783,29 @@
     "ice_cream_type": "Eiscafé",
     "is_handmade": true,
     "flavor_list": [
-      { "name": "Mohn Marzipan", "tag": "signatur" },
-      { "name": "Quark Sanddorn", "tag": "signatur" },
-      { "name": "Hafermilch Karamell", "tag": "vegan" },
-      { "name": "Waldmeister", "tag": "saisonal" },
-      { "name": "Erdbeer Cheesecake" },
-      { "name": "Pfirsich Melba" }
+      {
+        "name": "Mohn Marzipan",
+        "tag": "signatur"
+      },
+      {
+        "name": "Quark Sanddorn",
+        "tag": "signatur"
+      },
+      {
+        "name": "Hafermilch Karamell",
+        "tag": "vegan"
+      },
+      {
+        "name": "Waldmeister",
+        "tag": "saisonal"
+      },
+      {
+        "name": "Erdbeer Cheesecake"
+      },
+      {
+        "name": "Pfirsich Melba"
+      }
     ],
-    "signature_flavors": ["Mohn Marzipan", "Quark Sanddorn"],
     "has_waffle_cones": true,
     "has_sundaes": true,
     "has_pastry": true,
@@ -613,7 +815,11 @@
     "has_lactose_free": true,
     "has_gluten_free": false,
     "is_organic": false,
-    "atmosphere_tags": ["cozy", "romantic", "quiet"],
+    "atmosphere_tags": [
+      "cozy",
+      "romantic",
+      "quiet"
+    ],
     "open_after_8pm": true,
     "has_coffee": true,
     "has_alcohol_flavors": false,
@@ -649,8 +855,15 @@
       }
     ],
     "specialty": "Gemütliches Wohnzimmer-Eiscafé mit ostdeutschen Eissorten-Klassikern, neu interpretiert.",
-    "editorial_tags": ["hidden-gem", "date-night"],
-    "payment_methods": ["Bar", "EC-Karte", "Kontaktlos"],
+    "editorial_tags": [
+      "hidden-gem",
+      "date-night"
+    ],
+    "payment_methods": [
+      "Bar",
+      "EC-Karte",
+      "Kontaktlos"
+    ],
     "listing_status": "published"
   }
 ]

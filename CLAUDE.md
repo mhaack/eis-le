@@ -67,7 +67,6 @@ Key column groups:
 | `specialty` | One sentence about what makes the shop special |
 | `location_description` | One sentence about the location |
 | `ice_cream_type` | Eiscafé / Eisdiele / Gelateria / Softeis / Eisautomat / Frozen Yogurt / other |
-| `signature_flavors` | text[] |
 | `near_park`, `near_water`, `near_playground` | Specific names only, not guesses |
 | `has_vegan_options` | May be set by Claude if Google didn't supply it |
 | `fully_vegan` | Claude only |

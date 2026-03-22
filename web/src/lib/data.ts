@@ -87,8 +87,7 @@ export interface Shop {
   has_outdoor_seating: boolean;
   ice_cream_type: string;
   is_handmade: boolean;
-  flavor_list: { name: string; tag?: 'vegan' | 'signatur' | 'saisonal' }[] | null;
-  signature_flavors: string[];
+  flavor_list: { name: string; tag?: 'vegan' | 'signatur' | 'saisonal' | 'alkohol' | 'bio' | 'exotisch' | 'softeis' | 'sorbet' }[] | null;
   has_waffle_cones: boolean;
   has_sundaes: boolean;
   has_pastry: boolean;
