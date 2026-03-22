@@ -1,8 +1,8 @@
-# CLAUDE.md — eisleipzig.de
+# CLAUDE.md — eis-le.de
 
 ## Project purpose
 
-**eisleipzig.de** — a Leipzig ice cream shop directory. The repo contains:
+**eis-le.de** — a Leipzig ice cream shop directory. The repo contains:
 
 - **`web/`** — Astro SSG frontend, deployed as a Cloudflare Worker
 - **`scripts/`** — Data pipeline (seed, enrich, weekly update) run as one-offs or by CI
@@ -64,8 +64,8 @@ Key column groups:
 
 | Column | Notes |
 |---|---|
-| `specialty` | One sentence about what makes the shop special |
-| `location_description` | One sentence about the location |
+| `specialty` | Editorial description of the shop |
+| `location_description` | Editorial description of the location |
 | `ice_cream_type` | Eiscafé / Eisdiele / Gelateria / Softeis / Eisautomat / Frozen Yogurt / other |
 | `near_park`, `near_water`, `near_playground` | Specific names only, not guesses |
 | `has_vegan_options` | May be set by Claude if Google didn't supply it |
@@ -91,6 +91,7 @@ Key column groups:
 | `lvz_rank`, `lvz_year` | LVZ newspaper rankings — manual |
 | `our_rating`, `our_review` | Editorial ratings — manual |
 | `highlights` | JSONB editorial highlights — manual |
+| `flavor_list` | JSONB flavor list with tags (signatur, vegan, saisonal, alkohol, bio, exotisch, softeis, sorbet) — manual |
 | `last_visited_at` | Manual |
 | `price_per_scoop` | Manual |
 | `wait_time_typical` | Manual (kurz / mittel / lang) |

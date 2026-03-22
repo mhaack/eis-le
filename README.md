@@ -1,31 +1,29 @@
-# eisleipzig-pipeline
+# eis-le.de
 
-Data pipeline for [eisleipzig.de](https://eisleipzig.de) — a directory of ice cream shops in Leipzig. Pulls structured data from the Google Places API (New), stores it in Supabase, enriches it with Claude, and runs weekly via GitHub Actions.
+A directory of ice cream shops in Leipzig — [eis-le.de](https://eis-le.de).
 
 ---
 
 ## Architecture
 
 ```
-Google Places API (New)
-        │
-        ▼
-  initial-import.js          ← one-time seeding of the database
-        │
-        ▼
-    Supabase (shops table)
-        │
-        ▼
-  enrich-with-claude.js      ← analyses reviews, fills specialty/tags/etc.
-        │
-        ▼
-  weekly-update.js            ← every Monday: refresh data, detect changes
-        │
-        ▼
-  send-alerts.js              ← email summary of changes via Resend
+                 Google Places API (New)
+                         │
+          ┌──────────────┼──────────────┐
+          ▼              ▼              ▼
+  initial-import.js   weekly-update.js   enrich-with-claude.js
+          │              │              │
+          └──────────────┼──────────────┘
+                         ▼
+                 Supabase (shops table)
+                         │
+              ┌──────────┼──────────┐
+              ▼          ▼          ▼
+         web/ (Astro)  admin/    send-alerts.js
+              │
+              ▼
+       Cloudflare Pages
 ```
-
-The GitHub Actions workflow runs steps 3–5 automatically every Monday at 06:00 UTC.
 
 ---
 
@@ -33,35 +31,99 @@ The GitHub Actions workflow runs steps 3–5 automatically every Monday at 06:00
 
 ```
 .
-├── .env.example                  Environment variable template
-├── .github/
-│   └── workflows/
-│       └── weekly-scrape.yml     GitHub Actions workflow (weekly pipeline)
-├── scripts/
-│   ├── initial-import.js         One-time import: searches Google, seeds Supabase
-│   ├── enrich-with-claude.js     Enriches shops using Claude (reviews → structured fields)
-│   ├── weekly-update.js          Weekly refresh of existing shops + optional new-shop discovery
-│   ├── send-alerts.js            Reads change file, sends email alert via Resend
+├── web/                             Astro SSG frontend (Cloudflare Worker)
+│   ├── src/
+│   │   ├── pages/                   Astro pages (shop detail, curated lists, map, legal)
+│   │   ├── components/              Astro components (ShopCard, FlavorList, HighlightList, etc.)
+│   │   ├── layouts/                 BaseLayout with Nav + Footer
+│   │   ├── lib/                     Data fetching (Supabase client, Shop type)
+│   │   ├── content/                 Markdown content (Impressum, Datenschutz)
+│   │   ├── styles/                  Global CSS (Tailwind + design tokens)
+│   │   └── data/                    Static fallback data (shops.json)
+│   ├── public/                      Static assets (favicon, icons)
+│   ├── astro.config.mjs
+│   └── package.json
+├── admin/                           Local admin UI
+│   ├── index.html                   Single-page app (Alpine.js)
+│   ├── server.js                    Node proxy server for Supabase API
+│   └── config.js                    Configuration
+├── scripts/                         Data pipeline
+│   ├── initial-import.js            One-time import from Google Places
+│   ├── enrich-with-claude.js        AI enrichment (reviews → structured fields)
+│   ├── weekly-update.js             Weekly refresh + new-shop discovery
+│   ├── send-alerts.js               Email change alerts via Resend
 │   └── utils/
-│       ├── google-places.js      Places API (New) client: textSearch, placeDetails, generateSlug
-│       ├── change-detection.js   detectChanges, mapPlaceToShop, calcOpenAfter8pm, mapAtmosphereTags
-│       └── supabase.js           Supabase client initialisation
-├── sql/
-│   └── 01_shops.sql              Initial schema migration (shops table + indexes + trigger)
+│       ├── google-places.js         Places API (New) client
+│       ├── change-detection.js      Change detection, field mapping, derived fields
+│       └── supabase.js              Supabase client
+├── sql/                             Database migrations
+│   ├── 01_shops.sql                 Initial schema (legacy name)
+│   └── YYYYMMDDNNNNNN_*.sql         Numbered migrations
+├── supabase/                        Supabase CLI config + migrations
+├── .github/workflows/
+│   └── weekly-scrape.yml            GitHub Actions (weekly pipeline)
+├── CLAUDE.md                        AI assistant context
 └── package.json
 ```
 
 ---
 
-## Setup
+## Frontend (web/)
+
+Built with [Astro](https://astro.build), styled with [Tailwind CSS](https://tailwindcss.com), icons from [Lucide](https://lucide.dev). Deployed as a static site to Cloudflare Pages.
+
+### Pages
+
+- **`/`** — Homepage with filterable shop grid
+- **`/[slug]`** — Shop detail page (highlights, flavors, opening hours, map)
+- **`/karte`** — Full map view of all shops
+- **`/veganes-eis`**, **`/eis-mit-kindern`**, **`/date-night-eis`**, **`/eis-fuer-radfahrer`** — Curated lists
+- **`/beste-eisdielen-lvz`** — LVZ newspaper ranking
+- **`/stadtteil/[slug]`** — Neighborhood pages
+- **`/impressum`**, **`/datenschutz`** — Legal pages
+
+### Dev server
+
+```bash
+cd web
+npm install
+npx astro dev
+```
+
+### Build & deploy
+
+```bash
+cd web
+npm run build
+```
+
+Deployment happens automatically via Cloudflare Pages on push to `main`.
+
+---
+
+## Admin UI (admin/)
+
+A local-only single-page admin tool for managing shop data. Built with plain HTML and [Alpine.js](https://alpinejs.dev). Communicates with Supabase through a Node.js proxy server.
+
+```bash
+# Start the admin server (reads .env from project root)
+node admin/server.js
+# Open http://localhost:3000
+```
+
+Features: browse/filter shops, edit all fields (booleans, text, JSONB highlights/flavors), manage listing status.
+
+---
+
+## Data pipeline (scripts/)
 
 ### Prerequisites
 
-- Node.js 20+
-- A [Google Cloud](https://console.cloud.google.com) project with the **Places API (New)** enabled
-- A [Supabase](https://supabase.com) project
-- An [Anthropic](https://console.anthropic.com) API key
-- A [Resend](https://resend.com) account for email alerts
+- Node.js 22+
+- [Google Cloud](https://console.cloud.google.com) project with **Places API (New)** enabled
+- [Supabase](https://supabase.com) project
+- [Anthropic](https://console.anthropic.com) API key
+- [Resend](https://resend.com) account for email alerts
 
 ### Environment variables
 
@@ -77,51 +139,7 @@ RESEND_API_KEY=re_...
 ALERT_EMAIL=your-email@example.com
 ```
 
-The scripts use `SUPABASE_SERVICE_KEY` (service role key) to bypass RLS. `SUPABASE_ANON_KEY` is kept in `.env` for use by the frontend, not by these scripts.
-
-### Database migration
-
-Apply the schema with the Supabase CLI:
-
-```bash
-supabase db push
-# or run directly against your project:
-psql "$DATABASE_URL" -f sql/01_shops.sql
-```
-
-### Install dependencies
-
-```bash
-npm install
-```
-
-### Initial import
-
-Run once to seed the database with Leipzig ice cream shops from Google:
-
-```bash
-npm run import
-```
-
-This runs four text searches (`Eisdiele Leipzig`, `Eiscafé Leipzig`, `Gelateria Leipzig`, `Softeis Leipzig`), fetches full place details for each result, and upserts them into Supabase with `listing_status = 'draft'`. Shops already marked `ignored` are skipped.
-
-### Enrichment
-
-After importing, run Claude enrichment to fill in specialty, ice cream type, atmosphere tags, dietary flags, and neighbourhood data:
-
-```bash
-npm run enrich
-```
-
-By default this only processes shops where `specialty IS NULL`. To re-process all shops:
-
-```bash
-node scripts/enrich-with-claude.js --all
-```
-
----
-
-## Available npm scripts
+### Scripts
 
 | Script | Command | Description |
 |---|---|---|
@@ -131,28 +149,48 @@ node scripts/enrich-with-claude.js --all
 | `update:search-new` | `node scripts/weekly-update.js --search-new` | Refresh + discover new shops |
 | `alerts` | `node scripts/send-alerts.js` | Send email alert for detected changes |
 
----
-
-## Weekly pipeline
+### Weekly pipeline
 
 The GitHub Actions workflow (`.github/workflows/weekly-scrape.yml`) runs every Monday at 06:00 UTC:
 
-1. **Update existing shops** — fetches fresh place details from Google for every non-archived, non-ignored shop. Detects changes in rating (≥ 0.2 delta), opening hours, and business status. Writes detected changes to `/tmp/eisleipzig-changes.json`.
-2. **Search for new shops** — runs the same four text queries; any place ID not already in the database is inserted as a `draft`.
-3. **Enrich new shops with Claude** — runs `enrich-with-claude.js` (default mode: `specialty IS NULL` only), so only freshly imported shops are processed.
-4. **Send change alerts** — reads the changes file and sends an HTML email via Resend if anything changed.
+1. **Update existing shops** — fetches fresh place details from Google, detects changes in rating (≥ 0.2 delta), opening hours, and business status
+2. **Search for new shops** — runs text queries; new place IDs are inserted as `draft`
+3. **Enrich new shops** — runs Claude enrichment on shops where `specialty IS NULL`
+4. **Send change alerts** — sends an HTML email via Resend if anything changed
 
-The workflow can also be triggered manually from the GitHub Actions UI via `workflow_dispatch`.
+Can also be triggered manually via `workflow_dispatch`.
+
+---
+
+## Database
+
+Hosted on [Supabase](https://supabase.com) (PostgreSQL). Two tables: `shops` and `neighborhoods`.
+
+### Migrations
+
+```bash
+# Apply a migration
+npx supabase db query --linked -f sql/YYYYMMDDNNNNNN_description.sql
+```
+
+Migration files in `sql/` follow the naming pattern `YYYYMMDDNNNNNN_description.sql`.
+
+### listing_status values
+
+| Value | Meaning |
+|---|---|
+| `draft` | Imported from Google, not yet reviewed or published |
+| `published` | Live on eis-le.de, visible to visitors |
+| `archived` | Previously published, now hidden (e.g. shop closed) |
+| `ignored` | False positive or out-of-scope; skipped by all scripts |
 
 ---
 
 ## GitHub Secrets
 
-These secrets must be set in the repository settings under **Settings → Secrets and variables → Actions**:
-
 | Secret | Used by |
 |---|---|
-| `GOOGLE_PLACES_API_KEY` | weekly-update.js, enrich-with-claude.js |
+| `GOOGLE_PLACES_API_KEY` | weekly-update.js |
 | `SUPABASE_URL` | all scripts |
 | `SUPABASE_SERVICE_KEY` | all scripts |
 | `CLAUDE_API_KEY` | enrich-with-claude.js |
@@ -161,26 +199,6 @@ These secrets must be set in the repository settings under **Settings → Secret
 
 ---
 
-## listing_status values
+## License
 
-| Value | Meaning |
-|---|---|
-| `draft` | Imported from Google, not yet reviewed or published |
-| `published` | Live on eisleipzig.de, visible to visitors |
-| `archived` | Previously published, now hidden (e.g. shop closed) |
-| `ignored` | False positive or out-of-scope place; skipped by all scripts |
-
-Shops with `listing_status = 'ignored'` are never updated by the weekly pipeline and are never re-imported by the initial import script.
-
----
-
-## Adding shops manually
-
-1. Insert a row directly in Supabase (Table Editor or SQL):
-   ```sql
-   insert into shops (name, slug, listing_status)
-   values ('Mein Eisladen', 'mein-eisladen', 'draft');
-   ```
-2. Fill in `google_place_id` if the shop exists on Google Maps — the weekly update will then keep it in sync.
-3. Leave `google_place_id` as NULL for shops without a Google listing; they will be ignored by all Google-dependent scripts but remain in the database.
-4. Set `listing_status = 'published'` when the entry is ready to go live.
+See [LICENSE](LICENSE).

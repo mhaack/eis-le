@@ -7,7 +7,7 @@ const neighborhoods = await getNeighborhoods();
 
 <footer class="bg-schoko text-creme/80 mt-16">
   <div class="max-w-[960px] mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
       <!-- Brand -->
       <div>
         <a href="/" class="flex items-center gap-2 text-creme no-underline mb-3">
@@ -27,13 +27,12 @@ const neighborhoods = await getNeighborhoods();
           <li><a href="/eis-mit-kindern" class="text-creme/60 hover:text-creme transition-colors">Eis mit Kindern</a></li>
           <li><a href="/date-night-eis" class="text-creme/60 hover:text-creme transition-colors">Date Night</a></li>
           <li><a href="/eis-fuer-radfahrer" class="text-creme/60 hover:text-creme transition-colors">Radtour-Stopp</a></li>
-          <li><a href="/beste-eisdielen-lvz" class="text-creme/60 hover:text-creme transition-colors">LVZ-Ranking</a></li>
         </ul>
       </div>
-      <!-- Stadtteile -->
-      <div>
+      <!-- Stadtteile (two columns) -->
+      <div class="sm:col-span-2">
         <h4 class="font-heading text-sm font-semibold text-creme mb-3 uppercase tracking-wider">Stadtteile</h4>
-        <ul class="space-y-2 text-sm">
+        <ul class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
           {neighborhoods.map(n => (
             <li>
               <a href={`/stadtteil/${n.slug}`} class="text-creme/60 hover:text-creme transition-colors">
@@ -48,9 +47,11 @@ const neighborhoods = await getNeighborhoods();
       <p class="text-sm text-creme/40 font-heading italic">
         Gemacht in Leipzig, mit Liebe und zu viel Eis.
       </p>
-      <p class="text-xs text-creme/30">
-        &copy; {new Date().getFullYear()} eis-le.de
-      </p>
+      <div class="flex items-center gap-4 text-xs text-creme/30">
+        <a href="/impressum" class="hover:text-creme/60 transition-colors">Impressum</a>
+        <a href="/datenschutz" class="hover:text-creme/60 transition-colors">Datenschutz</a>
+        <span>&copy; {new Date().getFullYear()} eis-le.de</span>
+      </div>
     </div>
   </div>
 </footer>
