@@ -1,3 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
-  <text y="32" font-size="32">🍦</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <path d="M8 11l4 11 4-11" fill="#F2D888" stroke="#3D2B1F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="12" cy="8" r="4" fill="#E8788A" stroke="#3D2B1F" stroke-width="1.5" />
+  <circle cx="8.5" cy="10" r="3" fill="#A8C68F" stroke="#3D2B1F" stroke-width="1.5" />
+  <circle cx="15.5" cy="10" r="3" fill="#FFF4D6" stroke="#3D2B1F" stroke-width="1.5" />
 </svg>
