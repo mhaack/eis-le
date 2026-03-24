@@ -12,11 +12,12 @@ const links = [
 
 <header class="sticky top-0 z-50 bg-creme/90 backdrop-blur-md border-b border-border">
   <nav class="max-w-[960px] mx-auto px-4 py-3 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 no-underline group">
-      <LogoIcon size={28} />
-      <span class="font-heading text-xl font-semibold text-schoko group-hover:text-erdbeere transition-colors">
-        eisleipzig
-      </span>
+    <a href="/" class="flex items-center gap-0 no-underline leading-none" aria-label="eis-le.de — Startseite">
+      <span class="font-heading text-[1.3rem] font-bold text-schoko tracking-[0.02em]">E</span>
+      <LogoIcon size={22} class="relative -top-px -mx-px shrink-0" />
+      <span class="font-heading text-[1.3rem] font-bold text-schoko tracking-[0.02em]">S</span>
+      <span class="font-heading text-[1.15rem] font-normal text-schoko-muted mx-[0.3rem] tracking-[0.04em]">//</span>
+      <span class="font-heading text-[1.3rem] font-normal text-schoko-muted tracking-[0.06em]">LE</span>
     </a>
     <div class="hidden sm:flex items-center gap-6">
       {links.map(link => (
