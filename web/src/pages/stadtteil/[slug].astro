@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ShopGrid from '../../components/ShopGrid.astro';
 import LeafletMap from '../../components/LeafletMap.astro';
+import { ArrowLeft } from 'lucide-astro';
 import { getShopsByNeighborhood, getNeighborhoods, resolveShopPhotoMap } from '../../lib/data';
 
 export async function getStaticPaths() {
@@ -22,8 +23,8 @@ const photoMap = await resolveShopPhotoMap(shops);
 <BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={`Die besten Eisdielen in ${name}, Leipzig. Finde dein Eis im Viertel.`}>
   <section class="max-w-[960px] mx-auto px-4 py-8">
     <div class="mb-2">
-      <a href="/" class="text-sm text-blueberry hover:text-choco transition-colors">
-        ← Alle Eisdielen
+      <a href="/" class="text-sm text-blueberry hover:text-choco transition-colors inline-flex items-center gap-1">
+        <ArrowLeft size={14} stroke-width={2} /> Alle Eisdielen
       </a>
     </div>
 

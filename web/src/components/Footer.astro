@@ -10,9 +10,12 @@ const neighborhoods = await getNeighborhoods();
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
       <!-- Brand -->
       <div>
-        <a href="/" class="flex items-center gap-2 text-creme no-underline mb-3">
-          <LogoIcon size={28} />
-          <span class="font-heading text-xl font-semibold">eisleipzig</span>
+        <a href="/" class="flex items-center gap-0 text-creme no-underline mb-3 leading-none">
+          <span class="font-heading text-xl font-bold tracking-[0.02em]">E</span>
+          <LogoIcon size={22} class="relative -top-px -mx-px shrink-0" />
+          <span class="font-heading text-xl font-bold tracking-[0.02em]">S</span>
+          <span class="font-heading text-[1.1rem] font-normal opacity-50 mx-[0.3rem] tracking-[0.04em]">//</span>
+          <span class="font-heading text-xl font-normal opacity-50 tracking-[0.06em]">LE</span>
         </a>
         <p class="text-sm text-creme/60 leading-relaxed">
           Alle Eisdielen in Leipzig.<br />
@@ -47,9 +50,9 @@ const neighborhoods = await getNeighborhoods();
       <p class="text-sm text-creme/40 font-heading italic">
         Gemacht in Leipzig, mit Liebe und zu viel Eis.
       </p>
-      <div class="flex items-center gap-4 text-xs text-creme/30">
-        <a href="/impressum" class="hover:text-creme/60 transition-colors">Impressum</a>
-        <a href="/datenschutz" class="hover:text-creme/60 transition-colors">Datenschutz</a>
+      <div class="flex items-center gap-4 text-xs">
+        <a href="/impressum" class="text-creme/50 hover:text-creme transition-colors">Impressum</a>
+        <a href="/datenschutz" class="text-creme/50 hover:text-creme transition-colors">Datenschutz</a>
         <span>&copy; {new Date().getFullYear()} eis-le.de</span>
       </div>
     </div>

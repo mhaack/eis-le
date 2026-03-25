@@ -27,6 +27,9 @@
   --font-body: 'DM Sans', system-ui, sans-serif;
 }
 
+/* ===== Alpine.js cloak ===== */
+[x-cloak] { display: none !important; }
+
 /* ===== Base styles ===== */
 html {
   scroll-behavior: smooth;
@@ -65,14 +68,16 @@ footer h4 {
   color: var(--color-creme);
 }
 
-a {
-  color: var(--color-blueberry);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
+@layer base {
+  a {
+    color: var(--color-blueberry);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
 
-a:hover {
-  color: var(--color-choco);
+  a:hover {
+    color: var(--color-choco);
+  }
 }
 
 /* ===== Card base ===== */
