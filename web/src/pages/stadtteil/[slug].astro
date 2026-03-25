@@ -22,16 +22,16 @@ const photoMap = await resolveShopPhotoMap(shops);
 <BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={`Die besten Eisdielen in ${name}, Leipzig. Finde dein Eis im Viertel.`}>
   <section class="max-w-[960px] mx-auto px-4 py-8">
     <div class="mb-2">
-      <a href="/" class="text-sm text-heidelbeere hover:text-schoko transition-colors">
+      <a href="/" class="text-sm text-blueberry hover:text-choco transition-colors">
         ← Alle Eisdielen
       </a>
     </div>
 
     <div class="mb-8 animate-fade-up">
-      <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-schoko mb-2">
+      <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-choco mb-2">
         Eisdielen in {name}
       </h1>
-      <p class="text-lg text-schoko-muted">
+      <p class="text-lg text-choco-muted">
         {shops.length} {shops.length === 1 ? 'Eisdiele' : 'Eisdielen'} in {name}
       </p>
     </div>

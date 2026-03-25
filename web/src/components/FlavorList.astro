@@ -7,15 +7,15 @@ interface Props {
 
 const { flavors } = Astro.props;
 
-const tagVariant: Record<string, 'pistazie' | 'erdbeere' | 'vanille' | 'mango' | 'heidelbeere'> = {
-  vegan: 'pistazie',
-  signatur: 'erdbeere',
-  saisonal: 'vanille',
+const tagVariant: Record<string, 'pistachio' | 'strawberry' | 'vanilla' | 'mango' | 'blueberry'> = {
+  vegan: 'pistachio',
+  signatur: 'strawberry',
+  saisonal: 'vanilla',
   alkohol: 'mango',
-  bio: 'pistazie',
+  bio: 'pistachio',
   exotisch: 'mango',
-  softeis: 'vanille',
-  sorbet: 'heidelbeere',
+  softeis: 'vanilla',
+  sorbet: 'blueberry',
 };
 
 const tagLabel: Record<string, string> = {
@@ -33,10 +33,10 @@ const tagLabel: Record<string, string> = {
 <div class="space-y-3">
   {flavors.map((flavor, i) => (
     <div class="flex items-center gap-3 py-2 border-b border-border last:border-0">
-      <span class="text-sm font-semibold text-schoko-muted w-6 text-right shrink-0">
+      <span class="text-sm font-semibold text-choco-muted w-6 text-right shrink-0">
         {String(i + 1).padStart(2, '0')}
       </span>
-      <span class="text-base font-medium text-schoko flex-1">{flavor.name}</span>
+      <span class="text-base font-medium text-choco flex-1">{flavor.name}</span>
       {flavor.tag && (
         <Tag label={tagLabel[flavor.tag]} variant={tagVariant[flavor.tag]} size="sm" />
       )}

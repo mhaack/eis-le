@@ -16,7 +16,7 @@ const filters = [
     {filters.map(f => (
       <button
         @click={`activeFilter = '${f.key}'`}
-        :class={`activeFilter === '${f.key}' ? 'bg-schoko text-creme' : 'bg-sand text-schoko-muted hover:bg-schoko/10'`}
+        :class={`activeFilter === '${f.key}' ? 'bg-choco text-creme' : 'bg-sand text-choco-muted hover:bg-choco/10'`}
         class="pill text-sm font-medium transition-colors cursor-pointer shrink-0 inline-flex items-center gap-1.5"
       >
         {f.icon && <f.icon size={14} stroke-width={2} />}

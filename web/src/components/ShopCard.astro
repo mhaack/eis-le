@@ -15,8 +15,8 @@ const { shop, index = 0, photoUrl } = Astro.props;
 const stars = Math.round(shop.google_rating);
 const openNow = isShopOpen(shop.opening_hours);
 
-const tags: { label: string; variant: 'pistazie' | 'erdbeere' | 'vanille' | 'heidelbeere' | 'mango' | 'default' }[] = [];
-if (shop.has_vegan_options) tags.push({ label: 'Vegan', variant: 'pistazie' });
+const tags: { label: string; variant: 'pistachio' | 'strawberry' | 'vanilla' | 'blueberry' | 'mango' | 'default' }[] = [];
+if (shop.has_vegan_options) tags.push({ label: 'Vegan', variant: 'pistachio' });
 if (shop.child_friendly) tags.push({ label: 'Kinderfreundlich', variant: 'mango' });
 if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
 ---
@@ -52,7 +52,7 @@ if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
       <div class="absolute top-3 right-3">
         <span class:list={[
           'pill text-xs font-medium',
-          openNow ? 'bg-pistazie-bg text-pistazie' : 'bg-erdbeere-bg text-erdbeere',
+          openNow ? 'bg-pistachio-bg text-pistachio' : 'bg-strawberry-bg text-strawberry',
         ]}>
           {openNow ? 'Geöffnet' : 'Geschlossen'}
         </span>
@@ -64,19 +64,19 @@ if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
   <div class="p-4">
     <!-- Neighborhood + rating row -->
     <div class="flex items-center justify-between mb-1.5">
-      <span class="text-xs font-medium text-schoko-muted uppercase tracking-wide">{shop.neighborhood?.name}</span>
+      <span class="text-xs font-medium text-choco-muted uppercase tracking-wide">{shop.neighborhood?.name}</span>
       <div class="flex items-center gap-1">
-        <Star size={14} stroke-width={2} class="text-vanille fill-current" />
-        <span class="text-sm font-semibold text-schoko">{shop.google_rating}</span>
-        <span class="text-xs text-schoko-muted">({shop.google_review_count})</span>
+        <Star size={14} stroke-width={2} class="text-vanilla fill-current" />
+        <span class="text-sm font-semibold text-choco">{shop.google_rating}</span>
+        <span class="text-xs text-choco-muted">({shop.google_review_count})</span>
       </div>
     </div>
 
     <!-- Shop name -->
-    <h3 class="font-heading text-lg font-semibold text-schoko mb-1 leading-snug">{shop.name}</h3>
+    <h3 class="font-heading text-lg font-semibold text-choco mb-1 leading-snug">{shop.name}</h3>
 
     <!-- Type + price -->
-    <p class="text-sm text-schoko-muted mb-3">
+    <p class="text-sm text-choco-muted mb-3">
       {shop.ice_cream_type}
       {shop.is_handmade && <span> · Handgemacht</span>}
       {shop.price_per_scoop && <span> · {shop.price_per_scoop}</span>}
@@ -91,7 +91,7 @@ if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
 
     <!-- Specialty quote -->
     {shop.specialty && (
-      <p class="text-sm text-schoko-light italic leading-relaxed line-clamp-2">
+      <p class="text-sm text-choco-light italic leading-relaxed line-clamp-2">
         &bdquo;{shop.specialty}&ldquo;
       </p>
     )}

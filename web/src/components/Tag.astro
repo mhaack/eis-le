@@ -1,19 +1,19 @@
 ---
 interface Props {
   label: string;
-  variant?: 'pistazie' | 'erdbeere' | 'vanille' | 'heidelbeere' | 'mango' | 'default';
+  variant?: 'pistachio' | 'strawberry' | 'vanilla' | 'blueberry' | 'mango' | 'default';
   size?: 'sm' | 'md';
 }
 
 const { label, variant = 'default', size = 'sm' } = Astro.props;
 
 const variantClasses: Record<string, string> = {
-  pistazie: 'bg-pistazie-bg text-pistazie',
-  erdbeere: 'bg-erdbeere-bg text-erdbeere',
-  vanille: 'bg-vanille-bg text-vanille',
-  heidelbeere: 'bg-heidelbeere-bg text-heidelbeere',
+  pistachio: 'bg-pistachio-bg text-pistachio',
+  strawberry: 'bg-strawberry-bg text-strawberry',
+  vanilla: 'bg-vanilla-bg text-vanilla',
+  blueberry: 'bg-blueberry-bg text-blueberry',
   mango: 'bg-mango-bg text-mango',
-  default: 'bg-sand text-schoko-muted',
+  default: 'bg-sand text-choco-muted',
 };
 
 const sizeClasses: Record<string, string> = {

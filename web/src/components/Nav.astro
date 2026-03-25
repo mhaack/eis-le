@@ -13,11 +13,11 @@ const links = [
 <header class="sticky top-0 z-50 bg-creme/90 backdrop-blur-md border-b border-border">
   <nav class="max-w-[960px] mx-auto px-4 py-3 flex items-center justify-between">
     <a href="/" class="flex items-center gap-0 no-underline leading-none" aria-label="eis-le.de — Startseite">
-      <span class="font-heading text-[1.3rem] font-bold text-schoko tracking-[0.02em]">E</span>
+      <span class="font-heading text-[1.3rem] font-bold text-choco tracking-[0.02em]">E</span>
       <LogoIcon size={22} class="relative -top-px -mx-px shrink-0" />
-      <span class="font-heading text-[1.3rem] font-bold text-schoko tracking-[0.02em]">S</span>
-      <span class="font-heading text-[1.15rem] font-normal text-schoko-muted mx-[0.3rem] tracking-[0.04em]">//</span>
-      <span class="font-heading text-[1.3rem] font-normal text-schoko-muted tracking-[0.06em]">LE</span>
+      <span class="font-heading text-[1.3rem] font-bold text-choco tracking-[0.02em]">S</span>
+      <span class="font-heading text-[1.15rem] font-normal text-choco-muted mx-[0.3rem] tracking-[0.04em]">//</span>
+      <span class="font-heading text-[1.3rem] font-normal text-choco-muted tracking-[0.06em]">LE</span>
     </a>
     <div class="hidden sm:flex items-center gap-6">
       {links.map(link => (
@@ -26,8 +26,8 @@ const links = [
           class:list={[
             'text-sm font-medium transition-colors',
             currentPath === link.href
-              ? 'text-schoko'
-              : 'text-schoko-muted hover:text-schoko',
+              ? 'text-choco'
+              : 'text-choco-muted hover:text-choco',
           ]}
         >
           {link.label}
@@ -36,7 +36,7 @@ const links = [
     </div>
     <!-- Mobile menu button -->
     <button
-      class="sm:hidden p-2 text-schoko-muted hover:text-schoko"
+      class="sm:hidden p-2 text-choco-muted hover:text-choco"
       aria-label="Menü öffnen"
       x-data
       @click="$dispatch('toggle-mobile-nav')"
@@ -67,8 +67,8 @@ const links = [
           class:list={[
             'text-sm font-medium py-1',
             currentPath === link.href
-              ? 'text-schoko'
-              : 'text-schoko-muted hover:text-schoko',
+              ? 'text-choco'
+              : 'text-choco-muted hover:text-choco',
           ]}
         >
           {link.label}
