@@ -38,6 +38,7 @@ if (shop.has_coffee) tags.push({ label: 'Kaffee', variant: 'default' });
 
 const hoursEntries = formatOpeningHours(shop.opening_hours);
 const openNow = isShopOpen(shop.opening_hours);
+const editorialText = shop.our_review ?? shop.specialty ?? null;
 ---
 
 <BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}, Leipzig`} description={shop.specialty}>
@@ -114,11 +115,13 @@ const openNow = isShopOpen(shop.opening_hours);
     )}
 
     <!-- Editorial intro -->
-    <div class="mb-8 animate-fade-up stagger-2">
-      <p class="text-lg text-choco-light leading-relaxed">
-        {shop.our_review}
-      </p>
-    </div>
+    {editorialText && (
+      <div class="mb-8 animate-fade-up stagger-2">
+        <p class="text-lg text-choco-light leading-relaxed">
+          {editorialText}
+        </p>
+      </div>
+    )}
 
     <!-- Two-column content -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
