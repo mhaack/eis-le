@@ -145,11 +145,11 @@ const editorialText = shop.our_review ?? shop.specialty ?? null;
     <!-- Details section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
       <!-- Opening hours -->
-      <div class="card p-5 animate-fade-up stagger-5">
+      <div class="card p-5 animate-fade-up stagger-5 flex flex-col">
         <h3 class="font-heading text-lg font-semibold text-choco mb-3 flex items-center gap-2">
           <Clock size={18} stroke-width={2} class="text-choco-muted" /> Öffnungszeiten
         </h3>
-        <div class="space-y-2">
+        <div class="space-y-2 flex-1">
           {hoursEntries.map(([day, hours]) => (
             <div class="flex justify-between text-sm">
               <span class="text-choco-muted">{day}</span>
@@ -160,11 +160,11 @@ const editorialText = shop.our_review ?? shop.specialty ?? null;
       </div>
 
       <!-- Location & contact -->
-      <div class="card p-5 animate-fade-up stagger-6">
+      <div class="card p-5 animate-fade-up stagger-6 flex flex-col">
         <h3 class="font-heading text-lg font-semibold text-choco mb-3 flex items-center gap-2">
           <MapPin size={18} stroke-width={2} class="text-choco-muted" /> Anfahrt & Kontakt
         </h3>
-        <div class="space-y-2.5 text-sm">
+        <div class="space-y-2.5 text-sm flex-1">
           <p class="text-choco">{shop.address}</p>
           {shop.location_description && (
             <p class="text-choco-muted italic">{shop.location_description}</p>
