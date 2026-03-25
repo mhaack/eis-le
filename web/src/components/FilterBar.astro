@@ -12,21 +12,33 @@ const filters = [
 ---
 
 <section class="max-w-[960px] mx-auto px-4 pb-8">
-  <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-    {filters.map(f => (
-      <button
-        @click={`activeFilter = '${f.key}'`}
-        :class={`activeFilter === '${f.key}' ? 'bg-choco text-creme' : 'bg-sand text-choco-muted hover:bg-choco/10'`}
-        class="pill text-sm font-medium transition-colors cursor-pointer shrink-0 inline-flex items-center gap-1.5"
-      >
-        {f.icon && <f.icon size={14} stroke-width={2} />}
-        {f.label}
-      </button>
-    ))}
+  <div class="relative">
+    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      {filters.map(f => (
+        <button
+          @click={`activeFilter = '${f.key}'`}
+          :class={`activeFilter === '${f.key}' ? 'bg-choco text-creme' : 'bg-sand text-choco-muted hover:bg-choco/10'`}
+          class="pill text-sm font-medium transition-colors cursor-pointer shrink-0 inline-flex items-center gap-1.5"
+        >
+          {f.icon && <f.icon size={14} stroke-width={2} />}
+          {f.label}
+        </button>
+      ))}
+    </div>
+    <div class="fade-right pointer-events-none" aria-hidden="true"></div>
   </div>
 </section>
 
 <style>
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .fade-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0.5rem; /* match pb-2 */
+    width: 3rem;
+    background: linear-gradient(to right, transparent, var(--color-creme));
+  }
 </style>
