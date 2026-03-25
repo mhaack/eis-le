@@ -8,18 +8,18 @@
   --color-creme: #fef9f0;
   --color-sand: #f5ece0;
   --color-card-bg: #fffdf9;
-  --color-schoko: #2d1810;
-  --color-schoko-light: #5c3d2e;
-  --color-schoko-muted: #8b6f5e;
+  --color-choco: #2d1810;
+  --color-choco-light: #5c3d2e;
+  --color-choco-muted: #8b6f5e;
   --color-border: #e8ddd0;
-  --color-pistazie: #7a9a5a;
-  --color-pistazie-bg: #eef4e8;
-  --color-erdbeere: #c4566a;
-  --color-erdbeere-bg: #fceef1;
-  --color-vanille: #c49a3c;
-  --color-vanille-bg: #fdf5e6;
-  --color-heidelbeere: #5b6da3;
-  --color-heidelbeere-bg: #eef0f7;
+  --color-pistachio: #7a9a5a;
+  --color-pistachio-bg: #eef4e8;
+  --color-strawberry: #c4566a;
+  --color-strawberry-bg: #fceef1;
+  --color-vanilla: #c49a3c;
+  --color-vanilla-bg: #fdf5e6;
+  --color-blueberry: #5b6da3;
+  --color-blueberry-bg: #eef0f7;
   --color-mango: #d4903a;
   --color-mango-bg: #fdf2e4;
 
@@ -34,7 +34,7 @@ html {
 
 body {
   font-family: var(--font-body);
-  color: var(--color-schoko);
+  color: var(--color-choco);
   background-color: var(--color-creme);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -56,7 +56,7 @@ body::before {
 /* ===== Typography ===== */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  color: var(--color-schoko);
+  color: var(--color-choco);
   font-weight: 600;
   line-height: 1.2;
 }
@@ -66,13 +66,13 @@ footer h4 {
 }
 
 a {
-  color: var(--color-heidelbeere);
+  color: var(--color-blueberry);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: var(--color-schoko);
+  color: var(--color-choco);
 }
 
 /* ===== Card base ===== */
@@ -153,7 +153,7 @@ a:hover {
 }
 
 .star.filled {
-  color: var(--color-vanille);
+  color: var(--color-vanilla);
 }
 
 /* ===== Scrollbar styling ===== */
@@ -172,7 +172,7 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-schoko-muted);
+  background: var(--color-choco-muted);
 }
 
 /* ===== Prose (legal pages) ===== */
@@ -200,7 +200,7 @@ a:hover {
 
 .prose p {
   margin-bottom: 1rem;
-  color: var(--color-schoko-light);
+  color: var(--color-choco-light);
 }
 
 .prose a {
@@ -215,7 +215,7 @@ a:hover {
 
 .prose li {
   margin-bottom: 0.25rem;
-  color: var(--color-schoko-light);
+  color: var(--color-choco-light);
 }
 
 /* Leaflet overrides */
