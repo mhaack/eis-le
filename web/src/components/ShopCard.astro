@@ -1,5 +1,5 @@
 ---
-import { type Shop, isShopOpen } from '../lib/data';
+import { type Shop } from '../lib/data';
 import Tag from './Tag.astro';
 import LVZBadge from './LVZBadge.astro';
 import { Star } from 'lucide-astro';
@@ -13,7 +13,6 @@ interface Props {
 const { shop, index = 0, photoUrl } = Astro.props;
 
 const stars = Math.round(shop.google_rating);
-const openNow = isShopOpen(shop.opening_hours);
 
 const tags: { label: string; variant: 'pistachio' | 'strawberry' | 'vanilla' | 'blueberry' | 'mango' | 'default' }[] = [];
 if (shop.has_vegan_options) tags.push({ label: 'Vegan', variant: 'pistachio' });
@@ -48,14 +47,13 @@ if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
       </div>
     )}
 
-    {openNow !== null && (
+    {shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
       <div class="absolute top-3 right-3">
-        <span class:list={[
-          'pill text-xs font-medium',
-          openNow ? 'bg-pistachio-bg text-pistachio' : 'bg-strawberry-bg text-strawberry',
-        ]}>
-          {openNow ? 'Geöffnet' : 'Geschlossen'}
-        </span>
+        <span
+          class="pill text-xs font-medium hidden"
+          data-open-status
+          data-periods={JSON.stringify(shop.opening_hours)}
+        />
       </div>
     )}
   </div>
@@ -97,3 +95,8 @@ if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
     )}
   </div>
 </a>
+
+<script>
+  import { renderAllOpenStatusPills } from '../scripts/open-status';
+  renderAllOpenStatusPills();
+</script>
