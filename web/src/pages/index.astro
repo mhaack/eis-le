@@ -24,8 +24,8 @@ const photoMap = await resolveShopPhotoMap(shops);
             data-periods={JSON.stringify(shop.opening_hours ?? [])}
             data-filter-lvz={shop.lvz_rank ? 'true' : undefined}
             data-filter-vegan={shop.has_vegan_options ? 'true' : undefined}
+            data-filter-bio={shop.is_organic ? 'true' : undefined}
             data-filter-kinder={shop.child_friendly ? 'true' : undefined}
-            data-filter-fahrrad={shop.has_bike_parking ? 'true' : undefined}
           >
             <ShopCard shop={shop} index={i} photoUrl={photoMap.get(shop.id)} />
           </div>
