@@ -40,26 +40,7 @@ const photoMap = await resolveShopPhotoMap(shops);
 </BaseLayout>
 
 <script>
-  function isOpenNow(periods) {
-    if (!Array.isArray(periods) || periods.length === 0) return false;
-    const now = new Date();
-    const berlin = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
-    const day = berlin.getDay();
-    const mins = berlin.getHours() * 60 + berlin.getMinutes();
-
-    return periods.some(p => {
-      const openDay = p.open.day;
-      const openMins = p.open.hour * 60 + (p.open.minute ?? 0);
-      if (!p.close) return openDay === day;
-      const closeDay = p.close.day;
-      const closeMins = p.close.hour * 60 + (p.close.minute ?? 0);
-      if (openDay === closeDay) {
-        return day === openDay && mins >= openMins && mins < closeMins;
-      }
-      // wraps past midnight
-      return (day === openDay && mins >= openMins) || (day === closeDay && mins < closeMins);
-    });
-  }
+  import { isOpenNow } from '../scripts/open-status';
 
   document.addEventListener('alpine:init', () => {
     window.Alpine.data('shopFilter', () => ({
