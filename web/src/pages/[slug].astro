@@ -5,7 +5,7 @@ import Tag from '../components/Tag.astro';
 import FlavorList from '../components/FlavorList.astro';
 import HighlightList from '../components/HighlightList.astro';
 import RatingCTA from '../components/RatingCTA.astro';
-import { getAllShops, getShopBySlug, formatOpeningHours, isShopOpen, resolveShopPhotos } from '../lib/data';
+import { getAllShops, getShopBySlug, formatOpeningHours, resolveShopPhotos } from '../lib/data';
 import { Star, ArrowLeft, Clock, MapPin, Phone, ExternalLink, Navigation, CreditCard, IceCreamCone, Sparkles } from 'lucide-astro';
 
 export async function getStaticPaths() {
@@ -37,7 +37,6 @@ if (shop.has_outdoor_seating) tags.push({ label: 'Terrasse', variant: 'default' 
 if (shop.has_coffee) tags.push({ label: 'Kaffee', variant: 'default' });
 
 const hoursEntries = formatOpeningHours(shop.opening_hours);
-const openNow = isShopOpen(shop.opening_hours);
 const editorialText = shop.our_review ?? shop.specialty ?? null;
 ---
 
@@ -96,13 +95,12 @@ const editorialText = shop.our_review ?? shop.specialty ?? null;
           <span class="text-choco-muted">{shop.price_per_scoop}/Kugel</span>
         )}
         <!-- Open status -->
-        {openNow !== null && (
-          <span class:list={[
-            'pill text-xs font-medium',
-            openNow ? 'bg-pistachio-bg text-pistachio' : 'bg-strawberry-bg text-strawberry',
-          ]}>
-            {openNow ? 'Geöffnet' : 'Geschlossen'}
-          </span>
+        {shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
+          <span
+            class="pill text-xs font-medium hidden"
+            data-open-status
+            data-periods={JSON.stringify(shop.opening_hours)}
+          />
         )}
       </div>
     </div>
@@ -203,3 +201,8 @@ const editorialText = shop.our_review ?? shop.specialty ?? null;
     </div>
   </article>
 </BaseLayout>
+
+<script>
+  import { renderAllOpenStatusPills } from '../scripts/open-status';
+  renderAllOpenStatusPills();
+</script>
