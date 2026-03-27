@@ -2,3 +2,6 @@ name = "eis-le"
 compatibility_date = "2026-03-12"
 workers_dev = true
 preview_urls = true
+
+[assets]
+html_handling = "drop-trailing-slash"
