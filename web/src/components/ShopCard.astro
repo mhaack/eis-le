@@ -53,6 +53,10 @@ if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
         <span class="pill text-xs font-medium bg-strawberry-bg text-strawberry">
           Vorübergehend geschlossen
         </span>
+      ) : shop.is_24h ? (
+        <span class="pill text-xs font-medium bg-pistachio-bg text-pistachio">
+          24h geöffnet
+        </span>
       ) : shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
         <span
           class="pill text-xs font-medium hidden"

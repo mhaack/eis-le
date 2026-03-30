@@ -2,11 +2,15 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ShopGrid from '../components/ShopGrid.astro';
 import LeafletMap from '../components/LeafletMap.astro';
-import { getDateNightShops, resolveShopPhotoMap } from '../lib/data';
-import { Heart, ArrowLeft } from 'lucide-astro';
+import { getDateNightShops, get24hShops, resolveShopPhotoMap } from '../lib/data';
+import { Heart, ArrowLeft, Clock } from 'lucide-astro';
 
-const shops = await getDateNightShops();
-const photoMap = await resolveShopPhotoMap(shops);
+const allDateNight = await getDateNightShops();
+const automaten = await get24hShops();
+const automatenIds = new Set(automaten.map(s => s.id));
+const shops = allDateNight.filter(s => !automatenIds.has(s.id));
+const allShops = [...shops, ...automaten];
+const photoMap = await resolveShopPhotoMap(allShops);
 ---
 
 <BaseLayout title="Date Night Eis in Leipzig — Romantische Eisdielen" description="Romantische Eisdielen für den perfekten Abend in Leipzig: Geöffnet nach 20 Uhr, mit Atmosphäre und gutem Eis.">
@@ -21,17 +25,27 @@ const photoMap = await resolveShopPhotoMap(shops);
         <Heart size={24} stroke-width={2} class="text-blueberry" />
       </div>
       <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-choco mb-4">
-        Zwei Kugeln, ein Abend, Leipzig
+        Eis zu zweit — die schönsten Abende in Leipzig
       </h1>
       <p class="text-lg text-choco-light leading-relaxed max-w-2xl">
-        Manchmal braucht man keinen Drei-Gänge-Abend, sondern nur den richtigen Ort und gutes Eis.
+        Ein warmer Abend, eine geteilte Waffel und der richtige Ort dazu. Ob gemütlich am Kanal, auf einer kleinen Terrasse oder beim Spaziergang durch die Südvorstadt — diese Eisdielen haben abends geöffnet und sorgen für den perfekten Rahmen.
       </p>
     </div>
 
     <div class="mb-10">
-      <LeafletMap shops={shops} height="300px" id="date-map" />
+      <LeafletMap shops={allShops} height="300px" id="date-map" />
     </div>
 
     <ShopGrid shops={shops} photoMap={photoMap} emptyMessage="Keine Abend-Eisdielen gefunden." />
+
+    {automaten.length > 0 && (
+      <div class="mt-12">
+        <h2 class="font-heading text-xl font-semibold text-choco mb-2 flex items-center gap-2">
+          <Clock size={20} stroke-width={2} class="text-choco-muted" /> Eisautomaten — rund um die Uhr
+        </h2>
+        <p class="text-sm text-choco-muted mb-6">Spontanes Verlangen nach Mitternacht? Diese Automaten sind immer für euch da.</p>
+        <ShopGrid shops={automaten} photoMap={photoMap} emptyMessage="" />
+      </div>
+    )}
   </section>
 </BaseLayout>

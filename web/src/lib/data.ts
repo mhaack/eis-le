@@ -183,6 +183,10 @@ export async function getDateNightShops(): Promise<Shop[]> {
   return fetchShops((q) => q.eq('open_after_8pm', true));
 }
 
+export async function get24hShops(): Promise<Shop[]> {
+  return fetchShops((q) => q.eq('is_24h', true));
+}
+
 export async function getBikeFriendlyShops(): Promise<Shop[]> {
   return fetchShops((q) => q.eq('has_bike_parking', true));
 }

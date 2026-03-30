@@ -100,6 +100,10 @@ const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
           <span class="pill text-xs font-medium bg-strawberry-bg text-strawberry">
             Vorübergehend geschlossen
           </span>
+        ) : shop.is_24h ? (
+          <span class="pill text-xs font-medium bg-pistachio-bg text-pistachio">
+            24h geöffnet
+          </span>
         ) : shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
           <span
             class="pill text-xs font-medium hidden"
@@ -155,6 +159,11 @@ const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
         {tempClosed && (
           <div class="rounded-xl bg-strawberry-bg px-3 py-2 mb-3">
             <p class="text-sm font-medium text-strawberry">Vorübergehend geschlossen</p>
+          </div>
+        )}
+        {shop.is_24h && !tempClosed && (
+          <div class="rounded-xl bg-pistachio-bg px-3 py-2 mb-3">
+            <p class="text-sm font-medium text-pistachio">24 Stunden geöffnet, 7 Tage die Woche</p>
           </div>
         )}
         <div class="space-y-2 flex-1">

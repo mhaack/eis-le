@@ -29,6 +29,7 @@ const photoMap = await resolveShopPhotoMap(shops);
             data-filter-bio={shop.is_organic ? 'true' : undefined}
             data-filter-kinder={shop.child_friendly ? 'true' : undefined}
             data-temp-closed={shop.google_business_status === 'CLOSED_TEMPORARILY' ? 'true' : undefined}
+            data-is-24h={shop.is_24h ? 'true' : undefined}
           >
             <ShopCard shop={shop} index={i} photoUrl={photoMap.get(shop.id)} />
           </div>
@@ -102,6 +103,8 @@ const photoMap = await resolveShopPhotoMap(shops);
           } else if (this.activeFilter === 'open') {
             if (card.hasAttribute('data-temp-closed')) {
               show = false;
+            } else if (card.hasAttribute('data-is-24h')) {
+              show = true;
             } else {
               try {
                 const periods = JSON.parse(card.dataset.periods || '[]');
