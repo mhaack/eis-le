@@ -1,5 +1,5 @@
 ---
-import { Clock, Leaf, Baby, Sprout } from 'lucide-astro';
+import { Clock, Leaf, Baby, Sprout, ArrowDownAZ, Star } from 'lucide-astro';
 
 const filters = [
   { key: 'alle', label: 'Alle', icon: null },
@@ -9,23 +9,42 @@ const filters = [
   { key: 'bio', label: 'Bio', icon: Sprout },
   { key: 'kinder', label: 'Kinderfreundlich', icon: Baby },
 ];
+
+const sorts = [
+  { key: 'name', label: 'A–Z', icon: ArrowDownAZ },
+  { key: 'rating', label: 'Bewertung', icon: Star },
+];
 ---
 
 <section class="max-w-[960px] mx-auto px-4 pb-8">
-  <div class="relative">
-    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-      {filters.map(f => (
+  <div class="flex items-center justify-between gap-4">
+    <div class="relative flex-1 min-w-0">
+      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        {filters.map(f => (
+          <button
+            @click={`activeFilter = '${f.key}'`}
+            :class={`activeFilter === '${f.key}' ? 'bg-choco text-creme' : 'bg-sand text-choco-muted hover:bg-choco/10'`}
+            class="pill text-sm font-medium transition-colors cursor-pointer shrink-0 inline-flex items-center gap-1.5"
+          >
+            {f.icon && <f.icon size={14} stroke-width={2} />}
+            {f.label}
+          </button>
+        ))}
+      </div>
+      <div class="fade-right pointer-events-none" aria-hidden="true"></div>
+    </div>
+    <div class="flex gap-1.5 shrink-0 pb-2">
+      {sorts.map(s => (
         <button
-          @click={`activeFilter = '${f.key}'`}
-          :class={`activeFilter === '${f.key}' ? 'bg-choco text-creme' : 'bg-sand text-choco-muted hover:bg-choco/10'`}
-          class="pill text-sm font-medium transition-colors cursor-pointer shrink-0 inline-flex items-center gap-1.5"
+          @click={`activeSort = '${s.key}'`}
+          :class={`activeSort === '${s.key}' ? 'bg-choco text-creme' : 'bg-sand text-choco-muted hover:bg-choco/10'`}
+          class="pill text-xs font-medium transition-colors cursor-pointer inline-flex items-center gap-1"
         >
-          {f.icon && <f.icon size={14} stroke-width={2} />}
-          {f.label}
+          {s.icon && <s.icon size={12} stroke-width={2} />}
+          {s.label}
         </button>
       ))}
     </div>
-    <div class="fade-right pointer-events-none" aria-hidden="true"></div>
   </div>
 </section>
 

@@ -22,6 +22,8 @@ const photoMap = await resolveShopPhotoMap(shops);
           <div
             class="shop-card-wrapper"
             data-periods={JSON.stringify(shop.opening_hours ?? [])}
+            data-name={shop.name}
+            data-rating={shop.google_rating ?? 0}
             data-filter-lvz={shop.lvz_rank ? 'true' : undefined}
             data-filter-vegan={shop.has_vegan_options ? 'true' : undefined}
             data-filter-bio={shop.is_organic ? 'true' : undefined}
@@ -45,9 +47,49 @@ const photoMap = await resolveShopPhotoMap(shops);
   document.addEventListener('alpine:init', () => {
     window.Alpine.data('shopFilter', () => ({
       activeFilter: 'alle',
+      activeSort: 'name',
       visibleCount: -1,
       init() {
-        this.$watch('activeFilter', () => this.applyFilter());
+        const ttl = 24 * 60 * 60 * 1000;
+        ['eis-sort', 'eis-filter'].forEach(key => {
+          const stored = localStorage.getItem(key);
+          if (!stored) return;
+          try {
+            const { value, expires } = JSON.parse(stored);
+            if (expires > Date.now()) {
+              if (key === 'eis-sort') this.activeSort = value;
+              else this.activeFilter = value;
+            } else {
+              localStorage.removeItem(key);
+            }
+          } catch { localStorage.removeItem(key); }
+        });
+        this.applySort();
+        this.$watch('activeFilter', () => {
+          localStorage.setItem('eis-filter', JSON.stringify({
+            value: this.activeFilter,
+            expires: Date.now() + ttl,
+          }));
+          this.applyFilter();
+        });
+        this.$watch('activeSort', () => {
+          localStorage.setItem('eis-sort', JSON.stringify({
+            value: this.activeSort,
+            expires: Date.now() + ttl,
+          }));
+          this.applySort();
+        });
+      },
+      applySort() {
+        const grid = this.$refs.grid;
+        const cards = [...grid.querySelectorAll('.shop-card-wrapper')];
+        if (this.activeSort === 'name') {
+          cards.sort((a, b) => a.dataset.name.localeCompare(b.dataset.name, 'de'));
+        } else if (this.activeSort === 'rating') {
+          cards.sort((a, b) => parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating));
+        }
+        cards.forEach(card => grid.appendChild(card));
+        this.applyFilter();
       },
       applyFilter() {
         const cards = this.$refs.grid.querySelectorAll('.shop-card-wrapper');
