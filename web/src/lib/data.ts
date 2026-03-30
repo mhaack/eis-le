@@ -116,6 +116,8 @@ export interface Shop {
   highlights: { icon: string; title: string; text: string }[] | null;
   specialty: string;
   payment_methods: string[];
+  google_business_status: string | null;
+  is_24h: boolean;
   listing_status: 'published' | 'draft' | 'archived';
 }
 

@@ -28,6 +28,7 @@ const photoMap = await resolveShopPhotoMap(shops);
             data-filter-vegan={shop.has_vegan_options ? 'true' : undefined}
             data-filter-bio={shop.is_organic ? 'true' : undefined}
             data-filter-kinder={shop.child_friendly ? 'true' : undefined}
+            data-temp-closed={shop.google_business_status === 'CLOSED_TEMPORARILY' ? 'true' : undefined}
           >
             <ShopCard shop={shop} index={i} photoUrl={photoMap.get(shop.id)} />
           </div>
@@ -99,10 +100,14 @@ const photoMap = await resolveShopPhotoMap(shops);
           if (this.activeFilter === 'alle') {
             show = true;
           } else if (this.activeFilter === 'open') {
-            try {
-              const periods = JSON.parse(card.dataset.periods || '[]');
-              show = isOpenNow(periods);
-            } catch { show = false; }
+            if (card.hasAttribute('data-temp-closed')) {
+              show = false;
+            } else {
+              try {
+                const periods = JSON.parse(card.dataset.periods || '[]');
+                show = isOpenNow(periods);
+              } catch { show = false; }
+            }
           } else {
             show = card.hasAttribute(`data-filter-${this.activeFilter}`);
           }

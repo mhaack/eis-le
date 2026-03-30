@@ -274,7 +274,7 @@
                   <input type="text" :value="selected.price_level ?? '—'" readonly>
                 </div>
               </div>
-              <div class="field-row">
+              <div class="field-row-3">
                 <div class="field field-readonly">
                   <label>Zuletzt gescraped</label>
                   <input type="text" :value="fmtDate(selected.last_scraped_at)" readonly>
@@ -282,6 +282,10 @@
                 <div class="field field-readonly">
                   <label>Daten geaendert am</label>
                   <input type="text" :value="fmtDate(selected.data_changed_at)" readonly>
+                </div>
+                <div class="field field-readonly">
+                  <label>Business Status</label>
+                  <input type="text" :value="selected.google_business_status ?? '—'" readonly>
                 </div>
               </div>
             </div>
@@ -477,10 +481,18 @@
                   </select>
                 </div>
               </div>
-              <div class="field-row">
+              <div class="field-row-3">
                 <div class="field">
                   <label>Nach 20 Uhr geoeffnet</label>
                   <select x-model="selected.open_after_8pm">
+                    <option value="">— unbekannt —</option>
+                    <option value="true">Ja</option>
+                    <option value="false">Nein</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>24h / 7 Tage</label>
+                  <select x-model="selected.is_24h">
                     <option value="">— unbekannt —</option>
                     <option value="true">Ja</option>
                     <option value="false">Nein</option>
@@ -678,7 +690,7 @@
           'child_friendly', 'has_indoor_seating', 'has_outdoor_seating',
           'is_handmade', 'has_waffle_cones', 'has_sundaes', 'has_pastry',
           'has_vegan_options', 'fully_vegan', 'has_lactose_free', 'has_gluten_free',
-          'is_organic', 'open_after_8pm', 'has_coffee',
+          'is_organic', 'open_after_8pm', 'is_24h', 'has_coffee',
           'has_car_parking', 'has_bike_parking', 'near_public_transport'
         ],
 
@@ -692,7 +704,7 @@
         _readonlyFields: [
           'id', 'google_place_id', 'slug', 'created_at', 'updated_at',
           'last_scraped_at', 'data_changed_at', 'google_rating',
-          'google_review_count', 'price_level', 'google_maps_url', 'neighborhood'
+          'google_review_count', 'price_level', 'google_maps_url', 'google_business_status', 'neighborhood'
         ],
 
         init() {

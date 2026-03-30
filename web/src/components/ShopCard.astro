@@ -13,6 +13,7 @@ interface Props {
 const { shop, index = 0, photoUrl } = Astro.props;
 
 const stars = Math.round(shop.google_rating);
+const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
 
 const tags: { label: string; variant: 'pistachio' | 'strawberry' | 'vanilla' | 'blueberry' | 'mango' | 'default' }[] = [];
 if (shop.has_vegan_options) tags.push({ label: 'Vegan', variant: 'pistachio' });
@@ -36,7 +37,7 @@ if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
     <img
       src={photoUrl || 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop'}
       alt={shop.name}
-      class="w-full h-full object-cover"
+      class:list={['w-full h-full object-cover', tempClosed && 'grayscale']}
       loading="lazy"
     />
     <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
@@ -47,15 +48,19 @@ if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
       </div>
     )}
 
-    {shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
-      <div class="absolute top-3 right-3">
+    <div class="absolute top-3 right-3">
+      {tempClosed ? (
+        <span class="pill text-xs font-medium bg-strawberry-bg text-strawberry">
+          Vorübergehend geschlossen
+        </span>
+      ) : shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
         <span
           class="pill text-xs font-medium hidden"
           data-open-status
           data-periods={JSON.stringify(shop.opening_hours)}
         />
-      </div>
-    )}
+      )}
+    </div>
   </div>
 
   <!-- Content -->

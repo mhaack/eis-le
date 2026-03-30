@@ -28,7 +28,7 @@ const searchNew = process.argv.includes('--search-new');
 async function updateExistingShops() {
   const { data: shops, error } = await supabase
     .from('shops')
-    .select('id, name, google_place_id, google_rating, opening_hours')
+    .select('id, name, google_place_id, google_rating, opening_hours, is_24h')
     .not('google_place_id', 'is', null)
     .not('listing_status', 'in', '("archived","ignored")');
 
@@ -49,9 +49,19 @@ async function updateExistingShops() {
     const changes = detectChanges(shop, fresh);
     allChanges.push(...changes);
 
+    const mapped = mapPlaceToShop(fresh);
+
+    // Preserve manual is_24h override: if already true but Google disagrees, keep it
+    if (shop.is_24h && !mapped.is_24h) {
+      delete mapped.is_24h;
+    }
+
     const update = {
-      ...mapPlaceToShop(fresh),
+      ...mapped,
       ...(changes.length > 0 ? { data_changed_at: new Date().toISOString() } : {}),
+      ...(mapped.google_business_status === 'CLOSED_PERMANENTLY'
+        ? { listing_status: 'archived' }
+        : {}),
     };
 
     const { error: updateError } = await supabase
@@ -61,6 +71,8 @@ async function updateExistingShops() {
 
     if (updateError) {
       console.error(`  Update failed for ${shop.name}: ${updateError.message}`);
+    } else if (mapped.google_business_status === 'CLOSED_PERMANENTLY') {
+      console.log(`  [ARCHIVED] ${shop.name}: permanently closed per Google`);
     } else if (changes.length > 0) {
       console.log(`  [CHANGED] ${shop.name}: ${changes.map((c) => c.field).join(', ')}`);
     } else {

@@ -60,6 +60,19 @@ export function calcOpenAfter8pm(periods) {
 }
 
 /**
+ * Returns true if the shop is open 24 hours, 7 days a week.
+ * Google signals 24h operation with a period that has no close object.
+ * A true 24/7 shop has such a period covering every day of the week.
+ */
+export function calcIs24h(periods) {
+  if (!periods?.length) return false;
+  const alwaysOpenDays = new Set(
+    periods.filter((p) => !p.close).map((p) => p.open.day)
+  );
+  return alwaysOpenDays.size === 7;
+}
+
+/**
  * Derives payment_methods text[] from paymentOptions object.
  */
 function mapPaymentMethods(opts) {
@@ -120,10 +133,12 @@ export function mapPlaceToShop(details, { slug } = {}) {
     price_level: details.priceLevel ?? null,
     opening_hours: periods,
     photos: details.photos?.slice(0, 5).map((p) => p.name) ?? null,
+    google_business_status: details.businessStatus ?? 'OPERATIONAL',
     last_scraped_at: new Date().toISOString(),
 
     // Calculated from opening hours
     open_after_8pm: calcOpenAfter8pm(periods),
+    is_24h: calcIs24h(periods),
 
     // Family
     child_friendly: details.goodForChildren ?? null,

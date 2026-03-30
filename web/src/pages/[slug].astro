@@ -38,6 +38,7 @@ if (shop.has_coffee) tags.push({ label: 'Kaffee', variant: 'default' });
 
 const hoursEntries = formatOpeningHours(shop.opening_hours);
 const editorialText = shop.our_review ?? shop.specialty ?? null;
+const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
 ---
 
 <BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}, Leipzig`} description={shop.specialty}>
@@ -54,7 +55,7 @@ const editorialText = shop.our_review ?? shop.specialty ?? null;
       <img
         src={photos[0]}
         alt={shop.name}
-        class="w-full h-full object-cover"
+        class:list={['w-full h-full object-cover', tempClosed && 'grayscale']}
       />
       <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
 
@@ -95,7 +96,11 @@ const editorialText = shop.our_review ?? shop.specialty ?? null;
           <span class="text-choco-muted">{shop.price_per_scoop}/Kugel</span>
         )}
         <!-- Open status -->
-        {shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
+        {tempClosed ? (
+          <span class="pill text-xs font-medium bg-strawberry-bg text-strawberry">
+            Vorübergehend geschlossen
+          </span>
+        ) : shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
           <span
             class="pill text-xs font-medium hidden"
             data-open-status
@@ -147,6 +152,11 @@ const editorialText = shop.our_review ?? shop.specialty ?? null;
         <h3 class="font-heading text-lg font-semibold text-choco mb-3 flex items-center gap-2">
           <Clock size={18} stroke-width={2} class="text-choco-muted" /> Öffnungszeiten
         </h3>
+        {tempClosed && (
+          <div class="rounded-xl bg-strawberry-bg px-3 py-2 mb-3">
+            <p class="text-sm font-medium text-strawberry">Vorübergehend geschlossen</p>
+          </div>
+        )}
         <div class="space-y-2 flex-1">
           {hoursEntries.map(([day, hours]) => (
             <div class="flex justify-between text-sm">

@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ShopGrid from '../components/ShopGrid.astro';
 import LeafletMap from '../components/LeafletMap.astro';
 import { getDateNightShops, resolveShopPhotoMap } from '../lib/data';
-import { Moon, ArrowLeft } from 'lucide-astro';
+import { Heart, ArrowLeft } from 'lucide-astro';
 
 const shops = await getDateNightShops();
 const photoMap = await resolveShopPhotoMap(shops);
@@ -18,7 +18,7 @@ const photoMap = await resolveShopPhotoMap(shops);
     </div>
     <div class="mb-8 animate-fade-up">
       <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blueberry-bg mb-4">
-        <Moon size={24} stroke-width={2} class="text-blueberry" />
+        <Heart size={24} stroke-width={2} class="text-blueberry" />
       </div>
       <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-choco mb-4">
         Zwei Kugeln, ein Abend, Leipzig
