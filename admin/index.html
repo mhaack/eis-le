@@ -671,7 +671,8 @@
     const SUPABASE_URL = 'https://itzvyiwotjxywkpesznj.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_0DRMyRB6FIq14NXoMJj0Xw_-sPgOaEu';
 
-    const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { createClient } = window.supabase;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Thin wrapper so the Alpine component stays readable
     const api = {
