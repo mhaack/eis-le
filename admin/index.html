@@ -727,7 +727,7 @@
         listLoading: false,
         filterStatus: '',
         filterSearch: '',
-        selected: null,
+        selected: {},
         saving: false,
         saveError: null,
         saveSuccess: false,
@@ -794,7 +794,7 @@
           this.view = 'login';
           this.shops = [];
           this.neighborhoods = [];
-          this.selected = null;
+          this.selected = {};
         },
 
         async loadData() {
@@ -856,7 +856,7 @@
 
         back() {
           this.view = 'list';
-          this.selected = null;
+          this.selected = {};
         },
 
         async save() {
