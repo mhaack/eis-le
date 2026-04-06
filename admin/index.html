@@ -110,6 +110,21 @@
 </head>
 <body x-data="adminApp()" @keydown.meta.s.window.prevent="view === 'detail' && save()" @keydown.ctrl.s.window.prevent="view === 'detail' && save()">
 
+  <!-- On-page error display for debugging (no console needed) -->
+  <div id="js-error" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#c0392b;color:#fff;padding:16px 20px;font-family:monospace;font-size:13px;white-space:pre-wrap;word-break:break-all"></div>
+  <script>
+    window.onerror = function(msg, src, line, col, err) {
+      var el = document.getElementById('js-error');
+      el.textContent = (err ? err.stack : msg) || msg;
+      el.style.display = 'block';
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      var el = document.getElementById('js-error');
+      el.textContent = (e.reason && e.reason.stack) ? e.reason.stack : String(e.reason);
+      el.style.display = 'block';
+    });
+  </script>
+
   <!-- LOGIN VIEW — visible by default, no x-cloak so it shows even if Alpine fails -->
   <div x-show="view === 'login'">
     <div class="login-wrap">
