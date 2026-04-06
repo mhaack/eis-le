@@ -110,8 +110,8 @@
 </head>
 <body x-data="adminApp()" @keydown.meta.s.window.prevent="view === 'detail' && save()" @keydown.ctrl.s.window.prevent="view === 'detail' && save()">
 
-  <!-- LOGIN VIEW -->
-  <div x-show="view === 'login'" x-cloak>
+  <!-- LOGIN VIEW — visible by default, no x-cloak so it shows even if Alpine fails -->
+  <div x-show="view === 'login'">
     <div class="login-wrap">
       <div class="login-card">
         <h2>eisleipzig Admin</h2>
@@ -671,8 +671,13 @@
     const SUPABASE_URL = 'https://itzvyiwotjxywkpesznj.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_0DRMyRB6FIq14NXoMJj0Xw_-sPgOaEu';
 
-    const { createClient } = window.supabase;
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let supabase;
+    try {
+      const { createClient } = window.supabase;
+      supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (e) {
+      console.error('Supabase init failed:', e);
+    }
 
     // Thin wrapper so the Alpine component stays readable
     const api = {
@@ -741,10 +746,15 @@
         ],
 
         async init() {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            this.view = 'list';
-            await this.loadData();
+          if (!supabase) return;
+          try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+              this.view = 'list';
+              await this.loadData();
+            }
+          } catch (e) {
+            console.error('Session check failed:', e);
           }
         },
 
