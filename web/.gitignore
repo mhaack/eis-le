@@ -1,6 +1,6 @@
 # build output
 dist/
-public/admin/
+public/admin.html
 # generated types
 .astro/
 
