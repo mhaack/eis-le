@@ -7,7 +7,9 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm run build:admin && npm run build:frontend",
+    "build:frontend": "astro build",
+    "build:admin": "mkdir -p public/admin && cp ../admin/index.html public/admin/index.html",
     "preview": "astro preview",
     "astro": "astro"
   },
