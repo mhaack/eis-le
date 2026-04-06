@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>eisleipzig Admin</title>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script defer crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+  <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     :root {
       --bg: #faf8f5;
@@ -115,7 +115,7 @@
   <script>
     window.onerror = function(msg, src, line, col, err) {
       var el = document.getElementById('js-error');
-      el.textContent = (err ? err.stack : msg) || msg;
+      el.textContent = (err && err.stack) ? err.stack : (msg + '\n' + src + ':' + line + ':' + col);
       el.style.display = 'block';
     };
     window.addEventListener('unhandledrejection', function(e) {
