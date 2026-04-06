@@ -123,6 +123,14 @@
       el.textContent = (e.reason && e.reason.stack) ? e.reason.stack : String(e.reason);
       el.style.display = 'block';
     });
+    // Capture Alpine expression errors before they are re-thrown via setTimeout
+    document.addEventListener('alpine:init', function() {
+      Alpine.onError(function(error, el, expression) {
+        var errEl = document.getElementById('js-error');
+        errEl.textContent = 'Alpine error in expression: ' + expression + '\n' + (error.stack || error.message);
+        errEl.style.display = 'block';
+      });
+    });
   </script>
 
   <!-- LOGIN VIEW — visible by default, no x-cloak so it shows even if Alpine fails -->
