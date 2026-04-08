@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getNeighborhoods } from '../lib/data';
+import { MapPin, ArrowLeft, ArrowRight } from 'lucide-astro';
+
+const neighborhoods = await getNeighborhoods();
+---
+
+<BaseLayout title="Eisdielen in Leipzigs Stadtteilen" description="Entdecke die besten Eisdielen in Leipzig nach Stadtteil: Connewitz, Südvorstadt, Plagwitz, Gohlis und mehr." canonical="https://eis-le.de/stadtteile">
+  <section class="max-w-[960px] mx-auto px-4 py-8">
+    <div class="mb-2">
+      <a href="/" class="text-sm text-blueberry hover:text-choco transition-colors inline-flex items-center gap-1">
+        <ArrowLeft size={14} stroke-width={2} /> Alle Eisdielen
+      </a>
+    </div>
+    <div class="mb-8 animate-fade-up">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-sand mb-4">
+        <MapPin size={24} stroke-width={2} class="text-choco-muted" />
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-choco mb-4">
+        Eisdielen in Leipzigs Stadtteilen
+      </h1>
+      <p class="text-lg text-choco-light leading-relaxed max-w-2xl">
+        Von Connewitz bis Gohlis, von Plagwitz bis zur Südvorstadt — Leipzigs Eisdielen warten in jedem Viertel. Finde die besten Kugeln in deiner Nachbarschaft.
+      </p>
+    </div>
+
+    {neighborhoods.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {neighborhoods.map(n => (
+          <a
+            href={`/stadtteil/${n.slug}`}
+            class="card block p-5 no-underline group"
+          >
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <h2 class="font-heading text-xl font-semibold text-choco group-hover:text-blueberry transition-colors">
+                {n.name}
+              </h2>
+              <ArrowRight size={18} stroke-width={2} class="text-choco-muted group-hover:text-blueberry group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
+            </div>
+            <p class="text-sm text-choco-muted mb-2">
+              {n.count} {n.count === 1 ? 'Eisdiele' : 'Eisdielen'}
+            </p>
+            {n.description && (
+              <p class="text-sm text-choco-light leading-relaxed line-clamp-3">
+                {n.description}
+              </p>
+            )}
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="text-choco-muted">Noch keine Stadtteile erfasst.</p>
+    )}
+  </section>
+</BaseLayout>

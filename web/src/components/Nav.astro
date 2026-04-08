@@ -6,8 +6,16 @@ const currentPath = Astro.url.pathname;
 const links = [
   { href: '/', label: 'Entdecken' },
   { href: '/karte', label: 'Karte' },
+  { href: '/stadtteile', label: 'Stadtteile' },
   // { href: '/beste-eisdielen-lvz', label: 'LVZ-Ranking' },
 ];
+
+function isActive(href: string): boolean {
+  if (currentPath === href) return true;
+  // Highlight "Stadtteile" on individual /stadtteil/[slug] detail pages too.
+  if (href === '/stadtteile' && currentPath.startsWith('/stadtteil/')) return true;
+  return false;
+}
 ---
 
 <header class="sticky top-0 z-50 bg-creme/90 backdrop-blur-md border-b border-border">
@@ -25,7 +33,7 @@ const links = [
           href={link.href}
           class:list={[
             'text-sm font-medium transition-colors',
-            currentPath === link.href
+            isActive(link.href)
               ? 'text-choco'
               : 'text-choco-muted hover:text-choco',
           ]}
@@ -66,7 +74,7 @@ const links = [
           href={link.href}
           class:list={[
             'text-sm font-medium py-1',
-            currentPath === link.href
+            isActive(link.href)
               ? 'text-choco'
               : 'text-choco-muted hover:text-choco',
           ]}
