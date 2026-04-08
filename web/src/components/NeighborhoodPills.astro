@@ -1,0 +1,35 @@
+---
+import { MapPin } from 'lucide-astro';
+import type { Neighborhood } from '../lib/data';
+
+interface Props {
+  neighborhoods: Neighborhood[];
+  excludeSlug?: string;
+  ariaLabel?: string;
+}
+
+const { neighborhoods, excludeSlug, ariaLabel = 'Stadtteile' } = Astro.props;
+
+const visible = excludeSlug
+  ? neighborhoods.filter(n => n.slug !== excludeSlug)
+  : neighborhoods;
+---
+
+{visible.length > 0 && (
+  <nav aria-label={ariaLabel}>
+    <ul class="flex flex-wrap justify-center gap-2.5 list-none p-0 m-0">
+      {visible.map(n => (
+        <li>
+          <a
+            href={`/stadtteil/${n.slug}`}
+            class="pill text-sm font-medium no-underline transition-colors inline-flex items-center gap-1.5 border border-choco-muted text-choco-muted hover:bg-choco-muted/10"
+          >
+            <MapPin size={14} stroke-width={2} />
+            <span>{n.name}</span>
+            <span class="opacity-60">({n.count})</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
