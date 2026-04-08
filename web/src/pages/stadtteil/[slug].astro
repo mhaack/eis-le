@@ -20,7 +20,7 @@ const shops = await getShopsByNeighborhood(slug!);
 const photoMap = await resolveShopPhotoMap(shops);
 ---
 
-<BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={`Die besten Eisdielen in ${name}, Leipzig. Finde dein Eis im Viertel.`}>
+<BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={`Die besten Eisdielen in ${name}, Leipzig. Finde dein Eis im Viertel.`} canonical={`https://eis-le.de/stadtteil/${slug}`}>
   <section class="max-w-[960px] mx-auto px-4 py-8">
     <div class="mb-2">
       <a href="/" class="text-sm text-blueberry hover:text-choco transition-colors inline-flex items-center gap-1">

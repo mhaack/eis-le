@@ -6,9 +6,10 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title: string;
   description?: string;
+  canonical?: string;
 }
 
-const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewertungen, Öffnungszeiten und Geheimtipps.' } = Astro.props;
+const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewertungen, Öffnungszeiten und Geheimtipps.', canonical } = Astro.props;
 ---
 
 <!doctype html>
@@ -24,6 +25,7 @@ const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewe
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#FDF8EF">
     <title>{title}</title>
+    {canonical && <link rel="canonical" href={canonical} />}
     <script defer src="https://p.eis-le.de/static/files/pa.js"
       id="pianjs"
       data-hit-endpoint="https://p.eis-le.de/pv"
