@@ -41,7 +41,7 @@ const editorialText = shop.our_review ?? shop.specialty ?? null;
 const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
 ---
 
-<BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}, Leipzig`} description={shop.specialty}>
+<BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}, Leipzig`} description={shop.specialty} canonical={`https://eis-le.de/${shop.slug}`}>
   <article class="max-w-[960px] mx-auto px-4 py-6">
     <!-- Back nav -->
     <div class="mb-4">
