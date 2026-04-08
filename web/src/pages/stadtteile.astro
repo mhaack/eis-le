@@ -1,14 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import LeafletMap from '../components/LeafletMap.astro';
-import { getAllShops, getNeighborhoods } from '../lib/data';
+import { getNeighborhoods } from '../lib/data';
 import { MapPin, ArrowLeft, ArrowRight } from 'lucide-astro';
 
 const neighborhoods = await getNeighborhoods();
-const shops = await getAllShops();
 ---
 
-<BaseLayout title="Eis nach Stadtteil — Eisdielen in Leipzig" description="Entdecke die besten Eisdielen in Leipzig nach Stadtteil: Connewitz, Südvorstadt, Plagwitz, Gohlis und mehr." canonical="https://eis-le.de/stadtteile">
+<BaseLayout title="Eisdielen in Leipzigs Stadtteilen" description="Entdecke die besten Eisdielen in Leipzig nach Stadtteil: Connewitz, Südvorstadt, Plagwitz, Gohlis und mehr." canonical="https://eis-le.de/stadtteile">
   <section class="max-w-[960px] mx-auto px-4 py-8">
     <div class="mb-2">
       <a href="/" class="text-sm text-blueberry hover:text-choco transition-colors inline-flex items-center gap-1">
@@ -20,18 +18,12 @@ const shops = await getAllShops();
         <MapPin size={24} stroke-width={2} class="text-choco-muted" />
       </div>
       <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-choco mb-4">
-        Eis nach Stadtteil
+        Eisdielen in Leipzigs Stadtteilen
       </h1>
       <p class="text-lg text-choco-light leading-relaxed max-w-2xl">
         Von Connewitz bis Gohlis, von Plagwitz bis zur Südvorstadt — Leipzigs Eisdielen warten in jedem Viertel. Finde die besten Kugeln in deiner Nachbarschaft.
       </p>
     </div>
-
-    {shops.length > 0 && (
-      <div class="mb-10">
-        <LeafletMap shops={shops} height="300px" id="stadtteile-map" />
-      </div>
-    )}
 
     {neighborhoods.length > 0 ? (
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
