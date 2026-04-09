@@ -39,9 +39,75 @@ if (shop.has_coffee) tags.push({ label: 'Kaffee', variant: 'default' });
 const hoursEntries = formatOpeningHours(shop.opening_hours);
 const editorialText = shop.our_review ?? shop.specialty ?? null;
 const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
+
+// JSON-LD structured data
+const SCHEMA_DAY_URLS = [
+  'https://schema.org/Sunday',
+  'https://schema.org/Monday',
+  'https://schema.org/Tuesday',
+  'https://schema.org/Wednesday',
+  'https://schema.org/Thursday',
+  'https://schema.org/Friday',
+  'https://schema.org/Saturday',
+];
+const PRICE_RANGE = ['', '€', '€€', '€€€', '€€€€'];
+
+type Period = {
+  open: { day: number; hour: number; minute: number };
+  close?: { day: number; hour: number; minute: number };
+};
+
+function toHHMM(hour: number, minute: number) {
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+const openingHoursSpecification = shop.opening_hours?.map((p) => {
+  const period = p as unknown as Period;
+  return {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: SCHEMA_DAY_URLS[period.open.day],
+    opens: toHHMM(period.open.hour, period.open.minute),
+    closes: period.close ? toHHMM(period.close.hour, period.close.minute) : '23:59',
+  };
+});
+
+const jsonLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'IceCreamShop',
+  name: shop.name,
+  url: `https://eis-le.de/${shop.slug}`,
+  image: photos[0],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: shop.address,
+    addressLocality: shop.city ?? 'Leipzig',
+    addressCountry: 'DE',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: shop.latitude,
+    longitude: shop.longitude,
+  },
+  servesCuisine: 'Eis',
+};
+
+if (shop.phone) jsonLd.telephone = shop.phone;
+if (shop.website) jsonLd.sameAs = shop.website;
+if (shop.google_maps_url) jsonLd.hasMap = shop.google_maps_url;
+if (shop.price_level) jsonLd.priceRange = PRICE_RANGE[shop.price_level];
+if (openingHoursSpecification?.length) jsonLd.openingHoursSpecification = openingHoursSpecification;
+if (shop.google_rating && shop.google_review_count) {
+  jsonLd.aggregateRating = {
+    '@type': 'AggregateRating',
+    ratingValue: shop.google_rating,
+    reviewCount: shop.google_review_count,
+    bestRating: 5,
+    worstRating: 1,
+  };
+}
 ---
 
-<BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}, Leipzig`} description={shop.specialty} canonical={`https://eis-le.de/${shop.slug}`} image={photos[0]}>
+<BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}, Leipzig`} description={shop.specialty} canonical={`https://eis-le.de/${shop.slug}`} image={photos[0]} jsonLd={jsonLd}>
   <article class="max-w-[960px] mx-auto px-4 py-6">
     <!-- Back nav -->
     <div class="mb-4">
