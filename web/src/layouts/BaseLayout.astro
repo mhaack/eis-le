@@ -8,9 +8,10 @@ interface Props {
   description?: string;
   canonical?: string;
   image?: string;
+  jsonLd?: Record<string, unknown>;
 }
 
-const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewertungen, Öffnungszeiten und Geheimtipps.', canonical, image } = Astro.props;
+const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewertungen, Öffnungszeiten und Geheimtipps.', canonical, image, jsonLd } = Astro.props;
 ---
 
 <!doctype html>
@@ -39,6 +40,7 @@ const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewe
     <meta name="theme-color" content="#FDF8EF">
     <title>{title}</title>
     {canonical && <link rel="canonical" href={canonical} />}
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/<\/script>/gi, '<\\/script>')} />}
     <script defer src="https://p.eis-le.de/static/files/pa.js"
       id="pianjs"
       data-hit-endpoint="https://p.eis-le.de/pv"
