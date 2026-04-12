@@ -16,20 +16,21 @@ export async function getStaticPaths() {
       longitude: n.longitude,
       description: n.description,
       short_description: n.short_description,
+      allNeighborhoods: neighborhoods,
     },
   }));
 }
 
 const { slug } = Astro.params;
-const { name, latitude, longitude, description, short_description } = Astro.props;
+const { name, latitude, longitude, description, short_description, allNeighborhoods } = Astro.props;
+const seoDescription = short_description ?? `Die besten Eisdielen in ${name}, Leipzig. Finde dein Eis im Viertel.`;
 const center = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 const shops = await getShopsByNeighborhood(slug!);
 const photoMap = await resolveShopPhotoMap(shops);
-const allNeighborhoods = await getNeighborhoods();
-const hasOtherNeighborhoods = allNeighborhoods.some(n => n.slug !== slug);
+const hasOtherNeighborhoods = allNeighborhoods.some((n: { slug: string }) => n.slug !== slug);
 ---
 
-<BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={short_description ?? `Die besten Eisdielen in ${name}, Leipzig. Finde dein Eis im Viertel.`} canonical={`https://eis-le.de/stadtteil/${slug}`} image={shops[0] ? photoMap.get(shops[0].id) : undefined}>
+<BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={seoDescription} canonical={`https://eis-le.de/stadtteil/${slug}`} image={shops[0] ? photoMap.get(shops[0].id) : undefined}>
   <section class="max-w-[960px] mx-auto px-4 py-8">
     <div class="mb-2">
       <a href="/stadtteile" class="text-sm text-blueberry hover:text-choco transition-colors inline-flex items-center gap-1">
