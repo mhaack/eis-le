@@ -213,13 +213,14 @@ export interface Neighborhood {
   latitude: number | null;
   longitude: number | null;
   description: string | null;
+  short_description: string | null;
   count: number;
 }
 
 export async function getNeighborhoods(): Promise<Neighborhood[]> {
   const { data: neighborhoods, error } = await supabase
     .from('neighborhoods')
-    .select('name, slug, latitude, longitude, description')
+    .select('name, slug, latitude, longitude, description, short_description')
     .order('name');
 
   if (error || !neighborhoods) return [];
@@ -232,7 +233,7 @@ export async function getNeighborhoods(): Promise<Neighborhood[]> {
   }
 
   return neighborhoods
-    .map(n => ({ name: n.name, slug: n.slug, latitude: n.latitude, longitude: n.longitude, description: n.description, count: counts.get(n.slug) ?? 0 }))
+    .map(n => ({ name: n.name, slug: n.slug, latitude: n.latitude, longitude: n.longitude, description: n.description, short_description: n.short_description, count: counts.get(n.slug) ?? 0 }))
     .filter(n => n.count > 0)
     .sort((a, b) => a.name.localeCompare(b.name, 'de'));
 }
