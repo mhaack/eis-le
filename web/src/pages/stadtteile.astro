@@ -41,9 +41,9 @@ const neighborhoods = await getNeighborhoods();
             <p class="text-sm text-choco-muted mb-2">
               {n.count} {n.count === 1 ? 'Eisdiele' : 'Eisdielen'}
             </p>
-            {n.description && (
+            {(n.short_description ?? n.description) && (
               <p class="text-sm text-choco-light leading-relaxed line-clamp-3">
-                {n.description}
+                {n.short_description ?? n.description}
               </p>
             )}
           </a>

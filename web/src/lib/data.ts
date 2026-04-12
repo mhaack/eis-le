@@ -218,22 +218,28 @@ export interface Neighborhood {
 }
 
 export async function getNeighborhoods(): Promise<Neighborhood[]> {
-  const { data: neighborhoods, error } = await supabase
-    .from('neighborhoods')
-    .select('name, slug, latitude, longitude, description, short_description')
-    .order('name');
+  const [{ data: neighborhoods, error }, { data: shopRows }] = await Promise.all([
+    supabase
+      .from('neighborhoods')
+      .select('id, name, slug, latitude, longitude, description, short_description')
+      .order('name'),
+    supabase
+      .from('shops')
+      .select('neighborhood_id')
+      .eq('listing_status', 'published'),
+  ]);
 
   if (error || !neighborhoods) return [];
 
-  const shops = await getAllShops();
   const counts = new Map<string, number>();
-  for (const shop of shops) {
-    const slug = shop.neighborhood?.slug;
-    if (slug) counts.set(slug, (counts.get(slug) ?? 0) + 1);
+  for (const shop of shopRows ?? []) {
+    if (shop.neighborhood_id) {
+      counts.set(shop.neighborhood_id, (counts.get(shop.neighborhood_id) ?? 0) + 1);
+    }
   }
 
   return neighborhoods
-    .map(n => ({ name: n.name, slug: n.slug, latitude: n.latitude, longitude: n.longitude, description: n.description, short_description: n.short_description, count: counts.get(n.slug) ?? 0 }))
+    .map(({ id, ...n }) => ({ ...n, count: counts.get(id) ?? 0 }))
     .filter(n => n.count > 0)
     .sort((a, b) => a.name.localeCompare(b.name, 'de'));
 }
