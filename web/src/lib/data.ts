@@ -119,6 +119,8 @@ export interface Shop {
   google_business_status: string | null;
   is_24h: boolean;
   listing_status: 'published' | 'draft' | 'archived';
+  instagram_url: string | null;
+  facebook_url: string | null;
 }
 
 // Base query: only published shops, sorted by LVZ rank first, then rating
