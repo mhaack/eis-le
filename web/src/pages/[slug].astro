@@ -1,312 +1,671 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import LVZBadge from '../components/LVZBadge.astro';
-import Tag from '../components/Tag.astro';
 import FlavorList from '../components/FlavorList.astro';
 import HighlightList from '../components/HighlightList.astro';
 import RatingCTA from '../components/RatingCTA.astro';
 import { getAllShops, getShopBySlug, formatOpeningHours, resolveShopPhotos } from '../lib/data';
-import { Star, ArrowLeft, Clock, MapPin, Phone, Globe, Navigation, CreditCard, IceCreamCone, Sparkles } from 'lucide-astro';
+import { Globe, Phone, Navigation, CreditCard } from 'lucide-astro';
 
 export async function getStaticPaths() {
   const shops = await getAllShops();
-  return shops.map(shop => ({
-    params: { slug: shop.slug },
-  }));
+  return shops.map(shop => ({ params: { slug: shop.slug } }));
 }
 
 const { slug } = Astro.params;
 const shop = await getShopBySlug(slug!);
+if (!shop) return Astro.redirect('/');
 
-if (!shop) {
-  return Astro.redirect('/');
-}
-
-const stars = Math.round(shop.google_rating);
 const photos = await resolveShopPhotos(shop.photos);
-
-// Build tags
-const tags: { label: string; variant: 'pistachio' | 'strawberry' | 'vanilla' | 'blueberry' | 'mango' | 'default' }[] = [];
-if (shop.has_vegan_options) tags.push({ label: shop.fully_vegan ? 'Voll vegan' : 'Vegane Optionen', variant: 'pistachio' });
-if (shop.child_friendly) tags.push({ label: 'Kinderfreundlich', variant: 'mango' });
-if (shop.has_bike_parking) tags.push({ label: 'Fahrradstellplatz', variant: 'default' });
-if (shop.is_organic) tags.push({ label: 'Bio', variant: 'pistachio' });
-if (shop.has_lactose_free) tags.push({ label: 'Laktosefrei', variant: 'pistachio' });
-if (shop.has_gluten_free) tags.push({ label: 'Glutenfrei', variant: 'pistachio' });
-if (shop.has_outdoor_seating) tags.push({ label: 'Terrasse', variant: 'default' });
-if (shop.has_coffee) tags.push({ label: 'Kaffee', variant: 'default' });
-
 const hoursEntries = formatOpeningHours(shop.opening_hours);
-const editorialText = shop.our_review ?? shop.specialty ?? null;
 const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
 
-// JSON-LD structured data
-const SCHEMA_DAY_URLS = [
-  'https://schema.org/Sunday',
-  'https://schema.org/Monday',
-  'https://schema.org/Tuesday',
-  'https://schema.org/Wednesday',
-  'https://schema.org/Thursday',
-  'https://schema.org/Friday',
-  'https://schema.org/Saturday',
-];
-const PRICE_RANGE = ['', '€', '€€', '€€€', '€€€€'];
+const tags: string[] = [];
+if (shop.has_vegan_options) tags.push(shop.fully_vegan ? 'Voll vegan' : 'Vegane Optionen');
+if (shop.child_friendly) tags.push('Kinderfreundlich');
+if (shop.has_bike_parking) tags.push('Fahrradstellplatz');
+if (shop.is_organic) tags.push('Bio');
+if (shop.has_lactose_free) tags.push('Laktosefrei');
+if (shop.has_gluten_free) tags.push('Glutenfrei');
+if (shop.has_outdoor_seating) tags.push('Terrasse');
+if (shop.has_coffee) tags.push('Kaffee');
+if (shop.is_handmade) tags.push('Handgemacht');
 
-type Period = {
-  open: { day: number; hour: number; minute: number };
-  close?: { day: number; hour: number; minute: number };
-};
-
-function toHHMM(hour: number, minute: number) {
-  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-}
-
+// JSON-LD
+const SCHEMA_DAY_URLS = ['https://schema.org/Sunday','https://schema.org/Monday','https://schema.org/Tuesday','https://schema.org/Wednesday','https://schema.org/Thursday','https://schema.org/Friday','https://schema.org/Saturday'];
+const PRICE_RANGE = ['','€','€€','€€€','€€€€'];
+type Period = { open: { day: number; hour: number; minute: number }; close?: { day: number; hour: number; minute: number } };
+const toHHMM = (h: number, m: number) => `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 const openingHoursSpecification = shop.opening_hours?.map((p) => {
   const period = p as unknown as Period;
-  return {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: SCHEMA_DAY_URLS[period.open.day],
-    opens: toHHMM(period.open.hour, period.open.minute),
-    closes: period.close ? toHHMM(period.close.hour, period.close.minute) : '23:59',
-  };
+  return { '@type': 'OpeningHoursSpecification', dayOfWeek: SCHEMA_DAY_URLS[period.open.day], opens: toHHMM(period.open.hour, period.open.minute), closes: period.close ? toHHMM(period.close.hour, period.close.minute) : '23:59' };
 });
-
 const jsonLd: Record<string, unknown> = {
-  '@context': 'https://schema.org',
-  '@type': 'IceCreamShop',
-  name: shop.name,
-  url: `https://eis-le.de/${shop.slug}`,
-  image: photos[0],
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: shop.address,
-    addressLocality: shop.city ?? 'Leipzig',
-    addressCountry: 'DE',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: shop.latitude,
-    longitude: shop.longitude,
-  },
+  '@context': 'https://schema.org', '@type': 'IceCreamShop',
+  name: shop.name, url: `https://eis-le.de/${shop.slug}`, image: photos[0],
+  address: { '@type': 'PostalAddress', streetAddress: shop.address, addressLocality: shop.city ?? 'Leipzig', addressCountry: 'DE' },
+  geo: { '@type': 'GeoCoordinates', latitude: shop.latitude, longitude: shop.longitude },
   servesCuisine: 'Eis',
 };
-
 if (shop.phone) jsonLd.telephone = shop.phone;
 if (shop.website) jsonLd.sameAs = shop.website;
 if (shop.google_maps_url) jsonLd.hasMap = shop.google_maps_url;
 if (shop.price_level) jsonLd.priceRange = PRICE_RANGE[shop.price_level];
 if (openingHoursSpecification?.length) jsonLd.openingHoursSpecification = openingHoursSpecification;
 if (shop.google_rating && shop.google_review_count) {
-  jsonLd.aggregateRating = {
-    '@type': 'AggregateRating',
-    ratingValue: shop.google_rating,
-    reviewCount: shop.google_review_count,
-    bestRating: 5,
-    worstRating: 1,
-  };
+  jsonLd.aggregateRating = { '@type': 'AggregateRating', ratingValue: shop.google_rating, reviewCount: shop.google_review_count, bestRating: 5, worstRating: 1 };
 }
+
+const today = new Date().getDay();
+const dayMap: Record<string, number> = {Mo:1,Di:2,Mi:3,Do:4,Fr:5,Sa:6,So:0};
+
+const storyText = shop.our_review || shop.specialty || null;
+const taglineText = shop.specialty || shop.ice_cream_type || null;
+const showTagline = taglineText && taglineText !== storyText;
 ---
 
-<BaseLayout title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}, Leipzig`} description={shop.specialty} canonical={`https://eis-le.de/${shop.slug}`} image={photos[0]} jsonLd={jsonLd}>
-  <article class="max-w-[960px] mx-auto px-4 py-6">
-    <!-- Back nav -->
-    <div class="mb-4">
-      <a href="/" class="text-sm text-blueberry hover:text-choco transition-colors inline-flex items-center gap-1">
-        <ArrowLeft size={14} stroke-width={2} /> Alle Eisdielen
-      </a>
+<BaseLayout
+  title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}`}
+  description={shop.specialty}
+  canonical={`https://eis-le.de/${shop.slug}`}
+  image={photos[0]}
+  jsonLd={jsonLd}
+>
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-bar">
+    <div class="breadcrumb-inner">
+      <a href="/">Verzeichnis</a>
+      <span class="bc-arrow">›</span>
+      {shop.neighborhood ? (
+        <a href={`/stadtteil/${shop.neighborhood.slug}`}>{shop.neighborhood.name}</a>
+      ) : <span>—</span>}
+      <span class="bc-arrow">›</span>
+      <span class="bc-current">{shop.name}</span>
     </div>
+  </div>
 
-    <!-- Hero image -->
-    <div class="relative rounded-[20px] overflow-hidden h-64 sm:h-80 mb-6 animate-fade-up">
-      <img
-        src={photos[0]}
-        alt={shop.name}
-        class:list={['w-full h-full object-cover', tempClosed && 'grayscale']}
-      />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-
-      {shop.lvz_rank && (
-        <div class="absolute top-4 left-4">
-          <LVZBadge rank={shop.lvz_rank} size="lg" />
+  <!-- Detail hero -->
+  <section class="detail-hero">
+    <div class="detail-hero-inner">
+      <div class="detail-hero-left">
+        <div class="detail-kicker">
+          {shop.neighborhood && <span class="kicker-hood">{shop.neighborhood.name}</span>}
+          <span>{shop.ice_cream_type}</span>
+          {shop.lvz_rank && <LVZBadge rank={shop.lvz_rank} size="sm" />}
         </div>
-      )}
-
-      <div class="absolute bottom-4 left-4 right-4">
-        <p class="text-white/80 text-sm font-medium mb-1">{shop.ice_cream_type}</p>
-        <h1 class="font-heading text-2xl sm:text-3xl font-bold text-white">{shop.name}</h1>
+        <h1 class="detail-title">{shop.name}</h1>
+        {showTagline && <p class="detail-tagline">{taglineText}</p>}
+      </div>
+      <div class="detail-hero-right">
+        <div class="quick-facts">
+          <div class="qf">
+            <div class="qf-label">Bewertung</div>
+            <div class="qf-value qf-stars">
+              {'★'.repeat(Math.round(shop.google_rating ?? 0))}
+              <span class="qf-dim"> {shop.google_rating?.toFixed(1)} ({shop.google_review_count})</span>
+            </div>
+          </div>
+          <div class="qf">
+            <div class="qf-label">Status</div>
+            <div class="qf-value">
+              {tempClosed ? (
+                <span class="qf-closed">Vorübergehend geschlossen</span>
+              ) : shop.is_24h ? (
+                <span class="qf-open">24h geöffnet</span>
+              ) : (
+                <span
+                  class="qf-status-dynamic"
+                  data-open-status
+                  data-periods={JSON.stringify(shop.opening_hours ?? [])}
+                >—</span>
+              )}
+            </div>
+          </div>
+          <div class="qf">
+            <div class="qf-label">Preis</div>
+            <div class="qf-value">{shop.price_per_scoop ? `${shop.price_per_scoop}/Kugel` : (shop.price_level ? '€'.repeat(shop.price_level) : '—')}</div>
+          </div>
+          <div class="qf">
+            <div class="qf-label">Stadtteil</div>
+            <div class="qf-value">
+              {shop.neighborhood ? (
+                <a href={`/stadtteil/${shop.neighborhood.slug}`} class="qf-link">{shop.neighborhood.name}</a>
+              ) : '—'}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- Info bar -->
-    <div class="card p-4 mb-6 animate-fade-up stagger-1">
-      <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
-        <!-- Rating -->
-        <div class="flex items-center gap-1.5">
-          <div class="flex gap-0.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star size={16} stroke-width={2} class:list={[i < stars ? 'text-vanilla fill-current' : 'text-border']} />
-            ))}
-          </div>
-          <span class="font-semibold text-choco">{shop.google_rating}</span>
-          <span class="text-choco-muted">({shop.google_review_count})</span>
+  <!-- Gallery -->
+  <div class="gallery-wrap">
+    <div class="detail-gallery">
+      <div class="g g-main">
+        <img src={photos[0]} alt={`${shop.name} — Foto 1`} class:list={['g-img', tempClosed && 'grayscale']} />
+        <span class="g-count">{photos.length} Fotos</span>
+      </div>
+      {photos[1] && <div class="g"><img src={photos[1]} alt={`${shop.name} — Foto 2`} class="g-img" /></div>}
+      {photos[2] && <div class="g"><img src={photos[2]} alt={`${shop.name} — Foto 3`} class="g-img" /></div>}
+      {photos[3] && <div class="g"><img src={photos[3]} alt={`${shop.name} — Foto 4`} class="g-img" /></div>}
+      {photos[4] && (
+        <div class="g">
+          <img src={photos[4]} alt={`${shop.name} — Foto 5`} class="g-img" />
+          <a href={shop.google_maps_url} target="_blank" rel="noopener" class="g-view">Fotos von Google →</a>
         </div>
-        <!-- Neighborhood -->
-        {shop.neighborhood && (
-          <a href={`/stadtteil/${shop.neighborhood.slug}`} class="text-blueberry font-medium hover:underline inline-flex items-center gap-1">
-            <MapPin size={14} stroke-width={2} />
-            {shop.neighborhood.name}
-          </a>
+      )}
+    </div>
+  </div>
+
+  <!-- Two-column body -->
+  <div class="detail-wrap">
+    <div class="detail-body">
+
+      <!-- Main -->
+      <div class="detail-main">
+
+        <!-- Story -->
+        {(shop.our_review || shop.specialty) && (
+          <section class="d-section">
+            <h3 class="d-section-head"><span class="d-num">01</span> Die Geschichte <span class="d-rule"></span></h3>
+            <p class="story-text">{shop.our_review || shop.specialty}</p>
+          </section>
         )}
-        <!-- Price -->
-        {shop.price_per_scoop && (
-          <span class="text-choco-muted">{shop.price_per_scoop}/Kugel</span>
+
+        <!-- Tags -->
+        {tags.length > 0 && (
+          <section class="d-section">
+            <h3 class="d-section-head"><span class="d-num">02</span> Merkmale <span class="d-rule"></span></h3>
+            <div class="detail-tag-row">
+              {tags.map(t => <span class="detail-tag">{t}</span>)}
+            </div>
+          </section>
         )}
-        <!-- Open status -->
-        {tempClosed ? (
-          <span class="pill text-xs font-medium bg-strawberry-bg text-strawberry">
-            Vorübergehend geschlossen
-          </span>
-        ) : shop.is_24h ? (
-          <span class="pill text-xs font-medium bg-pistachio-bg text-pistachio">
-            24h geöffnet
-          </span>
-        ) : shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
-          <span
-            class="pill text-xs font-medium hidden"
-            data-open-status
-            data-periods={JSON.stringify(shop.opening_hours)}
-          />
+
+        <!-- Flavors -->
+        {(shop.flavor_list ?? []).length > 0 && (
+          <section class="d-section">
+            <h3 class="d-section-head"><span class="d-num">03</span> Eissorten <span class="d-rule"></span></h3>
+            <FlavorList flavors={shop.flavor_list ?? []} />
+          </section>
         )}
-        <!-- Social / web links -->
-        {(shop.website || shop.instagram_url || shop.facebook_url) && (
-          <div class="ml-auto flex items-center gap-3">
+
+        <!-- Highlights -->
+        {(shop.highlights ?? []).length > 0 && (
+          <section class="d-section">
+            <h3 class="d-section-head"><span class="d-num">04</span> Besonderheiten <span class="d-rule"></span></h3>
+            <HighlightList highlights={shop.highlights ?? []} />
+          </section>
+        )}
+
+        <!-- Rating CTA -->
+        <div class="d-section">
+          <RatingCTA shopName={shop.name} />
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="detail-aside">
+
+        <!-- Hours -->
+        {hoursEntries.length > 0 && (
+          <div class="aside-card">
+            <h4 class="aside-head">Öffnungszeiten</h4>
+            {tempClosed && <p class="aside-closed">Vorübergehend geschlossen</p>}
+            {shop.is_24h && !tempClosed && <p class="aside-open">24 Stunden geöffnet</p>}
+            <div class="hours-grid">
+              {hoursEntries.map(([day, hours]) => {
+                const firstDay = day.split('–')[0];
+                const isToday = dayMap[firstDay] === today;
+                return (
+                  <>
+                    <span class:list={['hours-day', isToday && 'hours-today']}>{day}</span>
+                    <span class:list={['hours-time', isToday && 'hours-today', hours === 'Geschlossen' && 'hours-closed']}>{hours}</span>
+                  </>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <!-- Contact -->
+        <div class="aside-card">
+          <h4 class="aside-head">Adresse & Kontakt</h4>
+          <p class="aside-addr">{shop.address}</p>
+          {shop.location_description && (
+            <p class="aside-location">{shop.location_description}</p>
+          )}
+          <div class="aside-links">
+            <a href={shop.google_maps_url} target="_blank" rel="noopener" class="aside-link">
+              <Navigation size={13} stroke-width={2} /> Auf Google Maps
+            </a>
+            {shop.phone && (
+              <a href={`tel:${shop.phone}`} class="aside-link">
+                <Phone size={13} stroke-width={2} /> {shop.phone}
+              </a>
+            )}
             {shop.website && (
-              <a href={shop.website} target="_blank" rel="noopener" title="Website" class="text-choco-muted hover:text-blueberry transition-colors">
-                <Globe size={18} stroke-width={2} />
+              <a href={shop.website} target="_blank" rel="noopener" class="aside-link">
+                <Globe size={13} stroke-width={2} /> Website
               </a>
             )}
             {shop.instagram_url && (
-              <a href={shop.instagram_url} target="_blank" rel="noopener" title="Instagram" class="text-choco-muted hover:text-blueberry transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-                </svg>
+              <a href={shop.instagram_url} target="_blank" rel="noopener" class="aside-link">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                Instagram
               </a>
             )}
             {shop.facebook_url && (
-              <a href={shop.facebook_url} target="_blank" rel="noopener" title="Facebook" class="text-choco-muted hover:text-blueberry transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                </svg>
+              <a href={shop.facebook_url} target="_blank" rel="noopener" class="aside-link">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                Facebook
               </a>
             )}
           </div>
-        )}
-      </div>
-    </div>
-
-    <!-- Tags -->
-    {tags.length > 0 && (
-      <div class="flex flex-wrap gap-2 mb-6 animate-fade-up stagger-2">
-        {tags.map(t => <Tag label={t.label} variant={t.variant} size="md" />)}
-      </div>
-    )}
-
-    <!-- Editorial intro -->
-    {editorialText && (
-      <div class="mb-8 animate-fade-up stagger-2">
-        <p class="text-lg text-choco-light leading-relaxed">
-          {editorialText}
-        </p>
-      </div>
-    )}
-
-    <!-- Two-column content -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-      <!-- Left: Flavors -->
-      <div class="animate-fade-up stagger-3">
-        <h2 class="font-heading text-xl font-semibold text-choco mb-4 flex items-center gap-2">
-          <IceCreamCone size={20} stroke-width={2} class="text-strawberry" /> Eissorten
-        </h2>
-        <FlavorList flavors={shop.flavor_list ?? []} />
-      </div>
-
-      <!-- Right: Highlights -->
-      <div class="animate-fade-up stagger-4">
-        <h2 class="font-heading text-xl font-semibold text-choco mb-4 flex items-center gap-2">
-          <Sparkles size={20} stroke-width={2} class="text-vanilla" /> Das Besondere hier
-        </h2>
-        <HighlightList highlights={shop.highlights ?? []} />
-      </div>
-    </div>
-
-    <!-- Details section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-      <!-- Opening hours -->
-      <div class="card p-5 animate-fade-up stagger-5 flex flex-col">
-        <h3 class="font-heading text-lg font-semibold text-choco mb-3 flex items-center gap-2">
-          <Clock size={18} stroke-width={2} class="text-choco-muted" /> Öffnungszeiten
-        </h3>
-        {tempClosed && (
-          <div class="rounded-xl bg-strawberry-bg px-3 py-2 mb-3">
-            <p class="text-sm font-medium text-strawberry">Vorübergehend geschlossen</p>
-          </div>
-        )}
-        {shop.is_24h && !tempClosed && (
-          <div class="rounded-xl bg-pistachio-bg px-3 py-2 mb-3">
-            <p class="text-sm font-medium text-pistachio">24 Stunden geöffnet, 7 Tage die Woche</p>
-          </div>
-        )}
-        <div class="space-y-2 flex-1">
-          {hoursEntries.map(([day, hours]) => (
-            <div class="flex justify-between text-sm">
-              <span class="text-choco-muted">{day}</span>
-              <span class="font-medium text-choco">{hours}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <!-- Location & contact -->
-      <div class="card p-5 animate-fade-up stagger-6 flex flex-col">
-        <h3 class="font-heading text-lg font-semibold text-choco mb-3 flex items-center gap-2">
-          <MapPin size={18} stroke-width={2} class="text-choco-muted" /> Anfahrt & Kontakt
-        </h3>
-        <div class="space-y-2.5 text-sm flex-1">
-          <p class="text-choco">{shop.address}</p>
-          {shop.location_description && (
-            <p class="text-choco-muted italic">{shop.location_description}</p>
-          )}
-          {shop.phone && (
-            <p>
-              <a href={`tel:${shop.phone}`} class="text-blueberry inline-flex items-center gap-1.5">
-                <Phone size={14} stroke-width={2} /> {shop.phone}
-              </a>
-            </p>
-          )}
-          <p>
-            <a href={shop.google_maps_url} target="_blank" rel="noopener" class="text-blueberry inline-flex items-center gap-1.5">
-              <Navigation size={14} stroke-width={2} /> Auf Google Maps
-            </a>
-          </p>
           {shop.payment_methods?.length > 0 && (
-            <p class="text-choco-muted inline-flex items-center gap-1.5">
-              <CreditCard size={14} stroke-width={2} /> {shop.payment_methods.join(', ')}
+            <p class="aside-payment">
+              <CreditCard size={12} stroke-width={2} /> {shop.payment_methods.join(' · ')}
             </p>
           )}
         </div>
-      </div>
-    </div>
 
-    <!-- Rating CTA -->
-    <div class="mb-10 animate-fade-up stagger-7">
-      <RatingCTA shopName={shop.name} />
+        <!-- Awards -->
+        {shop.lvz_rank && (
+          <div class="aside-card">
+            <h4 class="aside-head">Auszeichnungen</h4>
+            <div class="aside-award">
+              <LVZBadge rank={shop.lvz_rank} size="lg" />
+              {shop.lvz_year && <span class="aside-award-year">LVZ Ranking {shop.lvz_year}</span>}
+            </div>
+          </div>
+        )}
+      </aside>
     </div>
-  </article>
+  </div>
 </BaseLayout>
 
+<style>
+  /* Breadcrumb */
+  .breadcrumb-bar {
+    border-bottom: 1px solid var(--rule);
+    padding: 18px 0 14px;
+  }
+  .breadcrumb-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .breadcrumb-inner a {
+    color: var(--ink-mute);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .breadcrumb-inner a:hover { color: var(--color-pistachio); }
+  .bc-arrow { opacity: 0.4; }
+  .bc-current { color: var(--color-choco); }
+
+  /* Detail hero */
+  .detail-hero {
+    padding: 44px 0 36px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .detail-hero-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 56px;
+    align-items: end;
+  }
+  .detail-kicker {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .kicker-hood { color: var(--color-pistachio); }
+  .detail-title {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 82px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px;
+    color: var(--color-choco);
+  }
+  .detail-tagline {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 40ch;
+  }
+
+  /* Quick facts */
+  .quick-facts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 20px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+  }
+  .qf-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 4px;
+  }
+  .qf-value {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    line-height: 1.2;
+    color: var(--color-choco);
+    letter-spacing: -0.01em;
+  }
+  .qf-stars { color: var(--color-strawberry); letter-spacing: 1px; font-size: 15px; }
+  .qf-dim { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); letter-spacing: 0; }
+  .qf-open { color: oklch(0.42 0.10 140); font-size: 14px; }
+  .qf-closed { color: var(--color-strawberry); font-size: 14px; }
+  .qf-status-dynamic { font-size: 14px; }
+  .qf-link { color: var(--color-pistachio); text-decoration: none; }
+  .qf-link:hover { text-decoration: underline; }
+
+  /* Gallery */
+  .gallery-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 1rem 0;
+  }
+  .detail-gallery {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 6px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .g {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-sand);
+  }
+  .g-main {
+    grid-row: 1 / 3;
+  }
+  .g-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .g-count {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: oklch(0.1 0 0 / 0.5);
+    color: var(--color-creme);
+    padding: 5px 9px;
+    border-radius: 2px;
+    backdrop-filter: blur(6px);
+  }
+  .g-view {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: oklch(0.99 0.008 85 / 0.9);
+    color: var(--color-choco);
+    padding: 5px 10px;
+    border-radius: 2px;
+    text-decoration: none;
+    border: 1px solid var(--rule);
+  }
+
+  /* Body layout */
+  .detail-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem 80px;
+  }
+  .detail-body {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 64px;
+    padding-top: 8px;
+  }
+
+  /* Sections */
+  .d-section {
+    padding: 32px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .d-section:first-child { border-top: none; padding-top: 0; }
+  .d-section-head {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 20px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .d-num { color: var(--color-pistachio); }
+  .d-rule { flex: 1; height: 1px; background: var(--rule); }
+
+  .story-text {
+    font-family: var(--font-heading);
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--color-choco);
+    margin: 0 0 16px;
+    max-width: 58ch;
+    text-wrap: pretty;
+  }
+
+  .detail-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .detail-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 5px 10px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--color-card-bg);
+  }
+
+  /* Sidebar */
+  .detail-aside {
+    position: sticky;
+    top: 88px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .aside-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    padding: 20px 22px;
+  }
+  .aside-head {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 14px;
+    font-weight: 500;
+  }
+  .aside-addr {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    color: var(--color-choco);
+    line-height: 1.45;
+    margin: 0 0 10px;
+  }
+  .aside-location {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+  }
+  .aside-closed {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-strawberry);
+    margin: 0 0 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .aside-open {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: oklch(0.42 0.10 140);
+    margin: 0 0 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .hours-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 16px;
+  }
+  .hours-day {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.06em;
+  }
+  .hours-time {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    color: var(--color-choco);
+    text-align: right;
+  }
+  .hours-today { color: var(--color-pistachio); }
+  .hours-closed { color: var(--ink-mute); font-style: italic; }
+
+  .aside-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .aside-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-pistachio);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .aside-link:hover { color: var(--color-pistachio-bg); text-decoration: underline; }
+  .aside-payment {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: 0.06em;
+    margin: 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .aside-award {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .aside-award-year {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .detail-hero-inner {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .detail-gallery {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 200px 160px;
+    }
+    .g-main { grid-row: auto; grid-column: 1 / 3; }
+    .detail-body {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .detail-aside {
+      position: static;
+      border-top: 1px solid var(--rule);
+      padding-top: 32px;
+      margin-top: 8px;
+    }
+  }
+</style>
+
 <script>
-  import { renderAllOpenStatusPills } from '../scripts/open-status';
+  import { renderAllOpenStatusPills, isOpenNow } from '../scripts/open-status';
   renderAllOpenStatusPills();
+
+  // Update quick-facts status dynamic
+  function updateDetailStatus() {
+    const el = document.querySelector('.qf-status-dynamic[data-open-status]') as HTMLElement | null;
+    if (!el) return;
+    try {
+      const periods = JSON.parse(el.dataset.periods || '[]');
+      const open = isOpenNow(periods);
+      if (open === true) {
+        el.textContent = 'Geöffnet';
+        el.style.color = 'oklch(0.42 0.10 140)';
+      } else if (open === false) {
+        el.textContent = 'Geschlossen';
+      }
+    } catch { /* skip */ }
+  }
+  updateDetailStatus();
 </script>

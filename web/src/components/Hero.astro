@@ -1,26 +1,157 @@
 ---
-import { Trophy } from 'lucide-astro';
+interface Props {
+  shopCount: number;
+  neighborhoodCount: number;
+}
+const { shopCount, neighborhoodCount } = Astro.props;
 ---
 
-<section class="max-w-[960px] mx-auto px-4 pt-8 pb-6 text-center">
-  <!-- Announcement badge -->
-  <!-- <a
-    href="/beste-eisdielen-lvz"
-    class="inline-flex items-center gap-2 pill bg-strawberry-bg text-strawberry text-sm font-medium mb-6 hover:bg-strawberry/10 transition-colors no-underline"
-  >
-    <Trophy size={16} stroke-width={2} />
-    <span>LVZ-Rankings 2025 sind da</span>
-    <span class="text-strawberry/50">→</span>
-  </a> -->
-
-  <!-- Headline -->
-  <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl font-700 text-choco leading-tight mb-4">
-    Finde dein Eis in{' '}
-    <span class="wave-underline">Leipzig</span>
-  </h1>
-
-  <!-- Subtitle -->
-  <p class="text-lg sm:text-xl text-choco-light max-w-lg mx-auto leading-relaxed">
-    Alle Eisdielen der Stadt — ehrlich bewertet, liebevoll kuratiert, mit Geheimtipps und Lieblingsorten.
-  </p>
+<section class="hero-section">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-meta">
+        <span class="hero-dot"></span>
+        Vol. 01 — Frühling / Sommer 2026
+        <span class="hero-sep">·</span>
+        Wöchentlich aktualisiert
+      </div>
+      <h1 class="hero-h1">
+        Wo Leipzig<br/>sein <em>gutes</em><br/>Eis aufbewahrt.
+      </h1>
+    </div>
+    <div class="hero-right">
+      <p class="hero-lede">
+        Ein langsames, meinungsstarkes Verzeichnis der Gelaterias, Eiscafés und Eisdielen, die in den Vierteln Leipzigs das Beste aus Milch, Früchten und Fantasie machen.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num" id="stat-open">—</div>
+          <div class="hero-stat-label">Gerade geöffnet</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">{shopCount}</div>
+          <div class="hero-stat-label">Eisdielen</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">{neighborhoodCount}</div>
+          <div class="hero-stat-label">Stadtteile</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<style>
+  .hero-section {
+    border-bottom: 1px solid var(--rule);
+    padding: 64px 0 52px;
+    background: var(--color-creme);
+  }
+
+  .hero-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 56px;
+    align-items: end;
+  }
+
+  .hero-meta {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+
+  .hero-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-pistachio);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .hero-sep {
+    opacity: 0.4;
+  }
+
+  .hero-h1 {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: clamp(52px, 7.5vw, 100px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--color-choco);
+  }
+
+  .hero-h1 em {
+    font-style: italic;
+    color: var(--color-pistachio);
+  }
+
+  .hero-lede {
+    font-family: var(--font-heading);
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--color-choco-light);
+    margin: 0 0 28px;
+    max-width: 40ch;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 22px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+  }
+
+  .hero-stat-num {
+    font-family: var(--font-heading);
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-choco);
+  }
+
+  .hero-stat-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-top: 7px;
+  }
+
+  @media (max-width: 720px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .hero-section {
+      padding: 40px 0 36px;
+    }
+    .hero-h1 {
+      font-size: clamp(44px, 12vw, 72px);
+    }
+    .hero-stats {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 16px;
+    }
+    .hero-stat-num {
+      font-size: 32px;
+    }
+  }
+</style>

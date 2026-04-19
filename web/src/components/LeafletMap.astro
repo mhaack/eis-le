@@ -25,7 +25,14 @@ const shopsJson = JSON.stringify(shops.map(s => ({
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<div id={id} style={`height: ${height}; border-radius: 16px;`} class="w-full border border-border"></div>
+<div id={id} style={`height: ${height};`} class="map-root"></div>
+
+<style>
+  .map-root {
+    width: 100%;
+    display: block;
+  }
+</style>
 
 <script define:vars={{ shopsJson, centerJson, mapId: id }}>
   async function initMap() {

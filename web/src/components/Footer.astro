@@ -5,58 +5,176 @@ import { getNeighborhoods } from '../lib/data';
 const neighborhoods = await getNeighborhoods();
 ---
 
-<footer class="bg-choco text-creme/80 mt-16">
-  <div class="max-w-[960px] mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
       <!-- Brand -->
-      <div>
-        <a href="/" class="flex items-center gap-0 text-creme no-underline mb-3 leading-none">
+      <div class="footer-brand-col">
+        <!-- Logo — DO NOT CHANGE -->
+        <a href="/" class="footer-logo flex items-center gap-0 no-underline leading-none" aria-label="eis-le.de">
           <span class="font-heading text-xl font-bold tracking-[0.02em]">E</span>
           <LogoIcon size={22} class="relative -top-px -mx-px shrink-0" />
           <span class="font-heading text-xl font-bold tracking-[0.02em]">S</span>
           <span class="font-heading text-[1.1rem] font-normal opacity-50 mx-[0.3rem] tracking-[0.04em]">//</span>
           <span class="font-heading text-xl font-normal opacity-50 tracking-[0.06em]">LE</span>
         </a>
-        <p class="text-sm text-creme/60 leading-relaxed">
-          Alle Eisdielen in Leipzig.<br />
-          Ehrlich bewertet, liebevoll kuratiert.
+        <p class="footer-blurb">
+          Ein langsames, meinungsstarkes Verzeichnis der Eisdielen Leipzigs. Ehrlich bewertet, liebevoll kuratiert — aktualisiert wenn sich die Sorten ändern.
         </p>
       </div>
+
       <!-- Entdecken -->
-      <div>
-        <h4 class="font-heading text-sm font-semibold text-creme mb-3 uppercase tracking-wider">Entdecken</h4>
-        <ul class="space-y-2 text-sm">
-          <li><a href="/veganes-eis" class="text-creme/60 hover:text-creme transition-colors">Veganes Eis</a></li>
-          <li><a href="/eis-mit-kindern" class="text-creme/60 hover:text-creme transition-colors">Eis mit Kindern</a></li>
-          <li><a href="/date-night-eis" class="text-creme/60 hover:text-creme transition-colors">Date Night</a></li>
-          <li><a href="/eis-fuer-radfahrer" class="text-creme/60 hover:text-creme transition-colors">Radtour-Stopp</a></li>
-        </ul>
+      <div class="footer-col">
+        <h5 class="footer-col-head">Entdecken</h5>
+        <a href="/">Alle Eisdielen</a>
+        <a href="/stadtteile">Stadtteile</a>
+        <a href="/veganes-eis">Veganes Eis</a>
+        <a href="/eis-mit-kindern">Eis mit Kindern</a>
+        <a href="/date-night-eis">Date Night</a>
+        <a href="/eis-fuer-radfahrer">Radtour-Stopp</a>
       </div>
-      <!-- Stadtteile (two columns) -->
-      <div class="sm:col-span-2">
-        <h4 class="font-heading text-sm font-semibold text-creme mb-3 uppercase tracking-wider">
-          <a href="/stadtteile" class="text-creme hover:text-creme/80 transition-colors">Stadtteile</a>
-        </h4>
-        <ul class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-          {neighborhoods.map(n => (
-            <li>
-              <a href={`/stadtteil/${n.slug}`} class="text-creme/60 hover:text-creme transition-colors">
-                {n.name} <span class="opacity-50 text-xs ml-0.5">{n.count}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+
+      <!-- Stadtteile -->
+      <div class="footer-col">
+        <h5 class="footer-col-head"><a href="/stadtteile">Stadtteile</a></h5>
+        {neighborhoods.slice(0, 8).map(n => (
+          <a href={`/stadtteil/${n.slug}`}>
+            {n.name} <span class="footer-count">{n.count}</span>
+          </a>
+        ))}
+      </div>
+
+      <!-- Mehr -->
+      <div class="footer-col">
+        <h5 class="footer-col-head">Mehr</h5>
+        <a href="/karte">Karte</a>
+        <a href="/impressum">Impressum</a>
+        <a href="/datenschutz">Datenschutz</a>
       </div>
     </div>
-    <div class="border-t border-creme/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-sm text-creme/40 font-heading italic">
-        Gemacht in Leipzig, mit Liebe und zu viel Eis.
-      </p>
-      <div class="flex items-center gap-4 text-xs">
-        <a href="/impressum" class="text-creme/50 hover:text-creme transition-colors">Impressum</a>
-        <a href="/datenschutz" class="text-creme/50 hover:text-creme transition-colors">Datenschutz</a>
-        <span>&copy; {new Date().getFullYear()} eis-le.de</span>
-      </div>
+
+    <div class="footer-foot">
+      <span>© {new Date().getFullYear()} eis-le.de, Leipzig</span>
+      <span class="footer-tagline">Gemacht in Leipzig, mit Liebe und zu viel Eis.</span>
     </div>
   </div>
 </footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 48px;
+    padding: 52px 0 40px;
+    background: var(--color-creme);
+  }
+
+  .footer-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 48px;
+  }
+
+  .footer-logo {
+    color: var(--color-choco);
+    margin-bottom: 14px;
+  }
+
+  .footer-blurb {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 34ch;
+  }
+
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .footer-col-head {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 6px;
+    font-weight: 500;
+  }
+
+  .footer-col-head a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .footer-col a {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .footer-col a:hover {
+    color: var(--color-pistachio);
+  }
+
+  .footer-count {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: var(--ink-mute);
+    margin-left: 3px;
+  }
+
+  .footer-foot {
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  .footer-tagline {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .footer-brand-col {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+    .footer-foot {
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+    }
+  }
+</style>

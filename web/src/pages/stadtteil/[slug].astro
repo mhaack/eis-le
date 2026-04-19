@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ShopGrid from '../../components/ShopGrid.astro';
+import ShopCard from '../../components/ShopCard.astro';
 import LeafletMap from '../../components/LeafletMap.astro';
 import NeighborhoodPills from '../../components/NeighborhoodPills.astro';
-import { ArrowLeft } from 'lucide-astro';
 import { getShopsByNeighborhood, getNeighborhoods, resolveShopPhotoMap } from '../../lib/data';
 
 export async function getStaticPaths() {
@@ -31,42 +30,146 @@ const hasOtherNeighborhoods = allNeighborhoods.some((n: { slug: string }) => n.s
 ---
 
 <BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={seoDescription} canonical={`https://eis-le.de/stadtteil/${slug}`} image={shops[0] ? photoMap.get(shops[0].id) : undefined}>
-  <section class="max-w-[960px] mx-auto px-4 py-8">
-    <div class="mb-2">
-      <a href="/stadtteile" class="text-sm text-blueberry hover:text-choco transition-colors inline-flex items-center gap-1">
-        <ArrowLeft size={14} stroke-width={2} /> Alle Stadtteile
-      </a>
-    </div>
+  <div class="page-wrap">
+    <a href="/stadtteile" class="back-link">← Alle Stadtteile</a>
 
-    <div class="mb-8 animate-fade-up">
-      <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-choco mb-2">
-        Eisdielen in {name}
-      </h1>
-      <p class="text-lg text-choco-muted mb-4">
-        {shops.length} {shops.length === 1 ? 'Eisdiele' : 'Eisdielen'} in {name}
-      </p>
-      {description && (
-        <p class="text-lg text-choco-light leading-relaxed max-w-2xl">
-          {description}
-        </p>
-      )}
+    <div class="page-head">
+      <h1 class="page-title">Eisdielen in <em>{name}</em></h1>
+      <p class="page-count">{shops.length} {shops.length === 1 ? 'Eisdiele' : 'Eisdielen'}</p>
+      {description && <p class="page-desc">{description}</p>}
     </div>
 
     {shops.length > 0 && (
-      <div class="mb-10">
+      <div class="map-wrap">
         <LeafletMap shops={shops} height="300px" id={`map-${slug}`} center={center} />
       </div>
     )}
 
-    <ShopGrid shops={shops} photoMap={photoMap} emptyMessage={`Noch keine Eisdielen in ${name} erfasst.`} />
+    {shops.length > 0 ? (
+      <div class="shop-grid">
+        {shops.map((shop, i) => (
+          <ShopCard shop={shop} photoUrl={photoMap.get(shop.id)} />
+        ))}
+      </div>
+    ) : (
+      <p class="empty">Noch keine Eisdielen in {name} erfasst.</p>
+    )}
 
     {hasOtherNeighborhoods && (
-      <div class="mt-16 pt-10 border-t border-border">
-        <h2 class="font-heading text-xl font-semibold text-choco mb-5 text-center">
-          Eis in anderen Stadtteilen
-        </h2>
+      <div class="other-hoods">
+        <h2 class="other-head">Eis in anderen <em>Stadtteilen</em></h2>
         <NeighborhoodPills neighborhoods={allNeighborhoods} excludeSlug={slug} ariaLabel="Andere Stadtteile" />
       </div>
     )}
-  </section>
+  </div>
 </BaseLayout>
+
+<style>
+  .page-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 1rem 80px;
+  }
+
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 28px;
+    transition: color 0.15s;
+  }
+
+  .back-link:hover { color: var(--color-choco); }
+
+  .page-head {
+    margin-bottom: 36px;
+  }
+
+  .page-title {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--color-choco);
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+  }
+
+  .page-title em {
+    font-style: italic;
+    color: var(--color-pistachio);
+  }
+
+  .page-count {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 12px;
+  }
+
+  .page-desc {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 52ch;
+    line-height: 1.5;
+  }
+
+  .map-wrap {
+    margin-bottom: 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .empty {
+    font-family: var(--font-heading);
+    font-style: italic;
+    color: var(--ink-mute);
+    font-size: 16px;
+    padding: 48px 0;
+    text-align: center;
+  }
+
+  .other-hoods {
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+
+  .other-head {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--color-choco);
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .other-head em {
+    font-style: italic;
+    color: var(--color-pistachio);
+  }
+
+  @media (max-width: 720px) {
+    .shop-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .shop-grid { grid-template-columns: 1fr; }
+  }
+</style>
