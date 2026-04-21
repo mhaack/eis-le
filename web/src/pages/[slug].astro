@@ -3,7 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import LVZBadge from '../components/LVZBadge.astro';
 import FlavorList from '../components/FlavorList.astro';
 import HighlightList from '../components/HighlightList.astro';
-import RatingCTA from '../components/RatingCTA.astro';
 import { getAllShops, getShopBySlug, formatOpeningHours, resolveShopPhotos } from '../lib/data';
 import { Globe, Phone, Navigation, CreditCard } from 'lucide-astro';
 
@@ -198,10 +197,6 @@ const showTagline = taglineText && taglineText !== storyText;
           </section>
         )}
 
-        <!-- Rating CTA -->
-        <div class="d-section">
-          <RatingCTA shopName={shop.name} />
-        </div>
       </div>
 
       <!-- Sidebar -->
