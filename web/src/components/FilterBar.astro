@@ -47,18 +47,6 @@ const sorts = [
         </select>
       </div>
 
-      <div class="view-toggle">
-        <button
-          @click="setView('grid')"
-          :class="activeView === 'grid' ? 'active' : ''"
-          aria-label="Gitteransicht"
-        >▦ Kacheln</button>
-        <button
-          @click="setView('list')"
-          :class="activeView === 'list' ? 'active' : ''"
-          aria-label="Listenansicht"
-        >≡ Liste</button>
-      </div>
     </div>
 
     <!-- Row 2: filter chips -->
@@ -104,7 +92,7 @@ const sorts = [
 
   .controls-row {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto;
     gap: 12px;
     align-items: center;
   }
@@ -169,38 +157,6 @@ const sorts = [
   }
 
   /* View toggle */
-  .view-toggle {
-    display: flex;
-    border: 1px solid var(--color-border);
-    border-radius: 2px;
-    overflow: hidden;
-    height: 40px;
-    background: var(--color-card-bg);
-  }
-
-  .view-toggle button {
-    border: none;
-    background: transparent;
-    padding: 0 14px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .view-toggle button + button {
-    border-left: 1px solid var(--color-border);
-  }
-
-  .view-toggle button.active {
-    background: var(--pistachio-ink);
-    color: var(--color-creme);
-  }
-
   /* Filter row */
   .filter-row {
     display: flex;

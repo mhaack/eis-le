@@ -25,10 +25,7 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
         <span class="section-sub" x-text={`\`\${visibleCount >= 0 ? visibleCount : ${shops.length}} von ${shops.length}\``}>{shops.length} von {shops.length}</span>
       </div>
 
-      <div
-        :class="activeView === 'list' ? 'store-list' : 'store-grid'"
-        x-ref="grid"
-      >
+      <div class="store-grid" x-ref="grid">
         {shops.map((shop, i) => (
           <div
             class="shop-card-wrapper"
@@ -103,19 +100,6 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
     padding-bottom: 24px;
   }
 
-  /* Store list */
-  .store-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-bottom: 24px;
-    border-top: 1px solid var(--rule);
-  }
-
-  .store-list .shop-card-wrapper {
-    border-bottom: 1px solid var(--rule-soft);
-  }
-
   /* Empty state */
   .empty-state {
     text-align: center;
@@ -148,25 +132,18 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
     window.Alpine.data('shopFilter', () => ({
       activeFilters: new Set(),
       activeSort: 'name',
-      activeView: 'grid',
       searchQuery: '',
       visibleCount: -1,
 
       init() {
-        const ttl = 24 * 60 * 60 * 1000;
-        ['eis-sort', 'eis-view'].forEach(key => {
-          const stored = localStorage.getItem(key);
-          if (!stored) return;
+        const stored = localStorage.getItem('eis-sort');
+        if (stored) {
           try {
             const { value, expires } = JSON.parse(stored);
-            if (expires > Date.now()) {
-              if (key === 'eis-sort') this.activeSort = value;
-              if (key === 'eis-view') this.activeView = value;
-            } else {
-              localStorage.removeItem(key);
-            }
-          } catch { localStorage.removeItem(key); }
-        });
+            if (expires > Date.now()) this.activeSort = value;
+            else localStorage.removeItem('eis-sort');
+          } catch { localStorage.removeItem('eis-sort'); }
+        }
 
         this.applySort();
         this.updateOpenStat();
@@ -185,11 +162,6 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
       clearFilters() {
         this.activeFilters.clear();
         this.applyFilter();
-      },
-
-      setView(v: string) {
-        this.activeView = v;
-        localStorage.setItem('eis-view', JSON.stringify({ value: v, expires: Date.now() + 24 * 60 * 60 * 1000 }));
       },
 
       applySearch() {
