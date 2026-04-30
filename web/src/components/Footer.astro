@@ -19,37 +19,39 @@ const neighborhoods = await getNeighborhoods();
           <span class="font-heading text-xl font-normal opacity-50 tracking-[0.06em]">LE</span>
         </a>
         <p class="footer-blurb">
-          Ein langsames, meinungsstarkes Verzeichnis der Eisdielen Leipzigs. Ehrlich bewertet, liebevoll kuratiert — aktualisiert wenn sich die Sorten ändern.
+          Alle Eisdielen der Stadt — ehrlich bewertet, liebevoll kuratiert, mit Geheimtipps und Lieblingsorten.
         </p>
       </div>
 
-      <!-- Entdecken -->
-      <div class="footer-col">
-        <h5 class="footer-col-head">Entdecken</h5>
-        <a href="/">Alle Eisdielen</a>
-        <a href="/stadtteile">Stadtteile</a>
-        <a href="/veganes-eis">Veganes Eis</a>
-        <a href="/eis-mit-kindern">Eis mit Kindern</a>
-        <a href="/date-night-eis">Date Night</a>
-        <a href="/eis-fuer-radfahrer">Radtour-Stopp</a>
+      <!-- Entdecken + Mehr -->
+      <div class="footer-nav-col">
+        <div class="footer-col">
+          <h5 class="footer-col-head">Entdecken</h5>
+          <a href="/">Alle Eisdielen</a>
+          <a href="/stadtteile">Stadtteile</a>
+          <a href="/veganes-eis">Veganes Eis</a>
+          <a href="/eis-mit-kindern">Eis mit Kindern</a>
+          <a href="/date-night-eis">Date Night</a>
+          <a href="/eis-fuer-radfahrer">Radtour-Stopp</a>
+        </div>
+        <div class="footer-col">
+          <h5 class="footer-col-head">Mehr</h5>
+          <a href="/karte">Karte</a>
+          <a href="/impressum">Impressum</a>
+          <a href="/datenschutz">Datenschutz</a>
+        </div>
       </div>
 
       <!-- Stadtteile -->
       <div class="footer-col">
         <h5 class="footer-col-head"><a href="/stadtteile">Stadtteile</a></h5>
-        {neighborhoods.slice(0, 8).map(n => (
-          <a href={`/stadtteil/${n.slug}`}>
-            {n.name} <span class="footer-count">{n.count}</span>
-          </a>
-        ))}
-      </div>
-
-      <!-- Mehr -->
-      <div class="footer-col">
-        <h5 class="footer-col-head">Mehr</h5>
-        <a href="/karte">Karte</a>
-        <a href="/impressum">Impressum</a>
-        <a href="/datenschutz">Datenschutz</a>
+        <div class="footer-stadtteile-links">
+          {neighborhoods.map(n => (
+            <a href={`/stadtteil/${n.slug}`}>
+              {n.name} <span class="footer-count">{n.count}</span>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
 
@@ -76,9 +78,15 @@ const neighborhoods = await getNeighborhoods();
 
   .footer-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 3fr;
     gap: 40px;
     margin-bottom: 48px;
+  }
+
+  .footer-nav-col {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
   }
 
   .footer-logo {
@@ -112,9 +120,18 @@ const neighborhoods = await getNeighborhoods();
     font-weight: 500;
   }
 
-  .footer-col-head a {
+  .footer-col .footer-col-head a {
     color: inherit;
     text-decoration: none;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+  }
+
+  .footer-stadtteile-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
   }
 
   .footer-col a {

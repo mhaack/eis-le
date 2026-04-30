@@ -34,7 +34,6 @@ const sorts = [
           @input="applySearch()"
           @keydown.escape="searchQuery = ''; applySearch()"
         />
-        <span class="search-kbd">⌘K</span>
       </div>
 
       <div class="sort-group">
@@ -139,15 +138,6 @@ const sorts = [
     color: var(--ink-mute);
   }
 
-  .search-kbd {
-    font-family: var(--font-mono);
-    font-size: 9.5px;
-    color: var(--ink-mute);
-    padding: 2px 5px;
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    white-space: nowrap;
-  }
 
   /* Sort */
   .sort-group {
@@ -279,6 +269,5 @@ const sorts = [
       grid-template-columns: 1fr auto;
     }
     .sort-group { display: none; }
-    .search-kbd { display: none; }
   }
 </style>

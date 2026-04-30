@@ -22,7 +22,7 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
       <!-- All stores -->
       <div class="section-meta">
         <h2 class="section-title">Alle <em>Eisdielen</em></h2>
-        <span class="section-sub" x-text={`\`— zeige \${visibleCount >= 0 ? visibleCount : ${shops.length}} von ${shops.length}\``}>— zeige {shops.length} von {shops.length}</span>
+        <span class="section-sub" x-text={`\`\${visibleCount >= 0 ? visibleCount : ${shops.length}} von ${shops.length}\``}>{shops.length} von {shops.length}</span>
       </div>
 
       <div
@@ -107,6 +107,7 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
   .store-list {
     display: flex;
     flex-direction: column;
+    gap: 12px;
     padding-bottom: 24px;
     border-top: 1px solid var(--rule);
   }
