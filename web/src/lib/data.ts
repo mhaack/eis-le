@@ -220,30 +220,18 @@ export interface Neighborhood {
 }
 
 export async function getNeighborhoods(): Promise<Neighborhood[]> {
-  const [{ data: neighborhoods, error }, { data: shopRows }] = await Promise.all([
-    supabase
-      .from('neighborhoods')
-      .select('id, name, slug, latitude, longitude, description, short_description')
-      .order('name'),
-    supabase
-      .from('shops')
-      .select('neighborhood_id')
-      .eq('listing_status', 'published'),
-  ]);
+  const { data, error } = await supabase
+    .from('neighborhoods')
+    .select('id, name, slug, latitude, longitude, description, short_description, shops!inner(count)')
+    .eq('shops.listing_status', 'published')
+    .order('name');
 
-  if (error || !neighborhoods) return [];
+  if (error || !data) return [];
 
-  const counts = new Map<string, number>();
-  for (const shop of shopRows ?? []) {
-    if (shop.neighborhood_id) {
-      counts.set(shop.neighborhood_id, (counts.get(shop.neighborhood_id) ?? 0) + 1);
-    }
-  }
-
-  return neighborhoods
-    .map(({ id, ...n }) => ({ ...n, count: counts.get(id) ?? 0 }))
-    .filter(n => n.count > 0)
-    .sort((a, b) => a.name.localeCompare(b.name, 'de'));
+  return data.map(({ id: _id, shops, ...n }) => ({
+    ...n,
+    count: (shops as { count: number }[])[0]?.count ?? 0,
+  }));
 }
 
 // --- Opening hours helpers ---
@@ -354,42 +342,3 @@ export function formatOpeningHours(periods: unknown): [string, string][] {
   return result;
 }
 
-/**
- * Checks if a shop is currently open based on its periods.
- * Uses Europe/Berlin timezone.
- */
-export function isShopOpen(periods: unknown): boolean | null {
-  if (!Array.isArray(periods) || periods.length === 0) return null;
-
-  const now = new Date();
-  const berlinTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
-  const currentDay = berlinTime.getDay(); // 0=Sun
-  const currentMinutes = berlinTime.getHours() * 60 + berlinTime.getMinutes();
-
-  for (const p of periods as Period[]) {
-    const openDay = p.open.day;
-    const openMinutes = p.open.hour * 60 + (p.open.minute ?? 0);
-
-    if (!p.close) {
-      // 24h open — check if this is the right day
-      if (openDay === currentDay) return true;
-      continue;
-    }
-
-    const closeDay = p.close.day;
-    const closeMinutes = p.close.hour * 60 + (p.close.minute ?? 0);
-
-    if (openDay === closeDay) {
-      // Same day
-      if (currentDay === openDay && currentMinutes >= openMinutes && currentMinutes < closeMinutes) {
-        return true;
-      }
-    } else {
-      // Wraps past midnight (e.g. open Fri 18:00, close Sat 02:00)
-      if (currentDay === openDay && currentMinutes >= openMinutes) return true;
-      if (currentDay === closeDay && currentMinutes < closeMinutes) return true;
-    }
-  }
-
-  return false;
-}

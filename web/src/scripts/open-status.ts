@@ -32,13 +32,13 @@ export function renderAllOpenStatusPills(): void {
       const periods: Period[] = JSON.parse(periodsAttr);
       const open = isOpenNow(periods);
       el.textContent = open ? 'Geöffnet' : 'Geschlossen';
-      el.classList.remove('hidden');
+      el.style.removeProperty('display');
       if (open) {
-        el.classList.add('bg-pistachio-bg', 'text-pistachio');
-        el.classList.remove('bg-strawberry-bg', 'text-strawberry');
+        el.classList.add('open');
+        el.classList.remove('closed');
       } else {
-        el.classList.add('bg-strawberry-bg', 'text-strawberry');
-        el.classList.remove('bg-pistachio-bg', 'text-pistachio');
+        el.classList.add('closed');
+        el.classList.remove('open');
       }
     } catch {
       // Invalid JSON or missing data — leave hidden

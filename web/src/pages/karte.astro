@@ -9,26 +9,88 @@ const photoMap = await resolveShopPhotoMap(shops);
 ---
 
 <BaseLayout title="Eiskarte Leipzig — Alle Eisdielen auf der Karte" description="Finde Eisdielen in deiner Nähe auf der interaktiven Leipzig-Karte.">
-  <div class="max-w-[1200px] mx-auto px-4 py-8">
-    <h1 class="font-heading text-3xl sm:text-4xl font-semibold text-choco mb-6">
-      Eiskarte Leipzig
-    </h1>
+  <div class="page-wrap">
+    <div class="page-head">
+      <h1 class="page-title">Eiskarte <em>Leipzig</em></h1>
+      <p class="page-count">{shops.length} Eisdielen</p>
+    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      <!-- Map (3/5 width on desktop, full on mobile) -->
-      <div class="lg:col-span-3 lg:sticky lg:top-20 lg:self-start">
-        <LeafletMap shops={shops} height="500px" />
+    <div class="map-layout">
+      <div class="map-col">
+        <LeafletMap shops={shops} height="560px" />
       </div>
 
-      <!-- Shop list (2/5 width on desktop) -->
-      <div class="lg:col-span-2 space-y-4">
-        <p class="text-sm text-choco-muted font-medium">
-          {shops.length} Eisdielen in Leipzig
-        </p>
+      <div class="list-col">
         {shops.map((shop, i) => (
-          <ShopCard shop={shop} index={i} photoUrl={photoMap.get(shop.id)} />
+          <ShopCard shop={shop} photoUrl={photoMap.get(shop.id)} />
         ))}
       </div>
     </div>
   </div>
 </BaseLayout>
+
+<style>
+  .page-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 1rem 80px;
+  }
+
+  .page-head {
+    margin-bottom: 28px;
+  }
+
+  .page-title {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--color-choco);
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+  }
+
+  .page-title em {
+    font-style: italic;
+    color: var(--color-pistachio);
+  }
+
+  .page-count {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0;
+  }
+
+  .map-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .map-col {
+    position: sticky;
+    top: 80px;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .list-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  @media (max-width: 900px) {
+    .map-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .map-col {
+      position: static;
+    }
+  }
+</style>

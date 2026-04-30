@@ -1,5 +1,4 @@
 ---
-import { MapPin } from 'lucide-astro';
 import type { Neighborhood } from '../lib/data';
 
 interface Props {
@@ -17,19 +16,52 @@ const visible = excludeSlug
 
 {visible.length > 0 && (
   <nav aria-label={ariaLabel}>
-    <ul class="flex flex-wrap justify-center gap-2.5 list-none p-0 m-0">
+    <ul class="pills-list">
       {visible.map(n => (
         <li>
-          <a
-            href={`/stadtteil/${n.slug}`}
-            class="pill text-sm font-medium no-underline transition-colors inline-flex items-center gap-1.5 border border-choco-muted text-choco-muted hover:bg-choco-muted/10"
-          >
-            <MapPin size={14} stroke-width={2} />
-            <span>{n.name}</span>
-            <span class="opacity-60">({n.count})</span>
+          <a href={`/stadtteil/${n.slug}`} class="pill">
+            {n.name} <span class="pill-count">{n.count}</span>
           </a>
         </li>
       ))}
     </ul>
   </nav>
 )}
+
+<style>
+  .pills-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pill {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .pill:hover {
+    border-color: var(--color-pistachio);
+    color: var(--color-choco);
+  }
+
+  .pill-count {
+    color: var(--ink-mute);
+    font-size: 9.5px;
+  }
+</style>

@@ -14,7 +14,7 @@ const { shops, photoMap, emptyMessage = 'Hmm, hier schmilzt gerade nichts. Versu
 {shops.length > 0 ? (
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {shops.map((shop, i) => (
-      <ShopCard shop={shop} index={i} photoUrl={photoMap?.get(shop.id)} />
+      <ShopCard shop={shop} photoUrl={photoMap?.get(shop.id)} />
     ))}
   </div>
 ) : (

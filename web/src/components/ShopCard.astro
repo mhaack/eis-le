@@ -1,109 +1,230 @@
 ---
-import { type Shop } from '../lib/data';
-import Tag from './Tag.astro';
+import type { Shop } from '../lib/data';
 import LVZBadge from './LVZBadge.astro';
-import { Star } from 'lucide-astro';
 
 interface Props {
   shop: Shop;
-  index?: number;
   photoUrl?: string;
 }
 
-const { shop, index = 0, photoUrl } = Astro.props;
+const { shop, photoUrl } = Astro.props;
 
-const stars = Math.round(shop.google_rating);
 const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
 
-const tags: { label: string; variant: 'pistachio' | 'strawberry' | 'vanilla' | 'blueberry' | 'mango' | 'default' }[] = [];
-if (shop.has_vegan_options) tags.push({ label: 'Vegan', variant: 'pistachio' });
-if (shop.child_friendly) tags.push({ label: 'Kinderfreundlich', variant: 'mango' });
-if (shop.has_bike_parking) tags.push({ label: 'Fahrrad', variant: 'default' });
+const tagLabels: string[] = [];
+if (shop.has_vegan_options) tagLabels.push('Vegan');
+if (shop.is_handmade) tagLabels.push('Handgemacht');
+if (shop.has_outdoor_seating) tagLabels.push('Terrasse');
+if (shop.child_friendly) tagLabels.push('Kinder');
+if (shop.is_organic) tagLabels.push('Bio');
 ---
 
-<a
-  href={`/${shop.slug}`}
-  class:list={[
-    'card block no-underline overflow-hidden animate-fade-up',
-    `stagger-${(index % 9) + 1}`,
-  ]}
-  data-filter-lvz={shop.lvz_rank ? 'true' : undefined}
-  data-filter-vegan={shop.has_vegan_options ? 'true' : undefined}
-  data-filter-kinder={shop.child_friendly ? 'true' : undefined}
-  data-filter-fahrrad={shop.has_bike_parking ? 'true' : undefined}
->
-  <!-- Image -->
-  <div class="relative h-48 overflow-hidden">
+<a href={`/${shop.slug}`} class="shop-card">
+  <!-- Art -->
+  <div class="card-art">
     <img
       src={photoUrl || 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop'}
       alt={shop.name}
-      class:list={['w-full h-full object-cover', tempClosed && 'grayscale']}
+      class:list={['card-photo', tempClosed && 'grayscale']}
       loading="lazy"
     />
-    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-
+{tempClosed ? (
+      <span class="card-status closed">Geschlossen</span>
+    ) : shop.is_24h ? (
+      <span class="card-status open">24h</span>
+    ) : shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
+      <span
+        class="card-status"
+        style="display:none"
+        data-open-status
+        data-periods={JSON.stringify(shop.opening_hours)}
+      />
+    )}
     {shop.lvz_rank && (
-      <div class="absolute top-3 left-3">
+      <div class="card-lvz-badge">
         <LVZBadge rank={shop.lvz_rank} size="sm" />
       </div>
     )}
-
-    <div class="absolute top-3 right-3">
-      {tempClosed ? (
-        <span class="pill text-xs font-medium bg-strawberry-bg text-strawberry">
-          Vorübergehend geschlossen
-        </span>
-      ) : shop.is_24h ? (
-        <span class="pill text-xs font-medium bg-pistachio-bg text-pistachio">
-          24h geöffnet
-        </span>
-      ) : shop.opening_hours && (shop.opening_hours as unknown[]).length > 0 && (
-        <span
-          class="pill text-xs font-medium hidden"
-          data-open-status
-          data-periods={JSON.stringify(shop.opening_hours)}
-        />
-      )}
-    </div>
   </div>
 
-  <!-- Content -->
-  <div class="p-4">
-    <!-- Neighborhood + rating row -->
-    <div class="flex items-center justify-between mb-1.5">
-      <span class="text-xs font-medium text-choco-muted uppercase tracking-wide">{shop.neighborhood?.name}</span>
-      <div class="flex items-center gap-1">
-        <Star size={14} stroke-width={2} class="text-vanilla fill-current" />
-        <span class="text-sm font-semibold text-choco">{shop.google_rating}</span>
-        <span class="text-xs text-choco-muted">({shop.google_review_count})</span>
-      </div>
+  <!-- Body -->
+  <div class="card-body">
+    <div class="card-hood">
+      <span>{shop.neighborhood?.name ?? '—'}</span>
+      {shop.price_per_scoop && <span>{shop.price_per_scoop}/Kugel</span>}
     </div>
-
-    <!-- Shop name -->
-    <h3 class="font-heading text-lg font-semibold text-choco mb-1 leading-snug">{shop.name}</h3>
-
-    <!-- Type + price -->
-    <p class="text-sm text-choco-muted mb-3">
-      {shop.ice_cream_type}
-      {shop.is_handmade && <span> · Handgemacht</span>}
-      {shop.price_per_scoop && <span> · {shop.price_per_scoop}</span>}
-    </p>
-
-    <!-- Tags -->
-    {tags.length > 0 && (
-      <div class="flex flex-wrap gap-1.5 mb-3">
-        {tags.map(t => <Tag label={t.label} variant={t.variant} />)}
+    <h3 class="card-name">{shop.name}</h3>
+    <p class="card-tagline">{shop.short_description || shop.specialty || shop.ice_cream_type}</p>
+    {tagLabels.length > 0 && (
+      <div class="card-tags">
+        {tagLabels.slice(0, 3).map(t => <span class="card-tag">{t}</span>)}
       </div>
     )}
-
-    <!-- Specialty quote -->
-    {shop.specialty && (
-      <p class="text-sm text-choco-light italic leading-relaxed line-clamp-2">
-        &bdquo;{shop.specialty}&ldquo;
-      </p>
-    )}
+    <div class="card-meta">
+      <span class="card-rating"><span class="card-star">★</span> {shop.google_rating?.toFixed(1)} <span class="card-dim">({shop.google_review_count})</span></span>
+      <span>{shop.ice_cream_type}</span>
+    </div>
   </div>
 </a>
+
+<style>
+  .shop-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .shop-card:hover {
+    border-color: var(--color-pistachio);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px -20px oklch(0.4 0.05 80 / 0.25);
+  }
+
+  /* Art */
+  .card-art {
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+    background: var(--color-sand);
+  }
+
+  .card-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-status {
+    position: absolute;
+    top: 11px;
+    right: 13px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 2px;
+    background: oklch(0.99 0.008 85 / 0.9);
+    color: var(--ink-soft);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .card-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: oklch(0.62 0.02 60);
+    flex-shrink: 0;
+  }
+
+  .card-status.open {
+    color: oklch(0.42 0.1 140);
+  }
+
+  .card-status.open::before {
+    background: oklch(0.72 0.14 140);
+  }
+
+  .card-status.closed {
+    color: oklch(0.5 0.08 25);
+  }
+
+  .card-status.closed::before {
+    background: oklch(0.65 0.1 25);
+  }
+
+  .card-lvz-badge {
+    position: absolute;
+    bottom: 11px;
+    left: 13px;
+  }
+
+  /* Body */
+  .card-body {
+    padding: 15px 17px 17px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card-hood {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .card-name {
+    font-family: var(--font-heading);
+    font-size: 21px;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    margin: 0 0 3px;
+    color: var(--color-choco);
+    font-weight: 400;
+  }
+
+  .card-tagline {
+    font-family: var(--font-heading);
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin: 0 0 11px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .card-tag {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-pistachio);
+    padding: 2px 6px;
+    background: var(--color-pistachio-bg);
+    border-radius: 2px;
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    letter-spacing: 0.03em;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule-soft);
+    margin-top: auto;
+  }
+
+  .card-rating { color: var(--color-choco); }
+  .card-star { color: var(--color-strawberry); }
+  .card-dim { color: var(--ink-mute); }
+</style>
 
 <script>
   import { renderAllOpenStatusPills } from '../scripts/open-status';

@@ -7,19 +7,18 @@ const links = [
   { href: '/', label: 'Entdecken' },
   { href: '/karte', label: 'Karte' },
   { href: '/stadtteile', label: 'Stadtteile' },
-  // { href: '/beste-eisdielen-lvz', label: 'LVZ-Ranking' },
 ];
 
 function isActive(href: string): boolean {
   if (currentPath === href) return true;
-  // Highlight "Stadtteile" on individual /stadtteil/[slug] detail pages too.
   if (href === '/stadtteile' && currentPath.startsWith('/stadtteil/')) return true;
   return false;
 }
 ---
 
-<header class="sticky top-0 z-50 bg-creme/90 backdrop-blur-md border-b border-border">
-  <nav class="max-w-[960px] mx-auto px-4 py-3 flex items-center justify-between">
+<header class="nav-bar">
+  <nav class="nav-inner">
+    <!-- Logo — DO NOT CHANGE -->
     <a href="/" class="flex items-center gap-0 no-underline leading-none" aria-label="eis-le.de — Startseite">
       <span class="font-heading text-[1.3rem] font-bold text-choco tracking-[0.02em]">E</span>
       <LogoIcon size={22} class="relative -top-px -mx-px shrink-0" />
@@ -27,24 +26,21 @@ function isActive(href: string): boolean {
       <span class="font-heading text-[1.15rem] font-normal text-choco-muted mx-[0.3rem] tracking-[0.04em]">//</span>
       <span class="font-heading text-[1.3rem] font-normal text-choco-muted tracking-[0.06em]">LE</span>
     </a>
-    <div class="hidden sm:flex items-center gap-6">
+
+    <div class="nav-links">
       {links.map(link => (
         <a
           href={link.href}
-          class:list={[
-            'text-sm font-medium transition-colors',
-            isActive(link.href)
-              ? 'text-choco'
-              : 'text-choco-muted hover:text-choco',
-          ]}
+          class:list={['nav-link', isActive(link.href) && 'active']}
         >
           {link.label}
         </a>
       ))}
     </div>
+
     <!-- Mobile menu button -->
     <button
-      class="sm:hidden p-2 text-choco-muted hover:text-choco"
+      class="nav-mobile-btn sm:hidden"
       aria-label="Menü öffnen"
       x-data
       @click="$dispatch('toggle-mobile-nav')"
@@ -54,34 +50,95 @@ function isActive(href: string): boolean {
       </svg>
     </button>
   </nav>
+
   <!-- Mobile nav -->
   <div
     x-data="{ open: false }"
     @toggle-mobile-nav.window="open = !open"
     x-show="open"
-    x-transition:enter="transition ease-out duration-200"
-    x-transition:enter-start="opacity-0 -translate-y-2"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0 -translate-y-1"
     x-transition:enter-end="opacity-100 translate-y-0"
-    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave="transition ease-in duration-100"
     x-transition:leave-start="opacity-100 translate-y-0"
-    x-transition:leave-end="opacity-0 -translate-y-2"
-    class="sm:hidden border-b border-border bg-creme px-4 pb-4"
+    x-transition:leave-end="opacity-0 -translate-y-1"
+    class="nav-mobile-drawer sm:hidden"
     style="display: none;"
   >
-    <div class="flex flex-col gap-3">
-      {links.map(link => (
-        <a
-          href={link.href}
-          class:list={[
-            'text-sm font-medium py-1',
-            isActive(link.href)
-              ? 'text-choco'
-              : 'text-choco-muted hover:text-choco',
-          ]}
-        >
-          {link.label}
-        </a>
-      ))}
-    </div>
+    {links.map(link => (
+      <a href={link.href} class:list={['nav-mobile-link', isActive(link.href) && 'active']}>
+        {link.label}
+      </a>
+    ))}
   </div>
 </header>
+
+<style>
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-creme);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-links {
+    display: none;
+    align-items: center;
+    gap: 24px;
+  }
+
+  @media (min-width: 640px) {
+    .nav-links { display: flex; }
+  }
+
+  .nav-link {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--color-choco);
+  }
+
+  .nav-mobile-btn {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .nav-mobile-drawer {
+    border-top: 1px solid var(--rule-soft);
+    padding: 12px 1rem 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-mobile-link {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 4px 0;
+  }
+
+  .nav-mobile-link.active {
+    color: var(--color-choco);
+  }
+</style>
