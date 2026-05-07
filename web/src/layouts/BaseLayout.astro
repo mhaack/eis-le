@@ -20,6 +20,10 @@ const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewe
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <!-- Preconnect for Google Fonts (eliminates serial CSS @import chain) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap">
     <!-- Open Graph -->
     <meta property="og:site_name" content="eis-le.de" />
     <meta property="og:type" content="website" />
@@ -41,6 +45,7 @@ const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewe
     <title>{title}</title>
     {canonical && <link rel="canonical" href={canonical} />}
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/<\/script>/gi, '<\\/script>')} />}
+    <link rel="preconnect" href="https://p.eis-le.de">
     <script defer src="https://p.eis-le.de/static/files/pa.js"
       id="pianjs"
       data-hit-endpoint="https://p.eis-le.de/pv"
