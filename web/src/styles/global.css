@@ -29,7 +29,7 @@
   /* Editorial design tokens (prototype-compatible) */
   --ink: oklch(0.24 0.02 60);
   --ink-soft: oklch(0.42 0.015 60);
-  --ink-mute: oklch(0.62 0.012 60);
+  --ink-mute: oklch(0.46 0.012 60);
   --rule: oklch(0.88 0.015 80);
   --rule-soft: oklch(0.92 0.012 82);
   --pistachio-ink: oklch(0.38 0.06 140);
