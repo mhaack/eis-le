@@ -20,7 +20,7 @@ const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1501443762994-82bd5da
 async function resolvePhotoUrl(resourceName: string, maxHeight = 600): Promise<string> {
   if (!googleApiKey) return PLACEHOLDER_IMG;
 
-  console.warn(`[photo-fetch] ${resourceName} (maxHeight=${maxHeight})`);
+  console.error(`[photo-fetch] ${resourceName} (maxHeight=${maxHeight})`);
 
   const apiUrl = `https://places.googleapis.com/v1/${resourceName}/media?maxHeightPx=${maxHeight}&key=${googleApiKey}`;
 
@@ -55,6 +55,7 @@ export async function resolveShopPhotos(photos: string[] | null): Promise<string
  * Returns a Map of shop.id → photo URL.
  */
 export async function resolveShopPhotoMap(shops: Shop[]): Promise<Map<string, string>> {
+  console.error(`[photo-fetch] resolveShopPhotoMap called with ${shops.length} shops`);
   const entries = await Promise.all(
     shops.map(async (shop) => {
       const firstPhoto = shop.photos?.[0];
