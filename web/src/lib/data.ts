@@ -20,14 +20,14 @@ const photoUrlCache = new Map<string, Promise<string>>();
  * At build time, resolves the redirect to get a stable CDN URL.
  * Falls back to the API URL (with key) or a placeholder.
  */
-async function resolvePhotoUrl(resourceName: string, maxHeight = 600): Promise<string> {
+async function resolvePhotoUrl(resourceName: string, maxHeight = 400, maxWidth = 800): Promise<string> {
   if (!googleApiKey) return PLACEHOLDER_IMG;
 
-  const cacheKey = `${resourceName}:${maxHeight}`;
+  const cacheKey = `${resourceName}:${maxHeight}:${maxWidth}`;
   const cached = photoUrlCache.get(cacheKey);
   if (cached) return cached;
 
-  const apiUrl = `https://places.googleapis.com/v1/${resourceName}/media?maxHeightPx=${maxHeight}&key=${googleApiKey}`;
+  const apiUrl = `https://places.googleapis.com/v1/${resourceName}/media?maxHeightPx=${maxHeight}&maxWidthPx=${maxWidth}&key=${googleApiKey}`;
 
   const promise = fetch(apiUrl, { redirect: 'manual' })
     .then(res => {

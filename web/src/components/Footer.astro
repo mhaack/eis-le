@@ -26,7 +26,7 @@ const neighborhoods = await getNeighborhoods();
       <!-- Entdecken + Mehr -->
       <div class="footer-nav-col">
         <div class="footer-col">
-          <h5 class="footer-col-head">Entdecken</h5>
+          <h3 class="footer-col-head">Entdecken</h3>
           <a href="/">Alle Eisdielen</a>
           <a href="/stadtteile">Stadtteile</a>
           <a href="/veganes-eis">Veganes Eis</a>
@@ -35,7 +35,7 @@ const neighborhoods = await getNeighborhoods();
           <a href="/eis-fuer-radfahrer">Radtour-Stopp</a>
         </div>
         <div class="footer-col">
-          <h5 class="footer-col-head">Mehr</h5>
+          <h3 class="footer-col-head">Mehr</h3>
           <a href="/karte">Karte</a>
           <a href="/impressum">Impressum</a>
           <a href="/datenschutz">Datenschutz</a>
@@ -44,7 +44,7 @@ const neighborhoods = await getNeighborhoods();
 
       <!-- Stadtteile -->
       <div class="footer-col">
-        <h5 class="footer-col-head"><a href="/stadtteile">Stadtteile</a></h5>
+        <h3 class="footer-col-head"><a href="/stadtteile">Stadtteile</a></h3>
         <div class="footer-stadtteile-links">
           {neighborhoods.map(n => (
             <a href={`/stadtteil/${n.slug}`}>

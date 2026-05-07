@@ -15,7 +15,7 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
 <BaseLayout title="eisleipzig — Die besten Eisdielen in Leipzig">
   <Hero shopCount={shops.length} neighborhoodCount={neighborhoodCount} />
 
-  <div x-data="shopFilter()" x-cloak>
+  <div x-data="shopFilter()">
     <FilterBar />
 
     <div class="page-wrap">
@@ -43,7 +43,7 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
             data-is-24h={shop.is_24h ? 'true' : undefined}
             data-search={`${shop.name} ${shop.neighborhood?.name ?? ''} ${shop.specialty ?? ''} ${shop.ice_cream_type ?? ''}`.toLowerCase()}
           >
-            <ShopCard shop={shop} photoUrl={photoMap.get(shop.id)} />
+            <ShopCard shop={shop} photoUrl={photoMap.get(shop.id)} eager={i === 0} />
           </div>
         ))}
       </div>
@@ -140,12 +140,14 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
         if (stored) {
           try {
             const { value, expires } = JSON.parse(stored);
-            if (expires > Date.now()) this.activeSort = value;
-            else localStorage.removeItem('eis-sort');
+            if (expires > Date.now()) {
+              this.activeSort = value;
+              this.applySort();
+            } else {
+              localStorage.removeItem('eis-sort');
+            }
           } catch { localStorage.removeItem('eis-sort'); }
         }
-
-        this.applySort();
         this.updateOpenStat();
       },
 

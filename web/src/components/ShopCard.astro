@@ -5,9 +5,10 @@ import LVZBadge from './LVZBadge.astro';
 interface Props {
   shop: Shop;
   photoUrl?: string;
+  eager?: boolean;
 }
 
-const { shop, photoUrl } = Astro.props;
+const { shop, photoUrl, eager = false } = Astro.props;
 
 const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
 
@@ -26,7 +27,10 @@ if (shop.is_organic) tagLabels.push('Bio');
       src={photoUrl || 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop'}
       alt={shop.name}
       class:list={['card-photo', tempClosed && 'grayscale']}
-      loading="lazy"
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : 'auto'}
+      width="800"
+      height="400"
     />
 {tempClosed ? (
       <span class="card-status closed">Geschlossen</span>
@@ -203,7 +207,7 @@ if (shop.is_organic) tagLabels.push('Bio');
     font-size: 9.5px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--color-pistachio);
+    color: var(--pistachio-ink);
     padding: 2px 6px;
     background: var(--color-pistachio-bg);
     border-radius: 2px;
