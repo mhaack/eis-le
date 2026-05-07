@@ -12,6 +12,9 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop';
 
+// Deduplicates Google Places /media redirect calls across the build
+const photoUrlCache = new Map<string, Promise<string>>();
+
 /**
  * Converts a Google Places photo resource name to a usable image URL.
  * At build time, resolves the redirect to get a stable CDN URL.
@@ -20,17 +23,21 @@ const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1501443762994-82bd5da
 async function resolvePhotoUrl(resourceName: string, maxHeight = 600): Promise<string> {
   if (!googleApiKey) return PLACEHOLDER_IMG;
 
+  const cacheKey = `${resourceName}:${maxHeight}`;
+  const cached = photoUrlCache.get(cacheKey);
+  if (cached) return cached;
+
   const apiUrl = `https://places.googleapis.com/v1/${resourceName}/media?maxHeightPx=${maxHeight}&key=${googleApiKey}`;
 
-  try {
-    const res = await fetch(apiUrl, { redirect: 'manual' });
-    const location = res.headers.get('location');
-    if (location) return location;
-    // If no redirect, the response itself may be the image (unlikely)
-    return apiUrl;
-  } catch {
-    return apiUrl;
-  }
+  const promise = fetch(apiUrl, { redirect: 'manual' })
+    .then(res => {
+      const location = res.headers.get('location');
+      return location ?? apiUrl;
+    })
+    .catch(() => apiUrl);
+
+  photoUrlCache.set(cacheKey, promise);
+  return promise;
 }
 
 /**
