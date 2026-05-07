@@ -12,6 +12,14 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop';
 
+// Tracks every Google Places /media fetch made during this build
+const _fetchedPhotos: string[] = [];
+
+process.on('exit', () => {
+  console.log(`\n[photo-fetch] Total API calls: ${_fetchedPhotos.length}`);
+  _fetchedPhotos.forEach(name => console.log(`  ${name}`));
+});
+
 /**
  * Converts a Google Places photo resource name to a usable image URL.
  * At build time, resolves the redirect to get a stable CDN URL.
@@ -19,6 +27,8 @@ const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1501443762994-82bd5da
  */
 async function resolvePhotoUrl(resourceName: string, maxHeight = 600): Promise<string> {
   if (!googleApiKey) return PLACEHOLDER_IMG;
+
+  _fetchedPhotos.push(`${resourceName} (maxHeight=${maxHeight})`);
 
   const apiUrl = `https://places.googleapis.com/v1/${resourceName}/media?maxHeightPx=${maxHeight}&key=${googleApiKey}`;
 
