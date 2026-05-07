@@ -27,8 +27,6 @@ async function resolvePhotoUrl(resourceName: string, maxHeight = 600): Promise<s
   const cached = photoUrlCache.get(cacheKey);
   if (cached) return cached;
 
-  console.error(`[photo-fetch] ${resourceName} (maxHeight=${maxHeight})`);
-
   const apiUrl = `https://places.googleapis.com/v1/${resourceName}/media?maxHeightPx=${maxHeight}&key=${googleApiKey}`;
 
   const promise = fetch(apiUrl, { redirect: 'manual' })
@@ -62,7 +60,6 @@ export async function resolveShopPhotos(photos: string[] | null): Promise<string
  * Returns a Map of shop.id → photo URL.
  */
 export async function resolveShopPhotoMap(shops: Shop[]): Promise<Map<string, string>> {
-  console.error(`[photo-fetch] resolveShopPhotoMap called with ${shops.length} shops`);
   const entries = await Promise.all(
     shops.map(async (shop) => {
       const firstPhoto = shop.photos?.[0];
