@@ -20,7 +20,7 @@ const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1501443762994-82bd5da
 async function resolvePhotoUrl(resourceName: string, maxHeight = 600): Promise<string> {
   if (!googleApiKey) return PLACEHOLDER_IMG;
 
-  console.log(`[photo-fetch] ${resourceName} (maxHeight=${maxHeight})`);
+  console.warn(`[photo-fetch] ${resourceName} (maxHeight=${maxHeight})`);
 
   const apiUrl = `https://places.googleapis.com/v1/${resourceName}/media?maxHeightPx=${maxHeight}&key=${googleApiKey}`;
 
