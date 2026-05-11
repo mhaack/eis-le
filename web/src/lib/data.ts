@@ -235,10 +235,12 @@ export async function getNeighborhoods(): Promise<Neighborhood[]> {
 
   if (error || !data) return [];
 
-  return data.map(({ id: _id, shops, ...n }) => ({
-    ...n,
-    count: (shops as { count: number }[])[0]?.count ?? 0,
-  }));
+  return data
+    .map(({ id: _id, shops, ...n }) => ({
+      ...n,
+      count: (shops as { count: number }[])[0]?.count ?? 0,
+    }))
+    .filter(n => n.count > 0);
 }
 
 // --- Opening hours helpers ---
