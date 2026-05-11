@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://eis-le.de/sitemap-index.xml

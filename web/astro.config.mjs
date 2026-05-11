@@ -33,5 +33,5 @@ export default defineConfig({
       },
     },
   },
-  integrations: [alpinejs(), sitemap()],
+  integrations: [alpinejs(), sitemap({ lastmod: new Date() })],
 });
