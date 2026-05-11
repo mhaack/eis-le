@@ -75,8 +75,10 @@ function isActive(href: string): boolean {
 
 <style>
   .nav-bar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 50;
     background: var(--color-creme);
     border-bottom: 1px solid var(--rule);
@@ -119,7 +121,7 @@ function isActive(href: string): boolean {
     border: none;
     color: var(--ink-soft);
     cursor: pointer;
-    padding: 4px;
+    padding: 1px 4px;
   }
 
   .nav-mobile-drawer {
@@ -132,7 +134,7 @@ function isActive(href: string): boolean {
 
   .nav-mobile-link {
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: 17px;
     color: var(--ink-soft);
     text-decoration: none;
     padding: 4px 0;
