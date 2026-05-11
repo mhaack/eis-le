@@ -75,11 +75,14 @@ function isActive(href: string): boolean {
 
 <style>
   .nav-bar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 50;
     background: var(--color-creme);
     border-bottom: 1px solid var(--rule);
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   .nav-inner {
