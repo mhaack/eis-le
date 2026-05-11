@@ -18,7 +18,7 @@ const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewe
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <!-- Preconnect for Google Fonts (eliminates serial CSS @import chain) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,7 +54,7 @@ const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewe
   </head>
   <body class="min-h-screen flex flex-col">
     <Nav />
-    <main class="flex-1" style="padding-top: calc(55px + env(safe-area-inset-top, 0px))">
+    <main class="flex-1" style="padding-top: 55px">
       <slot />
     </main>
     <Footer />
