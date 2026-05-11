@@ -82,6 +82,7 @@ function isActive(href: string): boolean {
     z-index: 50;
     background: var(--color-creme);
     border-bottom: 1px solid var(--rule);
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   .nav-inner {
@@ -121,7 +122,7 @@ function isActive(href: string): boolean {
     border: none;
     color: var(--ink-soft);
     cursor: pointer;
-    padding: 4px;
+    padding: 1px 4px;
   }
 
   .nav-mobile-drawer {
