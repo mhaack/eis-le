@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { buildGalleryUrl } from '../lib/data';
+import { buildGalleryUrl, buildCFImageUrl } from '../lib/data';
 
 interface Props {
   shopImages: string[] | null;
@@ -17,6 +17,10 @@ const useShopImages = shopImages && shopImages.length > 0;
 const shopUrls = useShopImages
   ? shopImages!.map(filename => buildGalleryUrl(slug, filename))
   : [];
+
+// CF Image Optimization URLs — Cloudflare transforms on the fly at eis-le.de/cdn-cgi/image/
+const cfMain  = shopUrls[0] ? buildCFImageUrl(shopUrls[0], { w: 800, h: 400, f: 'webp', fit: 'cover' }) : '';
+const cfThumb = (url: string) => buildCFImageUrl(url, { w: 400, h: 200, f: 'webp', fit: 'cover' });
 ---
 
 <div class="gallery-wrap">
@@ -25,7 +29,7 @@ const shopUrls = useShopImages
       <>
         <div class="g g-main">
           <Image
-            src={shopUrls[0]}
+            src={cfMain}
             alt={`${shopName} — Foto 1`}
             width={800}
             height={400}
@@ -34,22 +38,22 @@ const shopUrls = useShopImages
         </div>
         {shopUrls[1] && (
           <div class="g">
-            <Image src={shopUrls[1]} alt={`${shopName} — Foto 2`} width={400} height={200} class="g-img" />
+            <Image src={cfThumb(shopUrls[1])} alt={`${shopName} — Foto 2`} width={400} height={200} class="g-img" />
           </div>
         )}
         {shopUrls[2] && (
           <div class="g">
-            <Image src={shopUrls[2]} alt={`${shopName} — Foto 3`} width={400} height={200} class="g-img" />
+            <Image src={cfThumb(shopUrls[2])} alt={`${shopName} — Foto 3`} width={400} height={200} class="g-img" />
           </div>
         )}
         {shopUrls[3] && (
           <div class="g">
-            <Image src={shopUrls[3]} alt={`${shopName} — Foto 4`} width={400} height={200} class="g-img" />
+            <Image src={cfThumb(shopUrls[3])} alt={`${shopName} — Foto 4`} width={400} height={200} class="g-img" />
           </div>
         )}
         {shopUrls[4] && (
           <div class="g">
-            <Image src={shopUrls[4]} alt={`${shopName} — Foto 5`} width={400} height={200} class="g-img" />
+            <Image src={cfThumb(shopUrls[4])} alt={`${shopName} — Foto 5`} width={400} height={200} class="g-img" />
           </div>
         )}
       </>

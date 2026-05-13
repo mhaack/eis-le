@@ -134,9 +134,20 @@ export interface Shop {
 }
 
 const SUPABASE_STORAGE_URL = 'https://itzvyiwotjxywkpesznj.supabase.co/storage/v1/object/public';
+const CF_IMAGE_PREFIX = 'https://eis-le.de/cdn-cgi/image';
 
 export function buildGalleryUrl(slug: string, filename: string): string {
   return `${SUPABASE_STORAGE_URL}/shop-images/${slug}/${filename}`;
+}
+
+export function buildCFImageUrl(
+  src: string,
+  params: { w?: number; h?: number; f?: string; q?: number; fit?: string }
+): string {
+  const parts = (Object.entries(params) as [string, string | number | undefined][])
+    .filter(([, v]) => v !== undefined)
+    .map(([k, v]) => `${k}=${v}`);
+  return `${CF_IMAGE_PREFIX}/${parts.join(',')}/${src}`;
 }
 
 // Base query: only published shops, sorted by LVZ rank first, then rating
