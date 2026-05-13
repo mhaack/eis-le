@@ -1,0 +1,164 @@
+---
+import { Image } from 'astro:assets';
+import { buildGalleryUrl } from '../lib/data';
+
+interface Props {
+  shopImages: string[] | null;
+  googleImages: string[];
+  slug: string;
+  shopName: string;
+  tempClosed?: boolean;
+  googleMapsUrl?: string | null;
+}
+
+const { shopImages, googleImages, slug, shopName, tempClosed = false, googleMapsUrl } = Astro.props;
+
+const useShopImages = shopImages && shopImages.length > 0;
+const shopUrls = useShopImages
+  ? shopImages!.map(filename => buildGalleryUrl(slug, filename))
+  : [];
+---
+
+<div class="gallery-wrap">
+  <div class="detail-gallery">
+    {useShopImages ? (
+      <>
+        <div class="g g-main">
+          <Image
+            src={shopUrls[0]}
+            alt={`${shopName} — Foto 1`}
+            width={800}
+            height={400}
+            format="webp"
+            class:list={['g-img', tempClosed && 'grayscale']}
+          />
+        </div>
+        {shopUrls[1] && (
+          <div class="g">
+            <Image
+              src={shopUrls[1]}
+              alt={`${shopName} — Foto 2`}
+              width={400}
+              height={200}
+              format="webp"
+              class="g-img"
+            />
+          </div>
+        )}
+        {shopUrls[2] && (
+          <div class="g">
+            <Image
+              src={shopUrls[2]}
+              alt={`${shopName} — Foto 3`}
+              width={400}
+              height={200}
+              format="webp"
+              class="g-img"
+            />
+          </div>
+        )}
+        {shopUrls[3] && (
+          <div class="g">
+            <Image
+              src={shopUrls[3]}
+              alt={`${shopName} — Foto 4`}
+              width={400}
+              height={200}
+              format="webp"
+              class="g-img"
+            />
+          </div>
+        )}
+        {shopUrls[4] && (
+          <div class="g">
+            <Image
+              src={shopUrls[4]}
+              alt={`${shopName} — Foto 5`}
+              width={400}
+              height={200}
+              format="webp"
+              class="g-img"
+            />
+          </div>
+        )}
+      </>
+    ) : (
+      <>
+        <div class="g g-main">
+          <img src={googleImages[0]} alt={`${shopName} — Foto 1`} class:list={['g-img', tempClosed && 'grayscale']} />
+          <span class="g-count">{googleImages.length} Fotos</span>
+        </div>
+        {googleImages[1] && <div class="g"><img src={googleImages[1]} alt={`${shopName} — Foto 2`} class="g-img" /></div>}
+        {googleImages[2] && <div class="g"><img src={googleImages[2]} alt={`${shopName} — Foto 3`} class="g-img" /></div>}
+        {googleImages[3] && <div class="g"><img src={googleImages[3]} alt={`${shopName} — Foto 4`} class="g-img" /></div>}
+        {googleImages[4] && (
+          <div class="g">
+            <img src={googleImages[4]} alt={`${shopName} — Foto 5`} class="g-img" />
+            {googleMapsUrl && (
+              <a href={googleMapsUrl} target="_blank" rel="noopener" class="g-view">Fotos von Google →</a>
+            )}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+</div>
+
+<style>
+  .gallery-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 1rem 0;
+  }
+  .detail-gallery {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 6px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .g {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-sand);
+  }
+  .g-main {
+    grid-row: 1 / 3;
+  }
+  .g-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .g-count {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: oklch(0.1 0 0 / 0.5);
+    color: var(--color-creme);
+    padding: 5px 9px;
+    border-radius: 2px;
+    backdrop-filter: blur(6px);
+  }
+  .g-view {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: oklch(0.99 0.008 85 / 0.9);
+    color: var(--color-choco);
+    padding: 5px 10px;
+    border-radius: 2px;
+    text-decoration: none;
+    border: 1px solid var(--rule);
+  }
+</style>

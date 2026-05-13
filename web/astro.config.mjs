@@ -34,4 +34,7 @@ export default defineConfig({
     },
   },
   integrations: [alpinejs(), sitemap({ lastmod: new Date() })],
+  image: {
+    domains: ['itzvyiwotjxywkpesznj.supabase.co'],
+  },
 });

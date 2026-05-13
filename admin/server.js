@@ -42,6 +42,13 @@ createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Methods', '*');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
+  // Config endpoint: returns Supabase credentials for local Storage operations (localhost only)
+  if (req.method === 'GET' && req.url === '/config') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ url: SUPABASE_URL, key: SUPABASE_KEY }));
+    return;
+  }
+
   // API proxy: /api/* → Supabase REST API
   if (req.url.startsWith('/api/')) {
     const supaPath = req.url.slice(4); // strip /api prefix

@@ -128,6 +128,13 @@ export interface Shop {
   listing_status: 'published' | 'draft' | 'archived';
   instagram_url: string | null;
   facebook_url: string | null;
+  gallery_images: string[] | null;
+}
+
+const SUPABASE_STORAGE_URL = 'https://itzvyiwotjxywkpesznj.supabase.co/storage/v1/object/public';
+
+export function buildGalleryUrl(slug: string, filename: string): string {
+  return `${SUPABASE_STORAGE_URL}/shop-images/${slug}/${filename}`;
 }
 
 // Base query: only published shops, sorted by LVZ rank first, then rating
