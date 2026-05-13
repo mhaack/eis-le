@@ -103,6 +103,19 @@
     .shop-count { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
 
     [x-cloak] { display: none !important; }
+
+    /* Gallery admin */
+    .gallery-admin-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .gallery-admin-item { display: flex; gap: 12px; align-items: center; background: #f9f7f4; border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+    .gallery-admin-thumb { width: 80px; height: 54px; object-fit: cover; border-radius: 4px; background: var(--border); flex-shrink: 0; }
+    .gallery-admin-meta { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+    .gallery-admin-filename { font-size: 12px; font-family: ui-monospace, monospace; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gallery-admin-btns { display: flex; gap: 4px; flex-shrink: 0; }
+    .gallery-btn { padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; cursor: pointer; background: var(--card); color: var(--text); }
+    .gallery-btn:hover:not(:disabled) { background: #f0ece6; }
+    .gallery-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .gallery-btn-del { color: var(--red); border-color: #f5c6c3; }
+    .gallery-btn-del:hover:not(:disabled) { background: #fde; }
   </style>
 </head>
 <body x-data="adminApp()" @keydown.meta.s.window.prevent="view === 'detail' && save()" @keydown.ctrl.s.window.prevent="view === 'detail' && save()">
@@ -582,6 +595,39 @@
             </div>
           </details>
 
+          <!-- Galerie-Bilder -->
+          <details>
+            <summary>Galerie-Bilder</summary>
+            <div class="section-body">
+              <div class="gallery-admin-list" x-show="selected.gallery_images && selected.gallery_images.length > 0">
+                <template x-for="(img, idx) in (selected.gallery_images || [])" :key="idx">
+                  <div class="gallery-admin-item">
+                    <img :src="galleryPreviewUrl(img)" class="gallery-admin-thumb" :alt="img" loading="lazy" />
+                    <div class="gallery-admin-meta">
+                      <span class="gallery-admin-filename" x-text="img"></span>
+                      <div class="gallery-admin-btns">
+                        <button class="gallery-btn" @click="moveGalleryImage(idx, -1)" :disabled="idx === 0" title="Nach oben">↑</button>
+                        <button class="gallery-btn" @click="moveGalleryImage(idx, 1)" :disabled="idx === (selected.gallery_images?.length ?? 0) - 1" title="Nach unten">↓</button>
+                        <button class="gallery-btn gallery-btn-del" @click="deleteGalleryImage(idx)" title="Löschen">×</button>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+              <p x-show="!selected.gallery_images || selected.gallery_images.length === 0" style="font-size:13px;color:var(--muted);margin-bottom:12px;">Keine eigenen Bilder. Google-Fotos werden als Fallback angezeigt.</p>
+
+              <div class="field" x-show="!selected.gallery_images || selected.gallery_images.length < 5">
+                <label>Bild hochladen (noch <span x-text="5 - (selected.gallery_images?.length ?? 0)"></span> möglich)</label>
+                <input type="file" multiple accept="image/jpeg,image/png,image/webp" @change="uploadGalleryImages($event)" :disabled="galleryUploading" style="padding:4px 0;">
+              </div>
+              <p x-show="selected.gallery_images && selected.gallery_images.length >= 5" style="font-size:12px;color:var(--muted);margin-top:4px;">Maximum von 5 Bildern erreicht.</p>
+
+              <div x-show="galleryUploading" style="font-size:13px;color:var(--accent);margin-top:8px;">Wird hochgeladen...</div>
+              <div x-show="galleryError" x-text="galleryError" style="font-size:13px;color:var(--red);margin-top:8px;"></div>
+              <p class="field-hint" style="margin-top:12px;">Pfad: <code>shop-images/<span x-text="selected.slug"></span>/</code></p>
+            </div>
+          </details>
+
           <!-- Raw data -->
           <details>
             <summary>Rohdaten (JSON)</summary>
@@ -684,6 +730,9 @@
         saving: false,
         saveError: null,
         saveSuccess: false,
+        galleryUploading: false,
+        galleryError: null,
+        _supabaseConfig: null,
 
         // Boolean fields list for coercion
         _boolFields: [
@@ -709,6 +758,7 @@
 
         init() {
           this.loadData();
+          this.initSupabaseConfig();
         },
 
         async loadData() {
@@ -857,7 +907,103 @@
             day: '2-digit', month: '2-digit', year: 'numeric',
             hour: '2-digit', minute: '2-digit'
           });
-        }
+        },
+
+        async initSupabaseConfig() {
+          try {
+            const res = await fetch('/config');
+            this._supabaseConfig = await res.json();
+          } catch {}
+        },
+
+        galleryPreviewUrl(filename) {
+          if (!this._supabaseConfig || !this.selected) return '';
+          return `${this._supabaseConfig.url}/storage/v1/object/public/shop-images/${this.selected.slug}/${filename}`;
+        },
+
+        moveGalleryImage(idx, dir) {
+          const arr = [...(this.selected.gallery_images || [])];
+          const newIdx = idx + dir;
+          if (newIdx < 0 || newIdx >= arr.length) return;
+          [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+          this.selected.gallery_images = arr;
+        },
+
+        async deleteGalleryImage(idx) {
+          const arr = [...(this.selected.gallery_images || [])];
+          const filename = arr.splice(idx, 1)[0];
+          this.selected.gallery_images = arr.length > 0 ? arr : null;
+
+          if (this._supabaseConfig && filename) {
+            fetch(`${this._supabaseConfig.url}/storage/v1/object/shop-images/${this.selected.slug}/${filename}`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${this._supabaseConfig.key}`,
+                'apikey': this._supabaseConfig.key,
+              },
+            }).catch(() => {});
+          }
+        },
+
+        async uploadGalleryImages(event) {
+          const files = Array.from(event.target.files);
+          if (!files.length) return;
+
+          if (!this._supabaseConfig) {
+            this.galleryError = 'Supabase-Konfiguration nicht geladen';
+            return;
+          }
+
+          const current = this.selected.gallery_images || [];
+          const slots = 5 - current.length;
+          const toUpload = files.slice(0, slots);
+
+          this.galleryUploading = true;
+          this.galleryError = null;
+
+          const uploaded = [];
+          for (const file of toUpload) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            const ALLOWED_EXTS = ['jpg', 'jpeg', 'png', 'webp'];
+            if (!ALLOWED_EXTS.includes(ext)) {
+              this.galleryError = `Ungültiges Format: ${ext}. Erlaubt: jpg, jpeg, png, webp`;
+              break;
+            }
+            const base = file.name.replace(/\.[^.]+$/, '')
+              .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            const filename = `${base}.${ext}`;
+            const path = `${this.selected.slug}/${filename}`;
+
+            try {
+              const res = await fetch(`${this._supabaseConfig.url}/storage/v1/object/shop-images/${path}`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${this._supabaseConfig.key}`,
+                  'apikey': this._supabaseConfig.key,
+                  'Content-Type': file.type,
+                  'x-upsert': 'true',
+                },
+                body: file,
+              });
+
+              if (!res.ok) {
+                const err = await res.json().catch(() => ({ message: res.statusText }));
+                throw new Error(err.message || 'Upload fehlgeschlagen');
+              }
+              uploaded.push(filename);
+            } catch (err) {
+              this.galleryError = err.message;
+              break;
+            }
+          }
+
+          if (uploaded.length) {
+            this.selected.gallery_images = [...current, ...uploaded];
+          }
+
+          this.galleryUploading = false;
+          event.target.value = '';
+        },
       };
     }
   </script>

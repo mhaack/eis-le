@@ -1,0 +1,153 @@
+---
+import { Image } from 'astro:assets';
+import { buildGalleryUrl, buildCFImageUrl } from '../lib/data';
+
+interface Props {
+  shopImages: string[] | null;
+  googleImages: string[];
+  slug: string;
+  shopName: string;
+  tempClosed?: boolean;
+  googleMapsUrl?: string | null;
+}
+
+const { shopImages, googleImages, slug, shopName, tempClosed = false, googleMapsUrl } = Astro.props;
+
+const useShopImages = shopImages && shopImages.length > 0;
+const shopUrls = useShopImages
+  ? shopImages!.map(filename => buildGalleryUrl(slug, filename))
+  : [];
+
+// CF Image Optimization URLs — Cloudflare transforms on the fly at eis-le.de/cdn-cgi/image/
+const cfMain  = shopUrls[0] ? buildCFImageUrl(shopUrls[0], { w: 800, h: 400, f: 'webp', fit: 'cover' }) : '';
+const cfThumb = (url: string) => buildCFImageUrl(url, { w: 400, h: 200, f: 'webp', fit: 'cover' });
+
+const count = useShopImages ? shopUrls.length : googleImages.length;
+---
+
+<div class="gallery-wrap">
+  <div class="detail-gallery" data-count={count}>
+    {useShopImages ? (
+      <>
+        <div class="g g-main">
+          <Image
+            src={cfMain}
+            alt={`${shopName} — Foto 1`}
+            width={800}
+            height={400}
+            class:list={['g-img', tempClosed && 'grayscale']}
+          />
+        </div>
+        {shopUrls.slice(1).map((url, i) => (
+          <div class="g">
+            <Image src={cfThumb(url)} alt={`${shopName} — Foto ${i + 2}`} width={400} height={200} class="g-img" />
+          </div>
+        ))}
+      </>
+    ) : (
+      <>
+        <div class="g g-main">
+          <img src={googleImages[0]} alt={`${shopName} — Foto 1`} class:list={['g-img', tempClosed && 'grayscale']} />
+          <span class="g-count">{googleImages.length} Fotos</span>
+        </div>
+        {googleImages.slice(1).map((src, i, arr) => (
+          <div class="g">
+            <img src={src} alt={`${shopName} — Foto ${i + 2}`} class="g-img" />
+            {i === arr.length - 1 && googleMapsUrl && (
+              <a href={googleMapsUrl} target="_blank" rel="noopener" class="g-view">Fotos von Google →</a>
+            )}
+          </div>
+        ))}
+      </>
+    )}
+  </div>
+</div>
+
+<style>
+  .gallery-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 1rem 0;
+  }
+  .detail-gallery {
+    display: grid;
+    gap: 6px;
+    border-radius: 2px;
+    overflow: hidden;
+    /* default: 5 images */
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 200px 200px;
+  }
+  /* 1 image: full-width, no thumbnails */
+  .detail-gallery[data-count="1"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: 400px;
+  }
+  /* 2 images: side by side, both full height */
+  .detail-gallery[data-count="2"] {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 400px;
+  }
+  /* 3 images: main + 2 stacked in right column */
+  .detail-gallery[data-count="3"] {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 200px 200px;
+  }
+  /* 4 images: main + 3 stacked in right column */
+  .detail-gallery[data-count="4"] {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: repeat(3, 130px);
+  }
+  .g {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-sand);
+  }
+  .g-main {
+    grid-row: 1 / 3; /* default: span 2 rows */
+  }
+  /* counts 1 & 2: single row, no spanning needed */
+  .detail-gallery[data-count="1"] .g-main,
+  .detail-gallery[data-count="2"] .g-main {
+    grid-row: 1;
+  }
+  /* count 4: span all 3 rows */
+  .detail-gallery[data-count="4"] .g-main {
+    grid-row: 1 / 4;
+  }
+  .g-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .g-count {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: oklch(0.1 0 0 / 0.5);
+    color: var(--color-creme);
+    padding: 5px 9px;
+    border-radius: 2px;
+    backdrop-filter: blur(6px);
+  }
+  .g-view {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: oklch(0.99 0.008 85 / 0.9);
+    color: var(--color-choco);
+    padding: 5px 10px;
+    border-radius: 2px;
+    text-decoration: none;
+    border: 1px solid var(--rule);
+  }
+</style>

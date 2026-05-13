@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import alpinejs from '@astrojs/alpinejs';
 import cloudflare from '@astrojs/cloudflare';
@@ -34,4 +34,9 @@ export default defineConfig({
     },
   },
   integrations: [alpinejs(), sitemap({ lastmod: new Date() })],
+  image: {
+    // Passthrough emits the original src URL directly — no /_image proxy needed.
+    // Required for remote images (Supabase Storage) in a static Cloudflare Pages deploy.
+    service: passthroughImageService(),
+  },
 });

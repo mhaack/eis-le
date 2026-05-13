@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
 const googleApiKey = import.meta.env.GOOGLE_PLACES_API_KEY;
+const isProduction = import.meta.env.CF_PAGES_BRANCH === 'main';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables');
@@ -21,6 +22,7 @@ const photoUrlCache = new Map<string, Promise<string>>();
  * Falls back to the API URL (with key) or a placeholder.
  */
 async function resolvePhotoUrl(resourceName: string, maxHeight = 400, maxWidth = 800): Promise<string> {
+  if (!isProduction) return `https://placehold.co/${maxWidth}x${maxHeight}`;
   if (!googleApiKey) return PLACEHOLDER_IMG;
 
   const cacheKey = `${resourceName}:${maxHeight}:${maxWidth}`;
@@ -128,6 +130,24 @@ export interface Shop {
   listing_status: 'published' | 'draft' | 'archived';
   instagram_url: string | null;
   facebook_url: string | null;
+  gallery_images: string[] | null;
+}
+
+const SUPABASE_STORAGE_URL = `${supabaseUrl}/storage/v1/object/public`;
+const CF_IMAGE_PREFIX = 'https://eis-le.de/cdn-cgi/image';
+
+export function buildGalleryUrl(slug: string, filename: string): string {
+  return `${SUPABASE_STORAGE_URL}/shop-images/${slug}/${filename}`;
+}
+
+export function buildCFImageUrl(
+  src: string,
+  params: { w?: number; h?: number; f?: string; q?: number; fit?: string }
+): string {
+  const parts = (Object.entries(params) as [string, string | number | undefined][])
+    .filter(([, v]) => v !== undefined)
+    .map(([k, v]) => `${k}=${v}`);
+  return `${CF_IMAGE_PREFIX}/${parts.join(',')}/${src}`;
 }
 
 // Base query: only published shops, sorted by LVZ rank first, then rating
@@ -136,7 +156,6 @@ async function fetchShops(filters?: (query: ReturnType<ReturnType<typeof supabas
     .from('shops')
     .select('*, neighborhood:neighborhoods(*)')
     .eq('listing_status', 'published')
-    .order('lvz_rank', { ascending: true, nullsFirst: false })
     .order('google_rating', { ascending: false });
 
   if (filters) {
