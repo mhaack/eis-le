@@ -964,6 +964,11 @@
           const uploaded = [];
           for (const file of toUpload) {
             const ext = file.name.split('.').pop().toLowerCase();
+            const ALLOWED_EXTS = ['jpg', 'jpeg', 'png', 'webp'];
+            if (!ALLOWED_EXTS.includes(ext)) {
+              this.galleryError = `Ungültiges Format: ${ext}. Erlaubt: jpg, jpeg, png, webp`;
+              break;
+            }
             const base = file.name.replace(/\.[^.]+$/, '')
               .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             const filename = `${base}.${ext}`;
