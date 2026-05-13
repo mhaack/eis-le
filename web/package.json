@@ -6,8 +6,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "dev": "ENV=development astro dev",
+    "build": "ENV=production astro build",
+    "build:dev": "ENV=development astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
