@@ -21,10 +21,12 @@ const shopUrls = useShopImages
 // CF Image Optimization URLs — Cloudflare transforms on the fly at eis-le.de/cdn-cgi/image/
 const cfMain  = shopUrls[0] ? buildCFImageUrl(shopUrls[0], { w: 800, h: 400, f: 'webp', fit: 'cover' }) : '';
 const cfThumb = (url: string) => buildCFImageUrl(url, { w: 400, h: 200, f: 'webp', fit: 'cover' });
+
+const count = useShopImages ? shopUrls.length : googleImages.length;
 ---
 
 <div class="gallery-wrap">
-  <div class="detail-gallery">
+  <div class="detail-gallery" data-count={count}>
     {useShopImages ? (
       <>
         <div class="g g-main">
@@ -69,11 +71,32 @@ const cfThumb = (url: string) => buildCFImageUrl(url, { w: 400, h: 200, f: 'webp
   }
   .detail-gallery {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: 200px 200px;
     gap: 6px;
     border-radius: 2px;
     overflow: hidden;
+    /* default: 5 images */
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 200px 200px;
+  }
+  /* 1 image: full-width, no thumbnails */
+  .detail-gallery[data-count="1"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: 400px;
+  }
+  /* 2 images: side by side, both full height */
+  .detail-gallery[data-count="2"] {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 400px;
+  }
+  /* 3 images: main + 2 stacked in right column */
+  .detail-gallery[data-count="3"] {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 200px 200px;
+  }
+  /* 4 images: main + 3 stacked in right column */
+  .detail-gallery[data-count="4"] {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: repeat(3, 130px);
   }
   .g {
     position: relative;
@@ -81,7 +104,16 @@ const cfThumb = (url: string) => buildCFImageUrl(url, { w: 400, h: 200, f: 'webp
     background: var(--color-sand);
   }
   .g-main {
-    grid-row: 1 / 3;
+    grid-row: 1 / 3; /* default: span 2 rows */
+  }
+  /* counts 1 & 2: single row, no spanning needed */
+  .detail-gallery[data-count="1"] .g-main,
+  .detail-gallery[data-count="2"] .g-main {
+    grid-row: 1;
+  }
+  /* count 4: span all 3 rows */
+  .detail-gallery[data-count="4"] .g-main {
+    grid-row: 1 / 4;
   }
   .g-img {
     width: 100%;
