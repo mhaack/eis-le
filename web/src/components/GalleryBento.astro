@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { buildGalleryUrl } from '../lib/data';
 
 interface Props {
@@ -23,12 +24,34 @@ const shopUrls = useShopImages
     {useShopImages ? (
       <>
         <div class="g g-main">
-          <img src={shopUrls[0]} alt={`${shopName} — Foto 1`} class:list={['g-img', tempClosed && 'grayscale']} />
+          <Image
+            src={shopUrls[0]}
+            alt={`${shopName} — Foto 1`}
+            width={800}
+            height={400}
+            class:list={['g-img', tempClosed && 'grayscale']}
+          />
         </div>
-        {shopUrls[1] && <div class="g"><img src={shopUrls[1]} alt={`${shopName} — Foto 2`} class="g-img" /></div>}
-        {shopUrls[2] && <div class="g"><img src={shopUrls[2]} alt={`${shopName} — Foto 3`} class="g-img" /></div>}
-        {shopUrls[3] && <div class="g"><img src={shopUrls[3]} alt={`${shopName} — Foto 4`} class="g-img" /></div>}
-        {shopUrls[4] && <div class="g"><img src={shopUrls[4]} alt={`${shopName} — Foto 5`} class="g-img" /></div>}
+        {shopUrls[1] && (
+          <div class="g">
+            <Image src={shopUrls[1]} alt={`${shopName} — Foto 2`} width={400} height={200} class="g-img" />
+          </div>
+        )}
+        {shopUrls[2] && (
+          <div class="g">
+            <Image src={shopUrls[2]} alt={`${shopName} — Foto 3`} width={400} height={200} class="g-img" />
+          </div>
+        )}
+        {shopUrls[3] && (
+          <div class="g">
+            <Image src={shopUrls[3]} alt={`${shopName} — Foto 4`} width={400} height={200} class="g-img" />
+          </div>
+        )}
+        {shopUrls[4] && (
+          <div class="g">
+            <Image src={shopUrls[4]} alt={`${shopName} — Foto 5`} width={400} height={200} class="g-img" />
+          </div>
+        )}
       </>
     ) : (
       <>
