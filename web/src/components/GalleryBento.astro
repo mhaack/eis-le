@@ -13,7 +13,7 @@ interface Props {
 
 const { shopImages, googleImages, slug, shopName, tempClosed = false, googleMapsUrl } = Astro.props;
 
-const useShopImages = shopImages && shopImages.length > 0;
+const useShopImages = shopImages && shopImages.length > 0 && !!shopImages[0];
 const shopUrls = useShopImages
   ? shopImages!.map(filename => buildGalleryUrl(slug, filename))
   : [];
