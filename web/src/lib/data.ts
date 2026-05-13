@@ -64,6 +64,13 @@ export async function resolveShopPhotos(photos: string[] | null): Promise<string
 export async function resolveShopPhotoMap(shops: Shop[]): Promise<Map<string, string>> {
   const entries = await Promise.all(
     shops.map(async (shop) => {
+      // Own gallery images take priority over Google photos
+      if (shop.gallery_images && shop.gallery_images.length > 0 && shop.gallery_images[0]) {
+        const rawUrl = buildGalleryUrl(shop.slug, shop.gallery_images[0]);
+        const url = buildCFImageUrl(rawUrl, { w: 800, h: 400, f: 'webp', fit: 'cover' });
+        return [shop.id, url] as const;
+      }
+      // Fall back to Google photo
       const firstPhoto = shop.photos?.[0];
       if (!firstPhoto) return [shop.id, PLACEHOLDER_IMG] as const;
       const url = firstPhoto.startsWith('http') ? firstPhoto : await resolvePhotoUrl(firstPhoto);
