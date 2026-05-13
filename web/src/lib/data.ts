@@ -156,7 +156,6 @@ async function fetchShops(filters?: (query: ReturnType<ReturnType<typeof supabas
     .from('shops')
     .select('*, neighborhood:neighborhoods(*)')
     .eq('listing_status', 'published')
-    .order('lvz_rank', { ascending: true, nullsFirst: false })
     .order('google_rating', { ascending: false });
 
   if (filters) {
