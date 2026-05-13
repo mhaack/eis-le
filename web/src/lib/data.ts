@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
 const googleApiKey = import.meta.env.GOOGLE_PLACES_API_KEY;
+const isProduction = import.meta.env.ENVIRONMENT === 'production';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables');
@@ -21,6 +22,7 @@ const photoUrlCache = new Map<string, Promise<string>>();
  * Falls back to the API URL (with key) or a placeholder.
  */
 async function resolvePhotoUrl(resourceName: string, maxHeight = 400, maxWidth = 800): Promise<string> {
+  if (!isProduction) return `https://placehold.co/${maxWidth}x${maxHeight}`;
   if (!googleApiKey) return PLACEHOLDER_IMG;
 
   const cacheKey = `${resourceName}:${maxHeight}:${maxWidth}`;
