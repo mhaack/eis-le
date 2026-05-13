@@ -55,7 +55,7 @@ if (shop.is_organic) tagLabels.push('Bio');
   <div class="card-body">
     <div class="card-hood">
       <span>{shop.neighborhood?.name ?? '—'}</span>
-      {shop.price_per_scoop && <span>{shop.price_per_scoop}/Kugel</span>}
+      {shop.price_per_scoop && <span>{shop.price_per_scoop}</span>}
     </div>
     <h3 class="card-name">{shop.name}</h3>
     <p class="card-tagline">{shop.short_description || shop.specialty || shop.ice_cream_type}</p>

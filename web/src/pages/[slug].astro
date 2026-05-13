@@ -123,7 +123,7 @@ const showTagline = taglineText && taglineText !== storyText;
           </div>
           <div class="qf">
             <div class="qf-label">Preis</div>
-            <div class="qf-value">{shop.price_per_scoop ? `${shop.price_per_scoop}/Kugel` : (shop.price_level ? '€'.repeat(shop.price_level) : '—')}</div>
+            <div class="qf-value">{shop.price_per_scoop ? shop.price_per_scoop : (shop.price_level ? '€'.repeat(shop.price_level) : '—')}</div>
           </div>
           <div class="qf">
             <div class="qf-label">Stadtteil</div>
