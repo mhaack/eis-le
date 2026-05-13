@@ -133,7 +133,7 @@ export interface Shop {
   gallery_images: string[] | null;
 }
 
-const SUPABASE_STORAGE_URL = 'https://itzvyiwotjxywkpesznj.supabase.co/storage/v1/object/public';
+const SUPABASE_STORAGE_URL = `${supabaseUrl}/storage/v1/object/public`;
 const CF_IMAGE_PREFIX = 'https://eis-le.de/cdn-cgi/image';
 
 export function buildGalleryUrl(slug: string, filename: string): string {
