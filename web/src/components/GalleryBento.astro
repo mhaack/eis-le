@@ -36,26 +36,11 @@ const cfThumb = (url: string) => buildCFImageUrl(url, { w: 400, h: 200, f: 'webp
             class:list={['g-img', tempClosed && 'grayscale']}
           />
         </div>
-        {shopUrls[1] && (
+        {shopUrls.slice(1).map((url, i) => (
           <div class="g">
-            <Image src={cfThumb(shopUrls[1])} alt={`${shopName} — Foto 2`} width={400} height={200} class="g-img" />
+            <Image src={cfThumb(url)} alt={`${shopName} — Foto ${i + 2}`} width={400} height={200} class="g-img" />
           </div>
-        )}
-        {shopUrls[2] && (
-          <div class="g">
-            <Image src={cfThumb(shopUrls[2])} alt={`${shopName} — Foto 3`} width={400} height={200} class="g-img" />
-          </div>
-        )}
-        {shopUrls[3] && (
-          <div class="g">
-            <Image src={cfThumb(shopUrls[3])} alt={`${shopName} — Foto 4`} width={400} height={200} class="g-img" />
-          </div>
-        )}
-        {shopUrls[4] && (
-          <div class="g">
-            <Image src={cfThumb(shopUrls[4])} alt={`${shopName} — Foto 5`} width={400} height={200} class="g-img" />
-          </div>
-        )}
+        ))}
       </>
     ) : (
       <>
@@ -63,17 +48,14 @@ const cfThumb = (url: string) => buildCFImageUrl(url, { w: 400, h: 200, f: 'webp
           <img src={googleImages[0]} alt={`${shopName} — Foto 1`} class:list={['g-img', tempClosed && 'grayscale']} />
           <span class="g-count">{googleImages.length} Fotos</span>
         </div>
-        {googleImages[1] && <div class="g"><img src={googleImages[1]} alt={`${shopName} — Foto 2`} class="g-img" /></div>}
-        {googleImages[2] && <div class="g"><img src={googleImages[2]} alt={`${shopName} — Foto 3`} class="g-img" /></div>}
-        {googleImages[3] && <div class="g"><img src={googleImages[3]} alt={`${shopName} — Foto 4`} class="g-img" /></div>}
-        {googleImages[4] && (
+        {googleImages.slice(1).map((src, i, arr) => (
           <div class="g">
-            <img src={googleImages[4]} alt={`${shopName} — Foto 5`} class="g-img" />
-            {googleMapsUrl && (
+            <img src={src} alt={`${shopName} — Foto ${i + 2}`} class="g-img" />
+            {i === arr.length - 1 && googleMapsUrl && (
               <a href={googleMapsUrl} target="_blank" rel="noopener" class="g-view">Fotos von Google →</a>
             )}
           </div>
-        )}
+        ))}
       </>
     )}
   </div>
