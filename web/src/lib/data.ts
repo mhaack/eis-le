@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
 const googleApiKey = import.meta.env.GOOGLE_PLACES_API_KEY;
-const isProduction = import.meta.env.CF_PAGES_BRANCH === 'main';
+const isProduction = process.env.CF_PAGES_BRANCH === 'main';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables');
