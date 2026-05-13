@@ -12,6 +12,9 @@
     "preview": "astro preview",
     "astro": "astro"
   },
+  "overrides": {
+    "vite": "^7.3.3"
+  },
   "dependencies": {
     "@astrojs/alpinejs": "^0.5.0",
     "@astrojs/cloudflare": "^13.5.0",
