@@ -19,7 +19,7 @@ const shopUrls = useShopImages
   : [];
 
 // CF Image Optimization URLs — Cloudflare transforms on the fly at eis-le.de/cdn-cgi/image/
-const cfMain  = shopUrls[0] ? buildCFImageUrl(shopUrls[0], { w: 800, h: 400, f: 'webp', fit: 'cover' }) : '';
+const cfMain  = shopUrls[0] ? buildCFImageUrl(shopUrls[0], { w: 800, h: 400, f: 'webp' }) : '';
 const cfThumb = (url: string) => buildCFImageUrl(url, { w: 400, h: 200, f: 'webp', fit: 'cover' });
 
 const count = useShopImages ? shopUrls.length : googleImages.length;
