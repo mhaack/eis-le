@@ -4,7 +4,7 @@ import LVZBadge from '../components/LVZBadge.astro';
 import FlavorList from '../components/FlavorList.astro';
 import HighlightList from '../components/HighlightList.astro';
 import GalleryBento from '../components/GalleryBento.astro';
-import { getAllShops, getShopBySlug, formatOpeningHours, resolveShopPhotos } from '../lib/data';
+import { getAllShops, getShopBySlug, formatOpeningHours, resolveShopPhotos, resolveShopPrimaryPhoto } from '../lib/data';
 import { Globe, Phone, Navigation, CreditCard } from 'lucide-astro';
 
 export async function getStaticPaths() {
@@ -17,6 +17,7 @@ const shop = await getShopBySlug(slug!);
 if (!shop) return Astro.redirect('/');
 
 const photos = await resolveShopPhotos(shop.photos);
+const primaryImage = await resolveShopPrimaryPhoto(shop, { w: 1200, h: 630, f: 'webp', fit: 'cover' });
 const hoursEntries = formatOpeningHours(shop.opening_hours);
 const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
 
@@ -42,7 +43,7 @@ const openingHoursSpecification = shop.opening_hours?.map((p) => {
 });
 const jsonLd: Record<string, unknown> = {
   '@context': 'https://schema.org', '@type': 'IceCreamShop',
-  name: shop.name, url: `https://eis-le.de/${shop.slug}`, image: photos[0],
+  name: shop.name, url: `https://eis-le.de/${shop.slug}`, image: primaryImage,
   address: { '@type': 'PostalAddress', streetAddress: shop.address, addressLocality: shop.city ?? 'Leipzig', addressCountry: 'DE' },
   geo: { '@type': 'GeoCoordinates', latitude: shop.latitude, longitude: shop.longitude },
   servesCuisine: 'Eis',
@@ -68,7 +69,7 @@ const showTagline = taglineText && taglineText !== storyText;
   title={`${shop.name} — Eisdiele in ${shop.neighborhood?.name ?? 'Leipzig'}`}
   description={shop.specialty}
   canonical={`https://eis-le.de/${shop.slug}`}
-  image={photos[0]}
+  image={primaryImage}
   jsonLd={jsonLd}
 >
   <!-- Breadcrumb -->
