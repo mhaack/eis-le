@@ -90,7 +90,7 @@ Key column groups:
 | `listing_status` | Set to `draft` on import; manually promoted to `published` |
 | `lvz_rank`, `lvz_year` | LVZ newspaper rankings — manual |
 | `our_rating`, `our_review` | Editorial ratings — manual |
-| `highlights` | JSONB editorial highlights — manual |
+| `highlights` | JSONB editorial highlights — manual. Each entry: `{ icon, title, text }`. Supported icons: `star`, `award`, `truck`, `refresh-cw`, `heart`, `leaf`, `sparkles`, `coffee`, `map-pin`, `clock`, `gift`, `smile`, `thumbs-up`, `zap`, `sun`, `snowflake`, `music`, `camera`, `dog`, `popsicle`, `dessert`, `cup-soda`, `vegan`, `circle-parking`, `utensils`, `cake`, `cake-slice`, `chef-hat`, `ice-cream-bowl`, `ice-cream-cone`. Unknown strings render as emoji fallback. |
 | `flavor_list` | JSONB flavor list with tags (signatur, vegan, saisonal, alkohol, bio, exotisch, softeis, sorbet) — manual |
 | `last_visited_at` | Manual |
 | `price_per_scoop` | Manual |
