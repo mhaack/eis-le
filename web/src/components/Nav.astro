@@ -3,11 +3,25 @@ import LogoIcon from './LogoIcon.astro';
 
 const currentPath = Astro.url.pathname;
 
-const links = [
-  { href: '/', label: 'Entdecken' },
-  { href: '/karte', label: 'Karte' },
+const entdeckenLinks = [
+  { href: '/',                  label: 'Alle Eisdielen' },
+  { href: '/stadtteile',        label: 'Stadtteile' },
+  { href: '/veganes-eis',       label: 'Veganes Eis' },
+  { href: '/eis-mit-kindern',   label: 'Eis mit Kindern' },
+  { href: '/date-night-eis',    label: 'Date Night' },
+  { href: '/eis-fuer-radfahrer',label: 'Radtour-Stopp' },
+];
+
+const topLinks = [
+  { href: '/karte',      label: 'Karte' },
   { href: '/stadtteile', label: 'Stadtteile' },
 ];
+
+const entdeckenPaths = new Set(['/', '/veganes-eis', '/eis-mit-kindern', '/date-night-eis', '/eis-fuer-radfahrer']);
+const isEntdeckenActive =
+  entdeckenPaths.has(currentPath) ||
+  currentPath.startsWith('/stadtteil/') ||
+  currentPath.startsWith('/shop/');
 
 function isActive(href: string): boolean {
   if (currentPath === href) return true;
@@ -28,7 +42,29 @@ function isActive(href: string): boolean {
     </a>
 
     <div class="nav-links">
-      {links.map(link => (
+      <!-- Entdecken dropdown -->
+      <div x-data="{ open: false }" class="nav-dropdown-wrap" @click.outside="open = false" @keydown.escape.window="open = false">
+        <button
+          class:list={['nav-link nav-dropdown-btn', isEntdeckenActive && 'active']}
+          @click="open = !open"
+          :aria-expanded="open"
+          aria-haspopup="true"
+        >
+          Entdecken
+          <svg class="nav-chevron" :class="open && 'rotated'" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div x-show="open" x-cloak x-transition:enter="dropdown-enter" x-transition:enter-start="dropdown-enter-start" x-transition:enter-end="dropdown-enter-end" x-transition:leave="dropdown-leave" x-transition:leave-start="dropdown-leave-start" x-transition:leave-end="dropdown-leave-end" class="nav-dropdown" @click="open = false">
+          {entdeckenLinks.map(link => (
+            <a href={link.href} class:list={['nav-dropdown-link', isActive(link.href) && 'active']}>
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {topLinks.map(link => (
         <a
           href={link.href}
           class:list={['nav-link', isActive(link.href) && 'active']}
@@ -65,7 +101,13 @@ function isActive(href: string): boolean {
     class="nav-mobile-drawer sm:hidden"
     style="display: none;"
   >
-    {links.map(link => (
+    {entdeckenLinks.map(link => (
+      <a href={link.href} class:list={['nav-mobile-link', isActive(link.href) && 'active']}>
+        {link.label}
+      </a>
+    ))}
+    <div class="nav-mobile-divider"></div>
+    {topLinks.map(link => (
       <a href={link.href} class:list={['nav-mobile-link', isActive(link.href) && 'active']}>
         {link.label}
       </a>
@@ -116,6 +158,62 @@ function isActive(href: string): boolean {
     color: var(--color-choco);
   }
 
+  /* Dropdown */
+  .nav-dropdown-wrap {
+    position: relative;
+  }
+
+  .nav-dropdown-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .nav-chevron {
+    transition: transform 0.15s;
+    color: var(--ink-mute);
+  }
+
+  .nav-chevron.rotated {
+    transform: rotate(180deg);
+  }
+
+  .nav-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-creme);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 6px 0;
+    min-width: 160px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    z-index: 100;
+  }
+
+  .nav-dropdown-link {
+    display: block;
+    padding: 8px 16px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.1s, background 0.1s;
+    white-space: nowrap;
+  }
+
+  .nav-dropdown-link:hover,
+  .nav-dropdown-link.active {
+    color: var(--color-choco);
+    background: var(--color-card-bg);
+  }
+
+  /* Mobile */
   .nav-mobile-btn {
     background: none;
     border: none;
@@ -142,5 +240,10 @@ function isActive(href: string): boolean {
 
   .nav-mobile-link.active {
     color: var(--color-choco);
+  }
+
+  .nav-mobile-divider {
+    border-top: 1px solid var(--rule-soft);
+    margin: 4px 0;
   }
 </style>
