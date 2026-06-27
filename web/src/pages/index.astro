@@ -38,6 +38,7 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
             data-filter-kinder={shop.child_friendly ? 'true' : undefined}
             data-filter-outdoor={shop.has_outdoor_seating ? 'true' : undefined}
             data-filter-spät={shop.open_after_8pm ? 'true' : undefined}
+            data-ice-type={shop.ice_cream_type ?? undefined}
             data-filter-handgemacht={shop.is_handmade ? 'true' : undefined}
             data-temp-closed={shop.google_business_status === 'CLOSED_TEMPORARILY' ? 'true' : undefined}
             data-is-24h={shop.is_24h ? 'true' : undefined}
@@ -206,6 +207,10 @@ const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boole
                   const periods = JSON.parse(el.dataset.periods || '[]');
                   if (!isOpenNow(periods)) { show = false; break; }
                 } catch { show = false; break; }
+              } else if (key === 'spät') {
+                if (el.hasAttribute('data-is-24h')) continue;
+                if (el.dataset.iceType === 'Eisautomat') continue;
+                if (!el.hasAttribute('data-filter-spät')) { show = false; break; }
               } else {
                 if (!el.hasAttribute(`data-filter-${key}`)) { show = false; break; }
               }
