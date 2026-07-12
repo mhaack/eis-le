@@ -36,7 +36,7 @@ A directory of ice cream shops in Leipzig — [eis-le.de](https://eis-le.de).
 │   │   ├── pages/                   Astro pages (shop detail, curated lists, map, legal)
 │   │   ├── components/              Astro components (ShopCard, FlavorList, HighlightList, etc.)
 │   │   ├── layouts/                 BaseLayout with Nav + Footer
-│   │   ├── lib/                     Data fetching (Supabase client, Shop type)
+│   │   ├── lib/                     Data fetching (data.ts) + site config (site.ts: SITE_URL, pageUrl)
 │   │   ├── content/                 Markdown content (Impressum, Datenschutz)
 │   │   ├── styles/                  Global CSS (Tailwind + design tokens)
 │   │   └── data/                    Static fallback data (shops.json)
@@ -81,6 +81,12 @@ Built with [Astro](https://astro.build), styled with [Tailwind CSS](https://tail
 - **`/beste-eisdielen-lvz`** — LVZ newspaper ranking
 - **`/stadtteil/[slug]`** — Neighborhood pages
 - **`/impressum`**, **`/datenschutz`** — Legal pages
+
+### SEO & metadata
+
+- **Base URL in one place.** The domain is set in `astro.config.mjs` (`site`) and exposed via `src/lib/site.ts` — `SITE_URL` and `pageUrl(path)`. Never hard-code `https://eis-le.de` in a page; build canonical/OG URLs with `pageUrl()`.
+- **Canonical + Open Graph everywhere.** `BaseLayout` always emits `<link rel="canonical">`, `og:url`, `og:image`, and `twitter:image`, defaulting to the current page URL and the brand image. Pages override via the `canonical` and `image` props.
+- **Meta descriptions are length-capped.** Shop pages run the editorial `specialty` through `truncateMeta()` (~155 chars) so descriptions don't get truncated in search results; the full text still shows on-page. Static pages set their own unique descriptions.
 
 ### Dev server
 
