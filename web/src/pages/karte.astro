@@ -3,12 +3,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import LeafletMap from '../components/LeafletMap.astro';
 import ShopCard from '../components/ShopCard.astro';
 import { getAllShops, resolveShopPhotoMap } from '../lib/data';
+import { pageUrl } from '../lib/site';
 
 const shops = await getAllShops();
 const photoMap = await resolveShopPhotoMap(shops);
 ---
 
-<BaseLayout title="Eiskarte Leipzig — Alle Eisdielen auf der Karte" description="Finde Eisdielen in deiner Nähe auf der interaktiven Leipzig-Karte.">
+<BaseLayout title="Eiskarte Leipzig — Alle Eisdielen auf der Karte" description="Finde Eisdielen in deiner Nähe auf der interaktiven Leipzig-Karte." canonical={pageUrl('/karte')} image={shops[0] ? photoMap.get(shops[0].id) : undefined}>
   <div class="page-wrap">
     <div class="page-head">
       <h1 class="page-title">Eiskarte <em>Leipzig</em></h1>

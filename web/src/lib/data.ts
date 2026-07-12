@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { SITE_URL } from './site';
 
 const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
@@ -146,10 +147,22 @@ export interface Shop {
 }
 
 const SUPABASE_STORAGE_URL = `${supabaseUrl}/storage/v1/object/public`;
-const CF_IMAGE_PREFIX = 'https://eis-le.de/cdn-cgi/image';
+const CF_IMAGE_PREFIX = `${SITE_URL}/cdn-cgi/image`;
 
 export function buildGalleryUrl(slug: string, filename: string): string {
   return `${SUPABASE_STORAGE_URL}/shop-images/${slug}/${filename}`;
+}
+
+// Clamp editorial text to a search-friendly meta description length (~155 chars).
+// Trims on a word boundary and appends an ellipsis so descriptions aren't cut
+// off mid-word in the SERP. Full text is still used for on-page display.
+export function truncateMeta(text: string | null | undefined, max = 155): string | undefined {
+  if (!text) return undefined;
+  const trimmed = text.trim();
+  if (trimmed.length <= max) return trimmed;
+  const slice = trimmed.slice(0, max - 1);
+  const lastSpace = slice.lastIndexOf(' ');
+  return (lastSpace > 0 ? slice.slice(0, lastSpace) : slice).replace(/[,;:.\s]+$/, '') + '…';
 }
 
 export function buildCFImageUrl(

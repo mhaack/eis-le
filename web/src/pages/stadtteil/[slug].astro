@@ -4,6 +4,7 @@ import ShopCard from '../../components/ShopCard.astro';
 import LeafletMap from '../../components/LeafletMap.astro';
 import NeighborhoodPills from '../../components/NeighborhoodPills.astro';
 import { getShopsByNeighborhood, getNeighborhoods, resolveShopPhotoMap } from '../../lib/data';
+import { pageUrl } from '../../lib/site';
 
 export async function getStaticPaths() {
   const neighborhoods = await getNeighborhoods();
@@ -29,7 +30,7 @@ const photoMap = await resolveShopPhotoMap(shops);
 const hasOtherNeighborhoods = allNeighborhoods.some((n: { slug: string }) => n.slug !== slug);
 ---
 
-<BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={seoDescription} canonical={`https://eis-le.de/stadtteil/${slug}`} image={shops[0] ? photoMap.get(shops[0].id) : undefined}>
+<BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={seoDescription} canonical={pageUrl(`/stadtteil/${slug}`)} image={shops[0] ? photoMap.get(shops[0].id) : undefined}>
   <div class="page-wrap">
     <a href="/stadtteile" class="back-link">← Alle Stadtteile</a>
 

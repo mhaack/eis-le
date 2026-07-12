@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { pageUrl } from '../lib/site';
 import { Content } from '../content/datenschutz.md';
 ---
 
-<BaseLayout title="Datenschutz — eisleipzig">
+<BaseLayout title="Datenschutz — eisleipzig" description="Datenschutzerklärung von eis-le.de: Welche Daten wir erheben und wie wir sie verwenden." canonical={pageUrl('/datenschutz')}>
   <section class="max-w-[700px] mx-auto px-4 py-12">
     <div class="prose">
       <Content />
