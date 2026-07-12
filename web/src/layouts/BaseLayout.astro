@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { pageUrl } from '../lib/site';
 
 interface Props {
   title: string;
@@ -12,6 +13,11 @@ interface Props {
 }
 
 const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewertungen, Öffnungszeiten und Geheimtipps.', canonical, image, jsonLd } = Astro.props;
+
+// Fall back to the current page URL / brand image so og:url and og:image are
+// never missing, even on pages that don't pass an explicit canonical or photo.
+const canonicalUrl = canonical ?? pageUrl(Astro.url.pathname);
+const ogImage = image ?? pageUrl('/android-chrome-512x512.png');
 ---
 
 <!doctype html>
@@ -29,13 +35,13 @@ const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewe
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    {canonical && <meta property="og:url" content={canonical} />}
-    {image && <meta property="og:image" content={image} />}
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
     <!-- Twitter Card -->
     <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    {image && <meta name="twitter:image" content={image} />}
+    <meta name="twitter:image" content={ogImage} />
     <link rel="icon" href="/favicon.ico" sizes="48x48">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
@@ -43,7 +49,7 @@ const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewe
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#FDF8EF">
     <title>{title}</title>
-    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="canonical" href={canonicalUrl} />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/<\/script>/gi, '<\\/script>')} />}
     <link rel="preconnect" href="https://p.eis-le.de">
     <script defer src="https://p.eis-le.de/static/files/pa.js"

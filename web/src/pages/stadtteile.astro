@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getNeighborhoods } from '../lib/data';
+import { pageUrl } from '../lib/site';
 
 const neighborhoods = await getNeighborhoods();
 ---
 
-<BaseLayout title="Eisdielen in Leipzigs Stadtteilen" description="Entdecke die besten Eisdielen in Leipzig nach Stadtteil: Connewitz, Südvorstadt, Plagwitz, Gohlis und mehr." canonical="https://eis-le.de/stadtteile">
+<BaseLayout title="Eisdielen in Leipzigs Stadtteilen" description="Entdecke die besten Eisdielen in Leipzig nach Stadtteil: Connewitz, Südvorstadt, Plagwitz, Gohlis und mehr." canonical={pageUrl('/stadtteile')}>
   <div class="page-wrap">
     <a href="/" class="back-link">← Alle Eisdielen</a>
 

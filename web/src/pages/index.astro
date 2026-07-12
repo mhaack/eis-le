@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { pageUrl } from '../lib/site';
 import Hero from '../components/Hero.astro';
 import FilterBar from '../components/FilterBar.astro';
 import ShopCard from '../components/ShopCard.astro';
@@ -12,7 +13,7 @@ const photoMap = await resolveShopPhotoMap(shops);
 const neighborhoodCount = new Set(shops.map(s => s.neighborhood_id).filter(Boolean)).size;
 ---
 
-<BaseLayout title="eisleipzig — Die besten Eisdielen in Leipzig">
+<BaseLayout title="eisleipzig — Die besten Eisdielen in Leipzig" description="Der Guide zu den besten Eisdielen in Leipzig: Bewertungen, Öffnungszeiten, veganes Eis, Geheimtipps und alle Läden auf einen Blick." canonical={pageUrl('/')}>
   <Hero shopCount={shops.length} neighborhoodCount={neighborhoodCount} />
 
   <div x-data="shopFilter()">
