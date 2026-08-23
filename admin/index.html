@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>eisleipzig Admin</title>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
   <style>
     :root {
       --bg: #faf8f5;
@@ -94,6 +96,12 @@
     }
     .field textarea { resize: vertical; font-family: ui-monospace, monospace; font-size: 13px; }
     .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+    /* Quill editor, styled to match the other form fields */
+    .field .ql-toolbar.ql-snow { border: 1px solid var(--border); border-radius: 6px 6px 0 0; background: var(--card); }
+    .field .ql-container.ql-snow { border: 1px solid var(--border); border-top: 0; border-radius: 0 0 6px 6px; background: var(--card); font-family: inherit; font-size: 14px; }
+    .field .ql-editor { min-height: 140px; }
+    .field .ql-editor h2 { font-size: 18px; margin: 12px 0 6px; }
+    .field .ql-editor h3 { font-size: 15px; margin: 10px 0 5px; }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     .field-readonly input, .field-readonly textarea { background: #f5f3f0; color: var(--muted); }
@@ -116,6 +124,41 @@
     .gallery-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .gallery-btn-del { color: var(--red); border-color: #f5c6c3; }
     .gallery-btn-del:hover:not(:disabled) { background: #fde; }
+
+    /* Flavor list editor */
+    .flavor-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .flavor-item { display: flex; gap: 8px; align-items: center; background: #f9f7f4; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+    .flavor-index { font-size: 12px; font-family: ui-monospace, monospace; color: var(--muted); width: 22px; text-align: right; flex-shrink: 0; }
+    .flavor-item input, .flavor-item select {
+      padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px;
+      font-size: 14px; font-family: inherit; background: var(--card); color: var(--text);
+    }
+    .flavor-item input:focus, .flavor-item select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+    .flavor-name { flex: 1; min-width: 0; }
+    .flavor-tag { width: 150px; flex-shrink: 0; }
+    .flavor-btns { display: flex; gap: 4px; flex-shrink: 0; }
+    @media (max-width: 640px) {
+      .flavor-item { flex-wrap: wrap; }
+      .flavor-name { flex-basis: 100%; }
+    }
+
+    /* Highlight editor */
+    .highlight-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .highlight-item { background: #f9f7f4; border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+    .highlight-head { display: flex; gap: 8px; align-items: center; }
+    .highlight-item input, .highlight-item select, .highlight-item textarea {
+      padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px;
+      font-size: 14px; font-family: inherit; background: var(--card); color: var(--text);
+    }
+    .highlight-item input:focus, .highlight-item select:focus, .highlight-item textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+    .highlight-icon { width: 170px; flex-shrink: 0; }
+    .highlight-emoji { width: 92px; flex-shrink: 0; text-align: center; }
+    .highlight-title { flex: 1; min-width: 0; font-weight: 500; }
+    .highlight-text { width: 100%; margin-top: 6px; resize: vertical; }
+    @media (max-width: 640px) {
+      .highlight-head { flex-wrap: wrap; }
+      .highlight-title { flex-basis: 100%; }
+    }
   </style>
 </head>
 <body x-data="adminApp()" @keydown.meta.s.window.prevent="view === 'detail' && save()" @keydown.ctrl.s.window.prevent="view === 'detail' && save()">
@@ -332,12 +375,45 @@
               </div>
               <div class="field">
                 <label>Unsere Review</label>
-                <textarea rows="3" x-model="selected.our_review"></textarea>
+                <div id="review-editor"></div>
               </div>
               <div class="field">
                 <label>Zuletzt besucht</label>
                 <input type="date" x-model="selected.last_visited_at">
               </div>
+            </div>
+          </details>
+
+          <!-- Highlights -->
+          <details>
+            <summary>Highlights</summary>
+            <div class="section-body">
+              <div class="highlight-list" x-show="(selected._highlights || []).length > 0">
+                <template x-for="(hl, idx) in (selected._highlights || [])" :key="hl.uid">
+                  <div class="highlight-item">
+                    <div class="highlight-head">
+                      <span class="flavor-index" x-text="String(idx + 1).padStart(2, '0')"></span>
+                      <select class="highlight-icon" x-model="hl.icon" @change="onHighlightIconChange(hl)">
+                        <template x-for="opt in highlightIcons" :key="opt">
+                          <option :value="opt" x-text="opt"></option>
+                        </template>
+                        <option value="__custom__">&mdash; eigenes Emoji &mdash;</option>
+                      </select>
+                      <input type="text" class="highlight-emoji" x-show="hl.icon === '__custom__'" x-model="hl.emoji" placeholder="&#127846;" title="Emoji oder freier Text (wird als Text angezeigt)" maxlength="24">
+                      <input type="text" class="highlight-title" x-model="hl.title" placeholder="Titel">
+                      <div class="flavor-btns">
+                        <button type="button" class="gallery-btn" @click="moveHighlight(idx, -1)" :disabled="idx === 0" title="Nach oben">&uarr;</button>
+                        <button type="button" class="gallery-btn" @click="moveHighlight(idx, 1)" :disabled="idx === selected._highlights.length - 1" title="Nach unten">&darr;</button>
+                        <button type="button" class="gallery-btn gallery-btn-del" @click="removeHighlight(idx)" title="Loeschen">&times;</button>
+                      </div>
+                    </div>
+                    <textarea class="highlight-text" rows="2" x-model="hl.text" placeholder="Beschreibung"></textarea>
+                  </div>
+                </template>
+              </div>
+              <p x-show="!selected._highlights || selected._highlights.length === 0" style="font-size:13px;color:var(--muted);margin-bottom:12px;">Noch keine Highlights erfasst.</p>
+              <button type="button" class="gallery-btn" @click="addHighlight()">+ Highlight hinzufuegen</button>
+              <p class="field-hint" style="margin-top:8px;">Eintraege ohne Titel und Text werden beim Speichern verworfen.</p>
             </div>
           </details>
 
@@ -390,6 +466,35 @@
                   </select>
                 </div>
               </div>
+            </div>
+          </details>
+
+          <!-- Flavors -->
+          <details>
+            <summary>Eissorten</summary>
+            <div class="section-body">
+              <div class="flavor-list" x-show="(selected._flavors || []).length > 0">
+                <template x-for="(flavor, idx) in (selected._flavors || [])" :key="flavor.uid">
+                  <div class="flavor-item">
+                    <span class="flavor-index" x-text="String(idx + 1).padStart(2, '0')"></span>
+                    <input type="text" class="flavor-name" x-model="flavor.name" placeholder="Sortenname" @keydown.enter.prevent="addFlavor(idx)">
+                    <select class="flavor-tag" x-model="flavor.tag">
+                      <option value="">&mdash; kein Tag &mdash;</option>
+                      <template x-for="opt in flavorTags" :key="opt.value">
+                        <option :value="opt.value" x-text="opt.label"></option>
+                      </template>
+                    </select>
+                    <div class="flavor-btns">
+                      <button type="button" class="gallery-btn" @click="moveFlavor(idx, -1)" :disabled="idx === 0" title="Nach oben">&uarr;</button>
+                      <button type="button" class="gallery-btn" @click="moveFlavor(idx, 1)" :disabled="idx === selected._flavors.length - 1" title="Nach unten">&darr;</button>
+                      <button type="button" class="gallery-btn gallery-btn-del" @click="removeFlavor(idx)" title="Loeschen">&times;</button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+              <p x-show="!selected._flavors || selected._flavors.length === 0" style="font-size:13px;color:var(--muted);margin-bottom:12px;">Noch keine Sorten erfasst.</p>
+              <button type="button" class="gallery-btn" @click="addFlavor()">+ Sorte hinzufuegen</button>
+              <p class="field-hint" style="margin-top:8px;">Sorten ohne Namen werden beim Speichern verworfen.</p>
             </div>
           </details>
 
@@ -640,22 +745,6 @@
                 <label>Fotos</label>
                 <textarea rows="4" x-model="selected._photos"></textarea>
               </div>
-              <div class="field">
-                <label>Highlights</label>
-                <textarea rows="6" x-model="selected._highlights" placeholder='[
-  { "icon": "star", "title": "Besonderes Angebot", "text": "Hausgemachte Waffeln" },
-  { "icon": "award", "title": "Auszeichnung", "text": "Beste Eisdiele 2024" }
-]'></textarea>
-              </div>
-              <div class="field">
-                <label>Flavor List</label>
-                <textarea rows="6" x-model="selected._flavor_list" placeholder='[
-  { "name": "Pistazie", "tag": "signatur" },
-  { "name": "Mango Sorbet", "tag": "vegan" },
-  { "name": "Erdbeere" },
-  { "name": "Holunderbluete", "tag": "saisonal" }
-]'></textarea>
-              </div>
             </div>
           </details>
 
@@ -718,6 +807,9 @@
       }
     };
 
+    // Quill instance lives outside Alpine — its reactive Proxy breaks Quill internals.
+    let reviewQuill = null;
+
     function adminApp() {
       return {
         view: 'list',
@@ -746,8 +838,34 @@
         // Array fields
         _arrayFields: ['atmosphere_tags', 'payment_methods'],
 
-        // JSON fields
-        _jsonFields: ['opening_hours', 'photos', 'highlights', 'flavor_list'],
+        // JSON fields edited as raw JSON textareas
+        _jsonFields: ['opening_hours', 'photos'],
+
+        // JSON fields edited through a custom UI (see _flavors / _highlights)
+        _structuredFields: ['flavor_list', 'highlights'],
+
+        // Allowed highlight icons (must match web/src/components/HighlightList.astro)
+        highlightIcons: [
+          'star', 'award', 'truck', 'refresh-cw', 'heart', 'leaf', 'sparkles', 'coffee',
+          'map-pin', 'clock', 'gift', 'smile', 'thumbs-up', 'zap', 'sun', 'snowflake',
+          'music', 'camera', 'dog', 'popsicle', 'dessert', 'cup-soda', 'vegan',
+          'circle-parking', 'utensils', 'cake', 'cake-slice', 'chef-hat',
+          'ice-cream-bowl', 'ice-cream-cone'
+        ],
+        _highlightUid: 0,
+
+        // Allowed flavor tags (must match web/src/components/FlavorList.astro)
+        flavorTags: [
+          { value: 'signatur', label: 'Signatur' },
+          { value: 'vegan', label: 'Vegan' },
+          { value: 'saisonal', label: 'Saisonal' },
+          { value: 'alkohol', label: 'Alkohol' },
+          { value: 'bio', label: 'Bio' },
+          { value: 'exotisch', label: 'Exotisch' },
+          { value: 'softeis', label: 'Softeis' },
+          { value: 'sorbet', label: 'Sorbet' },
+        ],
+        _flavorUid: 0,
 
         // Read-only fields (excluded from update payload)
         _readonlyFields: [
@@ -806,6 +924,26 @@
             clone['_' + f] = clone[f] != null ? JSON.stringify(clone[f], null, 2) : '';
           }
 
+          // Highlights -> editable rows; unknown icons fall back to the emoji field
+          clone._highlights = (clone.highlights ?? []).map(h => {
+            const icon = h?.icon ?? '';
+            const known = this.highlightIcons.includes(icon);
+            return {
+              uid: ++this._highlightUid,
+              icon: known ? icon : '__custom__',
+              emoji: known ? '' : icon,
+              title: h?.title ?? '',
+              text: h?.text ?? ''
+            };
+          });
+
+          // Flavor list -> editable rows (uid keeps Alpine's x-for stable while reordering)
+          clone._flavors = (clone.flavor_list ?? []).map(f => ({
+            uid: ++this._flavorUid,
+            name: f?.name ?? '',
+            tag: f?.tag ?? ''
+          }));
+
           // Nulls to empty strings for text inputs
           clone.neighborhood_id = clone.neighborhood_id ?? '';
           clone.wait_time_typical = clone.wait_time_typical ?? '';
@@ -816,6 +954,37 @@
           this.saveSuccess = false;
           this.view = 'detail';
           window.scrollTo(0, 0);
+          this.$nextTick(() => this.setReviewEditor(clone.our_review));
+        },
+
+        setReviewEditor(value) {
+          if (!reviewQuill) {
+            reviewQuill = new Quill('#review-editor', {
+              theme: 'snow',
+              modules: {
+                toolbar: [
+                  [{ header: 2 }, { header: 3 }],
+                  ['bold', 'italic', 'underline'],
+                  [{ list: 'bullet' }, { list: 'ordered' }],
+                  ['clean']
+                ]
+              }
+            });
+          }
+          const v = value ?? '';
+          if (/<\/?[a-z][^>]*>/i.test(v)) {
+            reviewQuill.setContents(reviewQuill.clipboard.convert({ html: v }));
+          } else {
+            reviewQuill.setText(v);
+          }
+          reviewQuill.history.clear();
+        },
+
+        getReviewHtml() {
+          if (!reviewQuill) return this.selected?.our_review ?? null;
+          if (reviewQuill.getText().trim() === '') return null;
+          // Quill bug: getSemanticHTML() encodes regular spaces as &nbsp;
+          return reviewQuill.getSemanticHTML().replace(/&nbsp;/g, ' ');
         },
 
         back() {
@@ -829,6 +998,7 @@
           this.saveSuccess = false;
 
           const s = this.selected;
+          s.our_review = this.getReviewHtml();
           const payload = {};
           const jsonErrors = [];
 
@@ -839,6 +1009,7 @@
             if (this._boolFields.includes(key)) continue;
             if (this._arrayFields.includes(key)) continue;
             if (this._jsonFields.includes(key)) continue;
+            if (this._structuredFields.includes(key)) continue;
 
             // Normalize empty strings to null for nullable fields
             payload[key] = val === '' ? null : val;
@@ -855,6 +1026,24 @@
             const arr = raw.split(/\s*,\s*/).filter(v => v.length > 0);
             payload[f] = arr.length > 0 ? arr : null;
           }
+
+          // Build highlights from the structured editor
+          const highlights = (s._highlights ?? [])
+            .map(h => ({
+              icon: h.icon === '__custom__' ? (h.emoji ?? '').trim() : h.icon,
+              title: (h.title ?? '').trim(),
+              text: (h.text ?? '').trim()
+            }))
+            .filter(h => h.title.length > 0 || h.text.length > 0)
+            .map(h => ({ ...h, icon: h.icon || 'star' }));
+          payload.highlights = highlights.length > 0 ? highlights : null;
+
+          // Build flavor_list from the structured editor
+          const flavors = (s._flavors ?? [])
+            .map(f => ({ name: (f.name ?? '').trim(), tag: f.tag || '' }))
+            .filter(f => f.name.length > 0)
+            .map(f => f.tag ? { name: f.name, tag: f.tag } : { name: f.name });
+          payload.flavor_list = flavors.length > 0 ? flavors : null;
 
           // Parse JSON fields
           for (const f of this._jsonFields) {
@@ -919,6 +1108,52 @@
         galleryPreviewUrl(filename) {
           if (!this._supabaseConfig || !this.selected) return '';
           return `${this._supabaseConfig.url}/storage/v1/object/public/shop-images/${this.selected.slug}/${filename}`;
+        },
+
+        addHighlight() {
+          if (!this.selected._highlights) this.selected._highlights = [];
+          this.selected._highlights.push({ uid: ++this._highlightUid, icon: 'star', emoji: '', title: '', text: '' });
+          this.$nextTick(() => {
+            const inputs = document.querySelectorAll('.highlight-title');
+            inputs[inputs.length - 1]?.focus();
+          });
+        },
+
+        removeHighlight(idx) {
+          this.selected._highlights.splice(idx, 1);
+        },
+
+        moveHighlight(idx, dir) {
+          const arr = this.selected._highlights;
+          const newIdx = idx + dir;
+          if (newIdx < 0 || newIdx >= arr.length) return;
+          [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+        },
+
+        onHighlightIconChange(hl) {
+          if (hl.icon !== '__custom__') hl.emoji = '';
+        },
+
+        addFlavor(afterIdx = null) {
+          if (!this.selected._flavors) this.selected._flavors = [];
+          const row = { uid: ++this._flavorUid, name: '', tag: '' };
+          const at = afterIdx === null ? this.selected._flavors.length : afterIdx + 1;
+          this.selected._flavors.splice(at, 0, row);
+          this.$nextTick(() => {
+            const inputs = document.querySelectorAll('.flavor-name');
+            inputs[at]?.focus();
+          });
+        },
+
+        removeFlavor(idx) {
+          this.selected._flavors.splice(idx, 1);
+        },
+
+        moveFlavor(idx, dir) {
+          const arr = this.selected._flavors;
+          const newIdx = idx + dir;
+          if (newIdx < 0 || newIdx >= arr.length) return;
+          [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
         },
 
         moveGalleryImage(idx, dir) {

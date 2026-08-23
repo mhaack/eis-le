@@ -6,6 +6,7 @@ import HighlightList from '../components/HighlightList.astro';
 import GalleryBento from '../components/GalleryBento.astro';
 import { getAllShops, getShopBySlug, formatOpeningHours, resolveShopPhotos, resolveShopPrimaryPhoto, truncateMeta } from '../lib/data';
 import { pageUrl } from '../lib/site';
+import { renderRichText } from '../lib/richtext';
 import { Globe, Phone, Navigation, CreditCard } from 'lucide-astro';
 
 export async function getStaticPaths() {
@@ -161,7 +162,7 @@ const showTagline = taglineText && taglineText !== storyText;
         {(shop.our_review || shop.specialty) && (
           <section class="d-section">
             <h3 class="d-section-head"><span class="d-num">01</span> Die Geschichte <span class="d-rule"></span></h3>
-            <p class="story-text">{shop.our_review || shop.specialty}</p>
+            <div class="story-text" set:html={renderRichText(shop.our_review || shop.specialty)} />
           </section>
         )}
 
@@ -420,6 +421,31 @@ const showTagline = taglineText && taglineText !== storyText;
     margin: 0 0 16px;
     max-width: 58ch;
     text-wrap: pretty;
+  }
+  .story-text :global(p) {
+    margin: 0 0 14px;
+  }
+  .story-text :global(h2),
+  .story-text :global(h3) {
+    font-family: var(--font-heading);
+    color: var(--color-choco);
+    line-height: 1.3;
+    margin: 24px 0 10px;
+  }
+  .story-text :global(h2) { font-size: 24px; }
+  .story-text :global(h3) { font-size: 20px; }
+  .story-text :global(h2:first-child),
+  .story-text :global(h3:first-child) { margin-top: 0; }
+  .story-text :global(ul),
+  .story-text :global(ol) {
+    margin: 0 0 14px;
+    padding-left: 24px;
+  }
+  .story-text :global(li) {
+    margin-bottom: 6px;
+  }
+  .story-text :global(:last-child) {
+    margin-bottom: 0;
   }
 
   .detail-tag-row {
