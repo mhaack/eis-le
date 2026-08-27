@@ -2,14 +2,7 @@
 
 ## Project purpose
 
-**eis-le.de** — a Leipzig ice cream shop directory. The repo contains:
-
-- **`web/`** — Astro SSG frontend, deployed as a Cloudflare Worker
-- **`scripts/`** — Data pipeline (seed, enrich, weekly update) run as one-offs or by CI
-- **`admin/`** — Local admin UI (plain HTML + Alpine.js) with a Node proxy server for Supabase
-- **`sql/`** — Database migrations
-
-The pipeline seeds a Supabase `shops` table from Google Places API (New), enriches records using Claude, and runs weekly via GitHub Actions.
+**eis-le.de** — a Leipzig ice cream shop directory. The pipeline seeds a Supabase `shops` table from Google Places API (New), enriches records using Claude, and runs weekly via GitHub Actions.
 
 ---
 
@@ -17,68 +10,9 @@ The pipeline seeds a Supabase `shops` table from Google Places API (New), enrich
 
 Two tables: `shops` and `neighborhoods`. Shops reference neighborhoods via `neighborhood_id` FK.
 
-### `neighborhoods` table (manual-only)
+`neighborhoods` is **manual-only** — not written by any script (schema: `sql/20260321000001_neighborhoods.sql`).
 
-| Column | Notes |
-|---|---|
-| `id` | uuid PK |
-| `name` | e.g. "Connewitz" (unique) |
-| `slug` | e.g. "connewitz" (unique) |
-| `description` | Optional editorial blurb |
-| `latitude`, `longitude` | Center point for map views |
-
-Neighborhoods are managed manually — not written by any script.
-
-### `shops` table
-
-Key column groups:
-
-### From Google Places API (auto-updated weekly)
-
-| Column | Notes |
-|---|---|
-| `google_place_id` | Unique key for deduplication (`onConflict`) |
-| `name` | `displayName.text` |
-| `address` | `formattedAddress` |
-| `latitude`, `longitude` | `location.latitude/longitude` |
-| `phone` | `nationalPhoneNumber` |
-| `website` | `websiteUri` |
-| `google_maps_url` | `googleMapsUri` |
-| `google_rating` | float |
-| `google_review_count` | integer |
-| `price_level` | 0–4 integer, mapped from enum string |
-| `opening_hours` | `regularOpeningHours.periods` as JSONB |
-| `photos` | up to 5 photo resource names as JSONB |
-| `last_scraped_at` | set on every update |
-| `data_changed_at` | set only when a meaningful change is detected |
-| `open_after_8pm` | **calculated** from `opening_hours`, not stored by Google |
-| `child_friendly` | `goodForChildren` |
-| `has_outdoor_seating` | `outdoorSeating` |
-| `has_coffee` | `servesCoffee` |
-| `has_pastry` | `servesDessert` |
-| `has_vegan_options` | `servesVegetarianFood` |
-| `has_car_parking` | derived from `parkingOptions` (any truthy value → true) |
-| `payment_methods` | derived from `paymentOptions` (text array: Bar, Kreditkarte, EC-Karte, Kontaktlos) |
-
-### From Claude enrichment (enrich-with-claude.js)
-
-| Column | Notes |
-|---|---|
-| `specialty` | Editorial description of the shop |
-| `location_description` | Editorial description of the location |
-| `ice_cream_type` | Eiscafé / Eisdiele / Gelateria / Softeis / Eisautomat / Frozen Yogurt / other |
-| `near_park`, `near_water`, `near_playground` | Specific names only, not guesses |
-| `has_vegan_options` | May be set by Claude if Google didn't supply it |
-| `fully_vegan` | Claude only |
-| `is_handmade` | Claude only |
-| `has_waffle_cones` | Claude only |
-| `has_sundaes` | Claude only |
-| `has_lactose_free` | Claude only |
-| `has_gluten_free` | Claude only |
-| `is_organic` | Claude only |
-| `has_bike_parking` | Claude only |
-| `near_public_transport` | Claude only |
-| `atmosphere_tags` | Merged: Google booleans + Claude vibe tags (see below) |
+For `shops`, the Google-sourced columns and their API field mapping live in `mapPlaceToShop` (`scripts/utils/change-detection.js`) — read that function, don't trust a copy. The Claude-enrichment columns are defined by the prompt schema in `scripts/enrich-with-claude.js`. The columns below are the ones **no script writes**:
 
 ### Manual-only columns
 
@@ -129,66 +63,16 @@ Default mode: `WHERE specialty IS NULL AND listing_status NOT IN ('archived', 'i
 
 `mapPlaceToShop` is the single source of truth for mapping Google API fields to DB columns. It auto-calculates `open_after_8pm`, derives `payment_methods`, derives `has_car_parking`, etc. Changes to how Google data maps to DB columns should be made here, not in the individual scripts.
 
-### Site URL lives in one place (web/src/lib/site.ts)
-
-The canonical base URL is defined once in `web/astro.config.mjs` (`site: 'https://eis-le.de'`) and surfaced via `web/src/lib/site.ts`:
-
-- `SITE_URL` — the base, read from `import.meta.env.SITE`.
-- `pageUrl(path)` — absolute canonical URL for a site-relative path, honoring `trailingSlash: 'never'`. Use it for every `canonical`, `og:url`, and JSON-LD `url`. Never hard-code `https://eis-le.de` in a page.
-
-### BaseLayout always emits canonical + Open Graph tags
-
-`web/src/layouts/BaseLayout.astro` renders `<link rel="canonical">`, `og:url`, `og:image`, and `twitter:image` on **every** page. Pages pass optional `canonical` and `image` props to override; otherwise they default to the current page URL (`pageUrl(Astro.url.pathname)`) and the brand image (`/android-chrome-512x512.png`). Curated-list pages pass a representative shop photo as `image`.
-
-### Meta descriptions are length-capped, not raw specialty
-
-Shop detail pages (`[slug].astro`) feed `truncateMeta(shop.specialty)` into the `description` prop — `specialty` is editorial prose (often 200–450 chars) and would otherwise blow past the ~160-char SERP limit. `truncateMeta` (in `web/src/lib/data.ts`) clamps to ~155 chars on a word boundary; the full `specialty` is still shown on-page. Static pages set their own unique `description` so no two pages share one.
-
 ---
 
-## How to run each script
+## Running the scripts
 
-```bash
-# Seed the database (one-time)
-node scripts/initial-import.js
+`package.json` defines `import`, `enrich`, `update`, `update:search-new` and `alerts`. Not covered there:
 
-# Enrich un-enriched shops (specialty IS NULL)
-node scripts/enrich-with-claude.js
+- `node scripts/enrich-with-claude.js --all` — re-enrich every shop (costs API credits)
+- `node admin/server.js` — local admin UI
 
-# Re-enrich all shops (ignores specialty IS NULL filter)
-node scripts/enrich-with-claude.js --all
-
-# Weekly refresh (existing shops only)
-node scripts/weekly-update.js
-
-# Weekly refresh + discover new shops
-node scripts/weekly-update.js --search-new
-
-# Send email alert for changes written by weekly-update.js
-node scripts/send-alerts.js
-
-# Local admin UI (reads .env from project root)
-node admin/server.js
-
-# Frontend dev server
-cd web && npx astro dev
-```
-
-All scripts require environment variables from `.env`. Load them with `dotenv` or export them manually before running.
-
----
-
-## SQL migration naming convention
-
-Files in `sql/` follow the pattern:
-
-```
-YYYYMMDDNNNNNN_description.sql
-```
-
-Example: `20260321000001_neighborhoods.sql`
-
-The leading date + sequence number ensures migrations apply in the correct order. The initial schema is `01_shops.sql` (legacy name, predates the convention).
+All scripts need environment variables from `.env`. Load them with `dotenv` or export them manually before running.
 
 ---
 

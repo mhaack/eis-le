@@ -2,3 +2,6 @@
 node_modules/
 admin/config.js
 web/.playwright-mcp/
+.claude/
+skills-lock.json
+.mcp.json
