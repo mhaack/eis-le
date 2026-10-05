@@ -17,3 +17,10 @@ Shop detail pages (`[slug].astro`) feed `truncateMeta(shop.specialty)` into the 
 
 ---
 
+
+## Indexing guardrails
+
+- **Shop cards show a short teaser only** (`truncateMeta(specialty, 90)`). Never render the full `specialty`/`our_review` on list pages — repeating it verbatim made detail pages look like duplicates of the homepage to Google.
+- **Thin neighborhood pages are `noindex`** (fewer than `MIN_SHOPS_TO_INDEX_NEIGHBORHOOD` shops, `src/lib/site.ts`) and excluded from the sitemap (`SITEMAP_MIN_NBH_SHOPS`, `astro.config.mjs`). Keep both constants in sync. `BaseLayout` takes a `noindex` prop.
+- **No `aggregateRating` in JSON-LD.** Ratings come from Google reviews, which may not be marked up as our own.
+- **Trailing slashes 301** via `public/_redirects`; Workers' `drop-trailing-slash` alone answers 307.

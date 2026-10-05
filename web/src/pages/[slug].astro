@@ -55,9 +55,6 @@ if (shop.website) jsonLd.sameAs = shop.website;
 if (shop.google_maps_url) jsonLd.hasMap = shop.google_maps_url;
 if (shop.price_level) jsonLd.priceRange = PRICE_RANGE[shop.price_level];
 if (openingHoursSpecification?.length) jsonLd.openingHoursSpecification = openingHoursSpecification;
-if (shop.google_rating && shop.google_review_count) {
-  jsonLd.aggregateRating = { '@type': 'AggregateRating', ratingValue: shop.google_rating, reviewCount: shop.google_review_count, bestRating: 5, worstRating: 1 };
-}
 
 const today = new Date().getDay();
 const dayMap: Record<string, number> = {Mo:1,Di:2,Mi:3,Do:4,Fr:5,Sa:6,So:0};

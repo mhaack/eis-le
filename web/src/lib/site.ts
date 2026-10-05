@@ -9,6 +9,13 @@
 export const SITE_URL = (import.meta.env.SITE ?? 'https://eis-le.de').replace(/\/+$/, '');
 
 /**
+ * Neighborhood pages with fewer published shops than this are thin (intro + one
+ * card) and get `noindex` + are left out of the sitemap. Mirrored in
+ * astro.config.mjs (SITEMAP_MIN_NBH_SHOPS) — keep both in sync.
+ */
+export const MIN_SHOPS_TO_INDEX_NEIGHBORHOOD = 2;
+
+/**
  * Absolute canonical URL for a site-relative path.
  *   pageUrl()            -> "https://eis-le.de/"
  *   pageUrl('/karte')    -> "https://eis-le.de/karte"
