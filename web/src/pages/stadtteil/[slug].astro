@@ -4,7 +4,7 @@ import ShopCard from '../../components/ShopCard.astro';
 import LeafletMap from '../../components/LeafletMap.astro';
 import NeighborhoodPills from '../../components/NeighborhoodPills.astro';
 import { getShopsByNeighborhood, getNeighborhoods, resolveShopPhotoMap } from '../../lib/data';
-import { pageUrl } from '../../lib/site';
+import { pageUrl, MIN_SHOPS_TO_INDEX_NEIGHBORHOOD } from '../../lib/site';
 
 export async function getStaticPaths() {
   const neighborhoods = await getNeighborhoods();
@@ -27,10 +27,11 @@ const seoDescription = short_description ?? `Die besten Eisdielen in ${name}, Le
 const center = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 const shops = await getShopsByNeighborhood(slug!);
 const photoMap = await resolveShopPhotoMap(shops);
+const noindex = shops.length < MIN_SHOPS_TO_INDEX_NEIGHBORHOOD;
 const hasOtherNeighborhoods = allNeighborhoods.some((n: { slug: string }) => n.slug !== slug);
 ---
 
-<BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={seoDescription} canonical={pageUrl(`/stadtteil/${slug}`)} image={shops[0] ? photoMap.get(shops[0].id) : undefined}>
+<BaseLayout title={`Eisdielen in ${name} — Leipzig`} description={seoDescription} canonical={pageUrl(`/stadtteil/${slug}`)} image={shops[0] ? photoMap.get(shops[0].id) : undefined} noindex={noindex}>
   <div class="page-wrap">
     <a href="/stadtteile" class="back-link">← Alle Stadtteile</a>
 

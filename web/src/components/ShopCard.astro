@@ -1,6 +1,7 @@
 ---
 import type { Shop } from '../lib/data';
 import LVZBadge from './LVZBadge.astro';
+import { truncateMeta } from '../lib/data';
 
 interface Props {
   shop: Shop;
@@ -9,6 +10,10 @@ interface Props {
 }
 
 const { shop, photoUrl, eager = false } = Astro.props;
+
+// Short teaser only: the full specialty text lives on the detail page. Repeating
+// it verbatim on every list page made the detail pages look like duplicates.
+const tagline = truncateMeta(shop.specialty, 90) ?? shop.ice_cream_type;
 
 const tempClosed = shop.google_business_status === 'CLOSED_TEMPORARILY';
 
@@ -58,7 +63,7 @@ if (shop.is_organic) tagLabels.push('Bio');
       {shop.price_per_scoop && <span>{shop.price_per_scoop}</span>}
     </div>
     <h3 class="card-name">{shop.name}</h3>
-    <p class="card-tagline">{shop.short_description || shop.specialty || shop.ice_cream_type}</p>
+    <p class="card-tagline">{tagline}</p>
     {tagLabels.length > 0 && (
       <div class="card-tags">
         {tagLabels.slice(0, 3).map(t => <span class="card-tag">{t}</span>)}

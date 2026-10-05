@@ -1,0 +1,5 @@
+# Permanent (301) trailing-slash redirects. Without these, Workers' html_handling
+# "drop-trailing-slash" answers with a temporary 307, which Google treats as a
+# separate URL to keep checking instead of consolidating onto the slash-less one.
+/:slug/ /:slug 301
+/stadtteil/:slug/ /stadtteil/:slug 301

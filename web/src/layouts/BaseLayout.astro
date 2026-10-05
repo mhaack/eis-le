@@ -10,9 +10,10 @@ interface Props {
   canonical?: string;
   image?: string;
   jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
 }
 
-const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewertungen, Öffnungszeiten und Geheimtipps.', canonical, image, jsonLd } = Astro.props;
+const { title, description = 'Finde die besten Eisdielen in Leipzig — mit Bewertungen, Öffnungszeiten und Geheimtipps.', canonical, image, jsonLd, noindex = false } = Astro.props;
 
 // Fall back to the current page URL / brand image so og:url and og:image are
 // never missing, even on pages that don't pass an explicit canonical or photo.
@@ -26,6 +27,7 @@ const ogImage = image ?? pageUrl('/android-chrome-512x512.png');
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <!-- Preconnect for Google Fonts (eliminates serial CSS @import chain) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

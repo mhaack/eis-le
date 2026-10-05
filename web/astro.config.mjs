@@ -11,6 +11,13 @@ const { SUPABASE_URL, SUPABASE_ANON_KEY } = loadEnv('', process.cwd(), '');
 
 // Build a URL → lastmod map at build time from live DB data.
 // Shops use data_changed_at; neighborhoods use updated_at (trigger-maintained).
+// Neighborhood pages with fewer published shops are noindexed and left out of
+// the sitemap. Mirrors MIN_SHOPS_TO_INDEX_NEIGHBORHOOD in src/lib/site.ts.
+const SITEMAP_MIN_NBH_SHOPS = 2;
+
+/** @type {Set<string>} */
+const thinNeighborhoodUrls = new Set();
+
 const sitemapDates = await (async () => {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return /** @type {Map<string, Date>} */ (new Map());
 
@@ -23,7 +30,8 @@ const sitemapDates = await (async () => {
       .eq('listing_status', 'published'),
     supabase
       .from('neighborhoods')
-      .select('slug, updated_at'),
+      .select('slug, updated_at, shops!inner(count)')
+      .eq('shops.listing_status', 'published'),
   ]);
 
   /** @param {Array<{data_changed_at?: string|null, updated_at?: string|null}>} rows */
@@ -72,6 +80,8 @@ const sitemapDates = await (async () => {
   const nbhMax = maxDate(allNbh);
   if (nbhMax) map.set('https://eis-le.de/stadtteile', nbhMax);
   for (const n of allNbh) {
+    const shopCount = /** @type {{count: number}[]} */ (n.shops)?.[0]?.count ?? 0;
+    if (n.slug && shopCount < SITEMAP_MIN_NBH_SHOPS) thinNeighborhoodUrls.add(`https://eis-le.de/stadtteil/${n.slug}`);
     if (n.slug && n.updated_at) {
       map.set(`https://eis-le.de/stadtteil/${n.slug}`, new Date(n.updated_at));
     }
@@ -115,7 +125,7 @@ export default defineConfig({
   integrations: [
     alpinejs(),
     sitemap({
-      filter: (page) => !SITEMAP_EXCLUDE.has(page),
+      filter: (page) => !SITEMAP_EXCLUDE.has(page) && !thinNeighborhoodUrls.has(page),
       serialize: (item) => ({ ...item, lastmod: sitemapDates.get(item.url) }),
     }),
   ],
