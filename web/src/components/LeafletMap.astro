@@ -32,6 +32,10 @@ const shopsJson = JSON.stringify(shops.map(s => ({
     width: 100%;
     display: block;
   }
+  /* Mute the colourful OSM standard style to match the site's cream palette */
+  .map-root :global(.leaflet-tile-pane) {
+    filter: saturate(0.45) sepia(0.15) brightness(1.03);
+  }
 </style>
 
 <script define:vars={{ shopsJson, centerJson, mapId: id }}>
@@ -44,8 +48,8 @@ const shopsJson = JSON.stringify(shops.map(s => ({
       scrollWheelZoom: false,
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
     }).addTo(map);
 
